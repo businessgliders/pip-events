@@ -10,10 +10,10 @@ export default function Confirmation() {
   const eventType = state?.eventType || 'your event';
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
       <Navbar />
       <div className="max-w-lg mx-auto px-4 py-20 flex flex-col items-center">
-        <div className="bg-white border border-pink-100 rounded-2xl shadow-sm p-10 w-full text-center">
+        <div className="rounded-2xl p-10 w-full text-center" style={{background:'rgba(255,255,255,0.65)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.6)',boxShadow:'0 12px 48px rgba(241,136,155,0.12)'}}>
           <div className="w-16 h-16 rounded-full bg-pink-50 border-2 border-pink-200 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-8 h-8 text-pink-400" strokeWidth={1.5} />
           </div>

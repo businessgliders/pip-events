@@ -86,7 +86,7 @@ export default function Dashboard() {
   const eventTypes = [...new Set(requests.map(r => r.event_type).filter(Boolean))];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
@@ -113,7 +113,7 @@ export default function Dashboard() {
             { label: 'Confirmed', value: stats.confirmed, icon: '✅' },
             { label: 'Upcoming', value: stats.upcoming, icon: '📅' },
           ].map(s => (
-            <div key={s.label} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+            <div key={s.label} className="rounded-2xl p-5" style={{background:'rgba(255,255,255,0.6)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.55)',boxShadow:'0 8px 32px rgba(241,136,155,0.1)'}}>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{s.label}</p>
                 <span className="text-lg">{s.icon}</span>
@@ -124,7 +124,7 @@ export default function Dashboard() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-5 bg-gray-50 rounded-2xl p-4 border border-gray-100">
+        <div className="flex flex-wrap gap-3 mb-5 rounded-2xl p-4" style={{background:'rgba(255,255,255,0.5)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.5)'}}>
           <div className="flex-1 min-w-[200px] relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
             <input
@@ -145,7 +145,7 @@ export default function Dashboard() {
         </div>
 
         {/* Table */}
-        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+        <div className="rounded-2xl overflow-hidden" style={{background:'rgba(255,255,255,0.65)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.6)',boxShadow:'0 8px 32px rgba(241,136,155,0.1)'}}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-gray-100 bg-gray-50/50">
