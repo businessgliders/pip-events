@@ -94,15 +94,11 @@ export default function Calendar() {
                       ? 'cursor-pointer hover:bg-pink-50/60'
                       : 'bg-gray-50/30 cursor-default'
                   }`}
+                  style={isCurrentMonth ? {} : {}}
                 >
                   <div className={`text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
-                    isToday
-                      ? 'text-white'
-                      : isCurrentMonth
-                      ? 'text-gray-600'
-                      : 'text-gray-300'
-                  } ${isToday ? '' : ''
-                  }`}>
+                    isToday ? 'text-white' : isCurrentMonth ? 'text-gray-600' : 'text-gray-300'
+                  }`} style={isToday ? {backgroundColor: '#f1889b'} : {}}>
                     {format(day, 'd')}
                   </div>
                   <div className="flex flex-wrap gap-0.5 mt-1">
