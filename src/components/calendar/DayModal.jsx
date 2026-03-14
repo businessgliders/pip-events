@@ -52,7 +52,7 @@ export default function DayModal({ day, events, onClose }) {
         {uniqueEventTypes.length > 0 && (
           <div className="mb-5 space-y-2">
             {uniqueEventTypes.map(type => (
-              <div key={type} className="flex items-start gap-3 p-3 bg-pink-50 rounded-xl border border-pink-100">
+              <div key={type} className="flex items-start gap-3 p-3 rounded-xl border" style={{backgroundColor: '#fbe0e2', borderColor: '#f7b1bd'}}>
                 <span className="text-xl mt-0.5">{EVENT_ICONS[type] || '✨'}</span>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">{type} Event</p>
@@ -80,8 +80,9 @@ export default function DayModal({ day, events, onClose }) {
                   type="button"
                   onClick={() => setSelectedType(t.label)}
                   className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left transition-colors ${
-                    selectedType === t.label ? 'bg-pink-400 text-white' : 'text-gray-700 hover:bg-pink-50'
+                    selectedType === t.label ? 'text-white' : 'text-gray-700'
                   }`}
+                style={selectedType === t.label ? {backgroundColor: '#f1889b'} : {}}
                 >
                   <span>{t.icon}</span>
                   <span>{t.label}</span>
@@ -94,7 +95,8 @@ export default function DayModal({ day, events, onClose }) {
         <button
           onClick={handleProceed}
           disabled={!selectedType}
-          className="mt-5 w-full bg-pink-400 hover:bg-pink-500 disabled:opacity-40 disabled:cursor-not-allowed text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
+          className="mt-5 w-full disabled:opacity-40 disabled:cursor-not-allowed text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
+          style={{backgroundColor: '#f1889b'}}
         >
           Request Booking →
         </button>
