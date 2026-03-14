@@ -136,8 +136,8 @@ export default function RequestForm() {
 
         <form onSubmit={handleSubmit} className="space-y-7">
           {/* Contact Info */}
-          <section className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Contact Information</h2>
+          <section className="bg-white border rounded-2xl p-6 shadow-sm" style={{borderColor: '#f7b1bd'}}>
+            <h2 className="text-base font-semibold mb-4" style={{color: '#b67651'}}>Contact Information</h2>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-600 block mb-1">Full Name *</label>
@@ -160,8 +160,8 @@ export default function RequestForm() {
           </section>
 
           {/* Event Details */}
-          <section className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Event Details</h2>
+          <section className="bg-white border rounded-2xl p-6 shadow-sm" style={{borderColor: '#f7b1bd'}}>
+            <h2 className="text-base font-semibold mb-4" style={{color: '#b67651'}}>Event Details</h2>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-600 block mb-1">Event Type *</label>
@@ -213,8 +213,8 @@ export default function RequestForm() {
           </section>
 
           {/* Classes */}
-          <section className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Select Classes</h2>
+          <section className="bg-white border rounded-2xl p-6 shadow-sm" style={{borderColor: '#f7b1bd'}}>
+            <h2 className="text-base font-semibold mb-4" style={{color: '#b67651'}}>Select Classes</h2>
             <div className="space-y-2">
               {CLASS_OPTIONS.map(c => (
                 <label key={c} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-pink-200 cursor-pointer transition-colors">
@@ -227,8 +227,8 @@ export default function RequestForm() {
           </section>
 
           {/* Add-Ons */}
-          <section className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Add-Ons</h2>
+          <section className="bg-white border rounded-2xl p-6 shadow-sm" style={{borderColor: '#f7b1bd'}}>
+            <h2 className="text-base font-semibold mb-4" style={{color: '#b67651'}}>Add-Ons</h2>
             <div className="space-y-2">
               {ADDON_OPTIONS.map(a => (
                 <label key={a} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-pink-200 cursor-pointer transition-colors">
@@ -241,8 +241,8 @@ export default function RequestForm() {
           </section>
 
           {/* Budget & Notes */}
-          <section className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Budget & Notes</h2>
+          <section className="bg-white border rounded-2xl p-6 shadow-sm" style={{borderColor: '#f7b1bd'}}>
+            <h2 className="text-base font-semibold mb-4" style={{color: '#b67651'}}>Budget & Notes</h2>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-600 block mb-1">Budget Range</label>
