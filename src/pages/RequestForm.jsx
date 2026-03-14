@@ -130,8 +130,8 @@ export default function RequestForm() {
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 py-10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Submit Event Request</h1>
-          <p className="text-gray-400 mt-2 text-sm">Fill out the details below and we'll get back to you within 24 hours</p>
+          <h1 className="text-3xl font-bold" style={{color: '#b67651'}}>Submit Event Request</h1>
+          <p className="mt-2 text-sm" style={{color: '#f1889b'}}>Fill out the details below and we'll get back to you within 24 hours</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-7">

@@ -37,8 +37,8 @@ export default function Calendar() {
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Event Calendar</h1>
-          <p className="text-gray-400 mt-2 text-sm">Pick a date and request your event</p>
+          <h1 className="text-3xl font-bold" style={{color: '#b67651'}}>Event Calendar</h1>
+          <p className="mt-2 text-sm" style={{color: '#f1889b'}}>Pick a date and request your event</p>
         </div>
 
         {/* Month Nav */}

@@ -97,7 +97,8 @@ export default function Dashboard() {
           <div className="flex gap-2">
             <button
               onClick={() => { window.location.href = '/RequestForm'; }}
-              className="flex items-center gap-2 bg-pink-400 hover:bg-pink-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+              className="flex items-center gap-2 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+              style={{backgroundColor: '#f1889b'}}
             >
               <Plus className="w-4 h-4" /> New Request
             </button>
