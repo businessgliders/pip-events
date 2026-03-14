@@ -45,12 +45,13 @@ export default function Calendar() {
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            className="p-2 rounded-full hover:bg-pink-50 text-gray-500 transition-colors"
+            className="p-2 rounded-full text-gray-500 transition-colors hover:opacity-80"
+            style={{backgroundColor: 'transparent'}}
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5" style={{color: '#b67651'}} />
           </button>
           <div className="flex items-center gap-2">
-            <button onClick={() => setCurrentMonth(new Date())} className="text-xs text-pink-400 border border-pink-200 rounded-full px-3 py-1 hover:bg-pink-50 transition-colors">
+            <button onClick={() => setCurrentMonth(new Date())} className="text-xs rounded-full px-3 py-1 transition-colors" style={{color: '#f1889b', border: '1px solid #f7b1bd', backgroundColor: 'transparent'}}>
               Now
             </button>
             <h2 className="text-lg font-semibold text-gray-700 w-40 text-center">
@@ -59,9 +60,9 @@ export default function Calendar() {
           </div>
           <button
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            className="p-2 rounded-full hover:bg-pink-50 text-gray-500 transition-colors"
+            className="p-2 rounded-full text-gray-500 transition-colors hover:opacity-80"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5" style={{color: '#b67651'}} />
           </button>
         </div>
 
@@ -96,10 +97,11 @@ export default function Calendar() {
                 >
                   <div className={`text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
                     isToday
-                      ? 'bg-pink-400 text-white'
+                      ? 'text-white'
                       : isCurrentMonth
                       ? 'text-gray-600'
                       : 'text-gray-300'
+                  } ${isToday ? '' : ''
                   }`}>
                     {format(day, 'd')}
                   </div>

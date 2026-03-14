@@ -260,7 +260,8 @@ export default function RequestForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-pink-400 hover:bg-pink-500 disabled:opacity-60 text-white py-3.5 rounded-2xl font-semibold text-base transition-colors shadow-md"
+            className="w-full disabled:opacity-60 text-white py-3.5 rounded-2xl font-semibold text-base transition-colors shadow-md"
+          style={{backgroundColor: '#f1889b'}}
           >
             {submitting ? 'Submitting...' : 'Submit Request'}
           </button>
