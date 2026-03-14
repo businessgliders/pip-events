@@ -9,8 +9,9 @@ export default function Navbar() {
         <Link to="/Calendar">
           <button className={`px-5 py-1.5 rounded-full text-sm font-medium transition-all ${
             location.pathname === '/Calendar'
-              ? 'bg-pink-400 text-white shadow-sm'
-              : 'border border-pink-300 text-pink-500 hover:bg-pink-50'
+              ? 'text-white shadow-sm'
+              : 'border border-[#f7b1bd] text-[#f1889b] hover:bg-[#fbe0e2]'
+          } ${location.pathname === '/Calendar' ? 'bg-[#f1889b]' : ''
           }`}>
             Calendar
           </button>
@@ -23,9 +24,11 @@ export default function Navbar() {
       </div>
 
       <Link to="/Calendar" className="flex items-center justify-center">
-        <div className="w-9 h-9 rounded-full border-2 border-pink-300 flex items-center justify-center bg-pink-50">
-          <span className="text-pink-500 font-bold text-base leading-none">P</span>
-        </div>
+        <img
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
+          alt="Pilates in Pink"
+          className="w-10 h-10 object-contain"
+        />
       </Link>
 
       <div className="flex items-center gap-5">
