@@ -47,8 +47,20 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import Calendar from './pages/Calendar';
+import Confirmation from './pages/Confirmation';
+import Dashboard from './pages/Dashboard';
+import RequestForm from './pages/RequestForm';
 
-export const pagesConfig = {
-	Pages: {}
+
+export const PAGES = {
+    "Calendar": Calendar,
+    "Confirmation": Confirmation,
+    "Dashboard": Dashboard,
+    "RequestForm": RequestForm,
 }
 
+export const pagesConfig = {
+    mainPage: "Calendar",
+    Pages: PAGES,
+};

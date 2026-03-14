@@ -4,21 +4,21 @@ export default function Navbar() {
   const location = useLocation();
 
   return (
-    <nav className="bg-white border-b border-pink-100 px-6 py-3 flex items-center justify-between sticky top-0 z-40">
+    <nav className="bg-white border-b px-6 py-3 flex items-center justify-between sticky top-0 z-40" style={{borderColor: '#f7b1bd'}}>
       <div className="flex items-center gap-5">
         <Link to="/Calendar">
           <button className={`px-5 py-1.5 rounded-full text-sm font-medium transition-all ${
             location.pathname === '/Calendar'
-              ? 'text-white shadow-sm'
-              : 'border border-[#f7b1bd] text-[#f1889b] hover:bg-[#fbe0e2]'
-          } ${location.pathname === '/Calendar' ? 'bg-[#f1889b]' : ''
-          }`}>
+              ? 'text-white'
+              : 'border text-white'
+          }`} style={location.pathname === '/Calendar'
+            ? {backgroundColor: '#f1889b'}
+            : {backgroundColor: '#f7b1bd', borderColor: '#f7b1bd'}}>
             Calendar
           </button>
         </Link>
-        <Link to="/RequestForm" className={`text-sm transition-colors ${
-          location.pathname === '/RequestForm' ? 'text-pink-500 font-medium' : 'text-gray-500 hover:text-pink-400'
-        }`}>
+        <Link to="/RequestForm" className="text-sm transition-colors"
+          style={{color: location.pathname === '/RequestForm' ? '#f1889b' : '#b67651', fontWeight: location.pathname === '/RequestForm' ? 600 : 400}}>
           Submit Request
         </Link>
       </div>
@@ -32,12 +32,11 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-5">
-        <Link to="/Dashboard" className={`text-sm transition-colors ${
-          location.pathname === '/Dashboard' ? 'text-pink-500 font-medium' : 'text-gray-500 hover:text-pink-400'
-        }`}>
+        <Link to="/Dashboard" className="text-sm transition-colors"
+          style={{color: location.pathname === '/Dashboard' ? '#f1889b' : '#b67651', fontWeight: location.pathname === '/Dashboard' ? 600 : 400}}>
           Dashboard
         </Link>
-        <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center text-pink-400 text-sm">
+        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm" style={{backgroundColor: '#fbe0e2', color: '#f1889b'}}>
           👤
         </div>
       </div>

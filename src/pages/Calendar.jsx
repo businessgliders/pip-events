@@ -33,7 +33,7 @@ export default function Calendar() {
   const today = new Date();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{backgroundColor: '#f6eee7'}}>
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-10">
         <div className="text-center mb-8">

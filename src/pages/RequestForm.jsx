@@ -126,7 +126,7 @@ export default function RequestForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{backgroundColor: '#fbe0e2'}}>
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 py-10">
         <div className="text-center mb-8">
