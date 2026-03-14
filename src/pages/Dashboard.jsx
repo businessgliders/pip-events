@@ -32,8 +32,8 @@ export default function Dashboard() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-pink-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-sm border border-pink-100 p-10 w-full max-w-sm text-center">
+      <div className="min-h-screen flex items-center justify-center" style={{background:'linear-gradient(135deg,#fce4ec 0%,#fdf5f7 60%,#fce4ec 100%)'}}>
+        <div className="rounded-2xl p-10 w-full max-w-sm text-center" style={{background:'rgba(255,255,255,0.65)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.6)',boxShadow:'0 12px 48px rgba(241,136,155,0.12)'}}>
           <div className="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-5">
             <span className="text-2xl">🔒</span>
           </div>
