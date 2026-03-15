@@ -73,75 +73,14 @@ export default function RequestForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    await base44.entities.EventRequest.create({
+    const savedForm = {
       ...form,
       number_of_guests: parseInt(form.number_of_guests) || 0,
       status: 'Pending',
-    });
+    };
 
-    const emailBody = `
-<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
-  <div style="background:#f9a8c9;padding:32px;text-align:center;border-radius:12px 12px 0 0;">
-    <h1 style="color:white;margin:0;font-size:24px;">✨ Thank You, ${form.full_name}! ✨</h1>
-  </div>
-  <div style="background:white;padding:32px;border-radius:0 0 12px 12px;border:1px solid #f9e1ed;">
-    <p style="color:#555;">We're thrilled that you're interested in hosting your <strong>${form.event_type}</strong> at Pilates in Pink Studio!</p>
-    <div style="background:#fdf2f7;border-radius:8px;padding:20px;margin:20px 0;border-left:4px solid #f472b6;">
-      <h3 style="color:#ec4899;margin:0 0 12px 0;">📋 Your Request Summary</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:14px;">
-        <tr><td style="padding:4px 0;color:#999;">Event Type:</td><td style="padding:4px 0;font-weight:600;color:#333;">${form.event_type}</td></tr>
-        <tr><td style="padding:4px 0;color:#999;">Preferred Date:</td><td style="padding:4px 0;font-weight:600;color:#333;">${form.event_date}</td></tr>
-        <tr><td style="padding:4px 0;color:#999;">Number of Guests:</td><td style="padding:4px 0;font-weight:600;color:#333;">${form.number_of_guests}</td></tr>
-        <tr><td style="padding:4px 0;color:#999;">Duration:</td><td style="padding:4px 0;font-weight:600;color:#333;">${form.duration}</td></tr>
-        ${form.time_slot ? `<tr><td style="padding:4px 0;color:#999;">Time Slot:</td><td style="padding:4px 0;font-weight:600;color:#333;">${form.time_slot}</td></tr>` : ''}
-        ${form.selected_classes.length ? `<tr><td style="padding:4px 0;color:#999;">Classes:</td><td style="padding:4px 0;font-weight:600;color:#333;">${form.selected_classes.join(', ')}</td></tr>` : ''}
-      </table>
-    </div>
-    <div style="background:#f0fdf4;border-radius:8px;padding:20px;margin:20px 0;border-left:4px solid #22c55e;">
-      <h3 style="color:#16a34a;margin:0 0 12px 0;">✅ What Happens Next?</h3>
-      <ol style="margin:0;padding-left:20px;color:#555;font-size:14px;line-height:1.8;">
-        <li>Our team will review your request within <strong>24 hours</strong></li>
-        <li>We'll check availability for your preferred dates</li>
-        <li>You'll receive a personalized quote and booking details</li>
-        <li>Once confirmed, we'll send you all the event details!</li>
-      </ol>
-    </div>
-    <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid #f9e1ed;">
-      <p style="margin:4px 0;font-size:13px;color:#888;">📧 <a href="mailto:info@pilatesinpinkstudio.com" style="color:#ec4899;">info@pilatesinpinkstudio.com</a></p>
-      <p style="margin:4px 0;font-size:13px;color:#888;">📍 Pilates in Pink Studio</p>
-    </div>
-    <p style="text-align:center;color:#f9a8c9;font-size:12px;margin-top:20px;">We can't wait to help you create an unforgettable experience! 💕</p>
-  </div>
-</div>`;
-
-    await base44.integrations.Core.SendEmail({
-      to: form.email,
-      subject: `Thank You! Your Event Request Has Been Received - Pilates in Pink Studio`,
-      body: emailBody,
-      from_name: 'Pilates in Pink™ Studio',
-    });
-
-    await base44.integrations.Core.SendEmail({
-      to: 'info@pilatesinpinkstudio.com',
-      subject: `New Event Request: ${form.event_type} - ${form.full_name}`,
-      body: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-        <h2 style="color:#ec4899;">New Event Request Received</h2>
-        <p><strong>Name:</strong> ${form.full_name}</p>
-        <p><strong>Email:</strong> ${form.email}</p>
-        <p><strong>Phone:</strong> ${form.phone}</p>
-        <p><strong>Event Type:</strong> ${form.event_type}</p>
-        <p><strong>Date:</strong> ${form.event_date}</p>
-        <p><strong>Guests:</strong> ${form.number_of_guests}</p>
-        <p><strong>Duration:</strong> ${form.duration}</p>
-        <p><strong>Time Slot:</strong> ${form.time_slot}</p>
-        <p><strong>Classes:</strong> ${form.selected_classes.join(', ') || 'None'}</p>
-        <p><strong>Add-Ons:</strong> ${form.add_ons.join(', ') || 'None'}</p>
-        <p><strong>Notes:</strong> ${form.notes || 'None'}</p>
-        <p><strong>Budget:</strong> ${form.budget || 'Not specified'}</p>
-        <br/><p><a href="${window.location.origin}/Dashboard" style="background:#ec4899;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;">View in Dashboard →</a></p>
-      </div>`,
-      from_name: 'Pilates in Pink Events System',
-    });
+    await base44.entities.EventRequest.create(savedForm);
+    await base44.functions.invoke('sendEventEmails', { form: savedForm });
 
     setSubmitting(false);
     navigate('/Confirmation', { state: { name: form.full_name, email: form.email, eventType: form.event_type } });
