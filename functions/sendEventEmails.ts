@@ -2,8 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
-// Use your verified Resend domain sender, or Resend's default for testing: onboarding@resend.dev
-const FROM_EMAIL = 'Pilates in Pink™ Studio <onboarding@resend.dev>';
+const FROM_EMAIL = 'Pilates in Pink™ Studio <events@pilatesinpinkstudio.com>';
 
 async function sendEmail({ to, subject, html }) {
   const res = await fetch('https://api.resend.com/emails', {
