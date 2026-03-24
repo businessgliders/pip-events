@@ -75,6 +75,7 @@ export default function RequestForm() {
     phone: '',
     event_type: preType,
     event_date: preDate,
+    additional_dates: '',
     preferred_times: '',
     number_of_guests: '',
     time_slot: '',
