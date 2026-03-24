@@ -288,7 +288,7 @@ export default function Dashboard() {
           boxShadow: '0 12px 48px rgba(241,136,155,0.13)',
         }}>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm table-fixed">
               <thead style={{borderBottom: '1.5px solid rgba(247,177,189,0.35)', background: 'rgba(251,224,226,0.3)'}}>
                 <tr>
                   {activeColumns.map(col => (
