@@ -158,7 +158,8 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
               ))}
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   );
