@@ -5,6 +5,7 @@ import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
 import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, ChevronUp, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
+import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
 
 const STATUS_COLORS = {
   Pending: 'bg-yellow-100 text-yellow-700',
