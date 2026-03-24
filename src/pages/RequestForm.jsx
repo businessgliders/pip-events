@@ -124,15 +124,15 @@ export default function RequestForm() {
         playsInline
         className="fixed inset-0 w-full h-full object-cover"
         style={{zIndex: 0}}
+        crossOrigin="anonymous"
       >
-        <source src="https://videos.pexels.com/video-files/6456161/6456161-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-doing-pilates-exercises-on-a-reformer-42973-large.mp4" type="video/mp4" />
       </video>
-      {/* Pink overlay + blur */}
+      {/* Pink overlay — lighter so video shows through */}
       <div className="fixed inset-0" style={{
         zIndex: 1,
-        background: 'rgba(252, 220, 230, 0.72)',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
+        background: 'rgba(248, 210, 220, 0.55)',
       }} />
       {/* Content */}
       <div className="relative" style={{zIndex: 2}}>
