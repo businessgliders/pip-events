@@ -269,6 +269,11 @@ export default function Dashboard() {
             <option value="">All Statuses</option>
             {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
           </select>
+          <ColumnCustomizer
+            allColumns={ALL_COLUMNS}
+            visibleKeys={visibleCols}
+            onSave={setVisibleCols}
+          />
         </div>
 
         {/* Table */}
