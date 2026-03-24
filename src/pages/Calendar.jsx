@@ -7,7 +7,16 @@ import {
 } from 'date-fns';
 import Navbar from '../components/layout/Navbar';
 import DayModal from '../components/calendar/DayModal';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles } from 'lucide-react';
+
+const EVENT_TYPE_ICONS = {
+  'Birthday': Cake,
+  'Bridal Shower': Flower2,
+  'Bachelorette Party': Wine,
+  'Corporate Wellness Event': Briefcase,
+  'Private Class': PersonStanding,
+  'Other': Sparkles,
+};
 
 const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
