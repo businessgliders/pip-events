@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Settings2, GripVertical, Check, Save, X } from 'lucide-react';
 
 export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(visibleKeys);
+  const [position, setPosition] = useState({ top: 0, right: 0 });
+  const buttonRef = useRef(null);
 
   const toggleCol = (key) => {
     setDraft(d =>
