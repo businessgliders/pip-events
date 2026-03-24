@@ -5,14 +5,14 @@ const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
 const FROM_EMAIL = 'Pilates in Pink™ Studio <events@pilatesinpink.ca>';
 const FROM_EMAIL_NOREPLY = 'Pilates in Pink™ Studio <no-reply@pilatesinpink.ca>';
 
-async function sendEmail({ to, subject, html }) {
+async function sendEmail({ to, subject, html, from }) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${RESEND_API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+    body: JSON.stringify({ from: from || FROM_EMAIL, to, subject, html }),
   });
   return res.json();
 }
