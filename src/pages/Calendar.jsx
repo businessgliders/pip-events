@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
-  eachDayOfInterval, format, isSameMonth, isSameDay, addMonths, subMonths
+  eachDayOfInterval, format, isSameMonth, isSameDay, addMonths, subMonths, isBefore, startOfDay
 } from 'date-fns';
 import Navbar from '../components/layout/Navbar';
 import DayModal from '../components/calendar/DayModal';
