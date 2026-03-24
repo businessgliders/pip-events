@@ -61,7 +61,7 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
       {open && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0" style={{zIndex: 9998}} onClick={() => setOpen(false)} />
 
           {/* Panel */}
           <div
