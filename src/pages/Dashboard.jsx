@@ -117,20 +117,26 @@ export default function Dashboard() {
     <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 py-10">
+
+        {/* Page Header */}
         <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Event Requests Dashboard</h1>
-            <p className="text-sm text-gray-400 mt-1">Manage and track all event bookings</p>
+          <div className="inline-block rounded-2xl px-6 py-4" style={{
+            background: 'rgba(255,255,255,0.7)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
+          }}>
+            <h1 className="text-2xl font-bold" style={{color: '#b67651'}}>Event Requests Dashboard</h1>
+            <p className="text-sm mt-0.5" style={{color: '#c48a96'}}>Manage and track all event bookings</p>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { window.location.href = '/RequestForm'; }}
-              className="flex items-center gap-2 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
-              style={{backgroundColor: '#f1889b'}}
-            >
-              <Plus className="w-4 h-4" /> New Request
-            </button>
-          </div>
+          <button
+            onClick={() => { window.location.href = '/RequestForm'; }}
+            className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all self-start"
+            style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+          >
+            <Plus className="w-4 h-4" /> New Request
+          </button>
         </div>
 
         {/* Stats */}
@@ -141,31 +147,45 @@ export default function Dashboard() {
             { label: 'Confirmed', value: stats.confirmed, icon: '✅' },
             { label: 'Upcoming', value: stats.upcoming, icon: '📅' },
           ].map(s => (
-            <div key={s.label} className="rounded-2xl p-5" style={{background:'rgba(255,255,255,0.6)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.55)',boxShadow:'0 8px 32px rgba(241,136,155,0.1)'}}>
+            <div key={s.label} className="rounded-2xl p-5" style={{
+              background: 'rgba(255,255,255,0.6)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.65)',
+              boxShadow: '0 8px 32px rgba(241,136,155,0.1)',
+            }}>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{s.label}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide" style={{color: '#c48a96'}}>{s.label}</p>
                 <span className="text-lg">{s.icon}</span>
               </div>
-              <p className="text-3xl font-bold text-gray-800">{s.value}</p>
+              <p className="text-3xl font-bold" style={{color: '#b67651'}}>{s.value}</p>
             </div>
           ))}
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-5 rounded-2xl p-4" style={{background:'rgba(255,255,255,0.5)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.5)'}}>
+        <div className="flex flex-wrap gap-3 mb-5 rounded-2xl p-4" style={{
+          background: 'rgba(255,255,255,0.55)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.6)',
+          boxShadow: '0 4px 16px rgba(241,136,155,0.08)',
+        }}>
           <div className="flex-1 min-w-[200px] relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{color: '#f1889b'}} />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, email, or event type..."
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white"
+              className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl focus:outline-none bg-white/70 placeholder-gray-400"
+              style={{border: '1.5px solid rgba(220,200,205,0.6)'}}
             />
           </div>
           <select
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-200"
+            className="rounded-xl px-3 py-2.5 text-sm bg-white/70 focus:outline-none"
+            style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
           >
             <option value="">All Event Types</option>
             {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
@@ -173,36 +193,45 @@ export default function Dashboard() {
         </div>
 
         {/* Table */}
-        <div className="rounded-2xl overflow-hidden" style={{background:'rgba(255,255,255,0.65)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.6)',boxShadow:'0 8px 32px rgba(241,136,155,0.1)'}}>
+        <div className="rounded-2xl overflow-hidden" style={{
+          background: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1.5px solid rgba(247,177,189,0.45)',
+          boxShadow: '0 12px 48px rgba(241,136,155,0.13)',
+        }}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="border-b border-gray-100 bg-gray-50/50">
+              <thead style={{borderBottom: '1.5px solid rgba(247,177,189,0.35)', background: 'rgba(251,224,226,0.3)'}}>
                 <tr>
                   {['Status', 'Full Name', 'Email', 'Phone Number', 'Event Type', 'Number of Guests', 'Preferred Date'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">{h}</th>
+                    <th key={h} className="text-left px-4 py-3.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap" style={{color: '#c48a96'}}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={7} className="text-center py-12 text-gray-300 text-sm">No requests found</td></tr>
-                ) : filtered.map(r => (
+                  <tr><td colSpan={7} className="text-center py-12 text-sm" style={{color: '#d4b8bb'}}>No requests found</td></tr>
+                ) : filtered.map((r, idx) => (
                   <tr
                     key={r.id}
                     onClick={() => setSelected(r)}
-                    className="hover:bg-pink-50/40 cursor-pointer transition-colors"
+                    className="cursor-pointer transition-colors"
+                    style={{borderBottom: '1px solid rgba(247,177,189,0.2)'}}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(251,224,226,0.25)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
                         {r.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-800 whitespace-nowrap">{r.full_name}</td>
-                    <td className="px-4 py-3 text-gray-500">{r.email}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{r.phone || '—'}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{r.event_type}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{r.number_of_guests ? `${r.number_of_guests} (1 session)` : '—'}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3.5 font-semibold whitespace-nowrap" style={{color: '#6b4e4e'}}>{r.full_name}</td>
+                    <td className="px-4 py-3.5" style={{color: '#a07878'}}>{r.email}</td>
+                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>{r.phone || '—'}</td>
+                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#7a4a3a'}}>{r.event_type}</td>
+                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>{r.number_of_guests ? `${r.number_of_guests} (1 session)` : '—'}</td>
+                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>
                       {r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}
                     </td>
                   </tr>
