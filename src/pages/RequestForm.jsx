@@ -121,12 +121,12 @@ export default function RequestForm() {
       <HlsVideo
         src="https://video.squarespace-cdn.com/content/v1/6876866bd3fbe434b6566570/5e57b3a9-5624-4a07-b555-c3847af04b51/playlist.m3u8"
         className="fixed inset-0 w-full h-full object-cover"
-        style={{zIndex: 0}}
+        style={{zIndex: 0, filter: 'blur(6px)', transform: 'scale(1.05)'}}
       />
-      {/* Pink overlay — lighter so video shows through */}
+      {/* Pink overlay — stronger to calm the blurred video */}
       <div className="fixed inset-0" style={{
         zIndex: 1,
-        background: 'rgba(248, 210, 220, 0.55)',
+        background: 'rgba(248, 210, 220, 0.72)',
       }} />
       {/* Content */}
       <div className="relative" style={{zIndex: 2}}>
