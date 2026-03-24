@@ -295,10 +295,10 @@ export default function Dashboard() {
                     <th
                       key={col.key}
                       onClick={() => handleSort(col.key)}
-                      className="text-left px-4 py-3.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap cursor-pointer select-none"
+                      className="text-left px-3 py-3.5 text-xs font-semibold uppercase tracking-wide cursor-pointer select-none overflow-hidden text-ellipsis"
                       style={{color: sortKey === col.key ? '#f1889b' : '#c48a96'}}
                     >
-                      <span className="inline-flex items-center">
+                      <span className="inline-flex items-center gap-1">
                         {col.label}
                         <SortIcon col={col.key} />
                       </span>
