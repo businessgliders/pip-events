@@ -148,7 +148,7 @@ export default function RequestForm() {
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center mb-10 rounded-2xl px-6 py-3" style={{
+        <div className="flex items-center mb-10 rounded-2xl px-6 py-3 mx-auto" style={{
           background: 'rgba(255,255,255,0.35)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
