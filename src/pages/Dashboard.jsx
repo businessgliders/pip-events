@@ -32,33 +32,61 @@ export default function Dashboard() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background:'linear-gradient(135deg,#fce4ec 0%,#fdf5f7 60%,#fce4ec 100%)'}}>
-        <div className="rounded-2xl p-10 w-full max-w-sm text-center" style={{background:'rgba(255,255,255,0.65)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.6)',boxShadow:'0 12px 48px rgba(241,136,155,0.12)'}}>
-          <div className="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-5">
-            <span className="text-2xl">🔒</span>
+      <div className="min-h-screen flex items-center justify-center relative" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
+        {/* Decorative blobs */}
+        <div className="absolute top-[-80px] left-[-80px] w-72 h-72 rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(247,177,189,0.35) 0%, transparent 70%)'}} />
+        <div className="absolute bottom-[-60px] right-[-60px] w-64 h-64 rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(241,136,155,0.25) 0%, transparent 70%)'}} />
+
+        <div className="w-full max-w-sm mx-4">
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <img
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
+              alt="Pilates in Pink"
+              className="w-16 h-16 object-contain drop-shadow-sm"
+            />
           </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-1">Dashboard Access</h2>
-          <p className="text-sm text-gray-400 mb-6">Enter the admin password to continue</p>
-          <input
-            type="password"
-            value={pwInput}
-            onChange={e => { setPwInput(e.target.value); setPwError(false); }}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                if (pwInput === PASSWORD) setAuthed(true);
-                else setPwError(true);
-              }
-            }}
-            placeholder="Password"
-            className={`w-full border rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-pink-200 ${pwError ? 'border-red-300' : 'border-gray-200'}`}
-          />
-          {pwError && <p className="text-xs text-red-400 mb-3">Incorrect password</p>}
-          <button
-            onClick={() => { if (pwInput === PASSWORD) setAuthed(true); else setPwError(true); }}
-            className="w-full bg-pink-400 hover:bg-pink-500 text-white py-2.5 rounded-xl font-medium text-sm transition-colors"
-          >
-            Enter Dashboard
-          </button>
+
+          <div className="rounded-3xl p-10 text-center" style={{
+            background: 'rgba(255,255,255,0.65)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.7)',
+            boxShadow: '0 16px 56px rgba(241,136,155,0.18)',
+          }}>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+              <span className="text-xl">🔒</span>
+            </div>
+            <h2 className="text-2xl font-bold mb-1" style={{color: '#b67651'}}>Dashboard Access</h2>
+            <p className="text-sm mb-7" style={{color: '#c48a96'}}>Enter the admin password to continue</p>
+
+            <input
+              type="password"
+              value={pwInput}
+              onChange={e => { setPwInput(e.target.value); setPwError(false); }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  if (pwInput === PASSWORD) setAuthed(true);
+                  else setPwError(true);
+                }
+              }}
+              placeholder="Password"
+              className="w-full rounded-xl px-4 py-3 text-sm mb-3 focus:outline-none bg-white/70 placeholder-gray-400"
+              style={{
+                border: pwError ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.7)',
+                boxShadow: pwError ? '0 0 0 3px rgba(241,136,155,0.15)' : 'none',
+              }}
+            />
+            {pwError && <p className="text-xs mb-3" style={{color: '#f1889b'}}>Incorrect password. Please try again.</p>}
+
+            <button
+              onClick={() => { if (pwInput === PASSWORD) setAuthed(true); else setPwError(true); }}
+              className="w-full text-white py-3 rounded-xl font-semibold text-sm transition-all"
+              style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 6px 20px rgba(241,136,155,0.35)'}}
+            >
+              Enter Dashboard
+            </button>
+          </div>
         </div>
       </div>
     );
