@@ -273,7 +273,7 @@ export default function RequestForm() {
                         })}
                       </div>
                     )}
-                    {form.time_slot && form.time_slot !== 'Peak Hours (Fri-Sun, 10AM-6PM)' && (
+                    {form.time_slot === 'Non-Peak Hours (Mon-Thu, 12:30-3:30PM)' && (
                       <p className="text-xs mt-2" style={{color: '#c4909a'}}>4-hour option is only available for Peak Hours (Fri–Sun)</p>
                     )}
                   </div>
