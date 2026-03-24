@@ -250,32 +250,33 @@ export default function RequestForm() {
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600 block mb-3">Duration *</label>
-                    {!form.time_slot ? (
-                      <p className="text-xs italic" style={{color: '#c4909a'}}>Please select a time slot first</p>
-                    ) : (
-                      <div className="flex gap-3 flex-wrap">
-                        {durationOptions.map(d => {
-                          const sel = form.duration === d;
-                          return (
-                            <label key={d} className="flex items-center gap-2.5 px-5 py-3 rounded-xl cursor-pointer transition-all"
-                              style={{
-                                border: sel ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.5)',
-                                background: sel ? 'rgba(241,136,155,0.08)' : 'rgba(255,255,255,0.5)',
-                              }}>
-                              <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-                                style={{borderColor: sel ? '#f1889b' : '#d4b8bb'}}>
-                                {sel && <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />}
-                              </div>
-                              <input type="radio" name="duration" value={d} checked={sel} onChange={e => set('duration', e.target.value)} className="sr-only" />
-                              <span className="text-sm font-medium" style={{color: sel ? '#f1889b' : '#6b4e4e'}}>{d}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    )}
-                    {form.time_slot === 'Non-Peak Hours (Mon-Thu, 12:30-3:30PM)' && (
-                      <p className="text-xs mt-2" style={{color: '#c4909a'}}>4-hour option is only available for Peak Hours (Fri–Sun)</p>
-                    )}
+                    <div className="flex gap-3 flex-wrap">
+                      {['2 Hours', '3 Hours', '4 Hours'].map(d => {
+                        const isPeakOnly = d === '4 Hours';
+                        const isNonPeak = form.time_slot === 'Non-Peak Hours (Mon-Thu, 12:30-3:30PM)';
+                        const disabled = isPeakOnly && (isNonPeak || !form.time_slot);
+                        const sel = form.duration === d && !disabled;
+                        return (
+                          <label key={d}
+                            className="flex items-center gap-2.5 px-5 py-3 rounded-xl transition-all"
+                            style={{
+                              border: sel ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.5)',
+                              background: sel ? 'rgba(241,136,155,0.08)' : 'rgba(255,255,255,0.5)',
+                              opacity: disabled ? 0.4 : 1,
+                              cursor: disabled ? 'not-allowed' : 'pointer',
+                            }}>
+                            <div className="w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                              style={{borderColor: sel ? '#f1889b' : '#d4b8bb'}}>
+                              {sel && <div className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />}
+                            </div>
+                            <input type="radio" name="duration" value={d} checked={sel} disabled={disabled}
+                              onChange={e => !disabled && set('duration', e.target.value)} className="sr-only" />
+                            <span className="text-sm font-medium" style={{color: sel ? '#f1889b' : '#6b4e4e'}}>{d}</span>
+                            {isPeakOnly && <span className="text-xs ml-1" style={{color: '#c4909a'}}>(Peak only)</span>}
+                          </label>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
