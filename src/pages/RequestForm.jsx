@@ -130,7 +130,7 @@ export default function RequestForm() {
                 <select required value={form.event_type} onChange={e => set('event_type', e.target.value)}
                   className={`${inputClass} ${inputFocus} bg-white/70`}>
                   <option value="">Select event type</option>
-                  {EVENT_TYPES.map(t => <option key={t} value={t}>{EVENT_ICONS[t]} {t}</option>)}
+                  {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
 
