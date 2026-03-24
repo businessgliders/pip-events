@@ -135,8 +135,16 @@ export default function RequestForm() {
 
         {/* Page Header */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-2" style={{color: '#b67651'}}>Book Your Special Event</h1>
-          <p className="text-base mb-4" style={{color: '#c48a96'}}>We're thrilled you're considering us for your special occasion.</p>
+          <div className="inline-block rounded-2xl px-8 py-5 mb-4" style={{
+            background: 'rgba(255,255,255,0.7)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
+          }}>
+            <h1 className="text-4xl font-bold mb-1" style={{color: '#b67651'}}>Book Your Special Event</h1>
+            <p className="text-base" style={{color: '#c48a96'}}>We're thrilled you're considering us for your special occasion.</p>
+          </div>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium" style={{
             background: 'rgba(255,255,255,0.65)',
             backdropFilter: 'blur(12px)',
