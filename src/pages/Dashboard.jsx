@@ -288,7 +288,7 @@ export default function Dashboard() {
             <table className="w-full text-sm">
               <thead style={{borderBottom: '1.5px solid rgba(247,177,189,0.35)', background: 'rgba(251,224,226,0.3)'}}>
                 <tr>
-                  {COLUMNS.map(col => (
+                  {activeColumns.map(col => (
                     <th
                       key={col.key}
                       onClick={() => handleSort(col.key)}
@@ -305,7 +305,7 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {visible.length === 0 ? (
-                  <tr><td colSpan={7} className="text-center py-12 text-sm" style={{color: '#d4b8bb'}}>No requests found</td></tr>
+                  <tr><td colSpan={activeColumns.length} className="text-center py-12 text-sm" style={{color: '#d4b8bb'}}>No requests found</td></tr>
                 ) : visible.map((r) => (
                   <tr
                     key={r.id}
@@ -315,19 +315,23 @@ export default function Dashboard() {
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(251,224,226,0.25)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
-                    <td className="px-4 py-3.5 whitespace-nowrap">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
-                        {r.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5 font-semibold whitespace-nowrap" style={{color: '#6b4e4e'}}>{r.full_name}</td>
-                    <td className="px-4 py-3.5" style={{color: '#a07878'}}>{r.email}</td>
-                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>{r.phone || '—'}</td>
-                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#7a4a3a'}}>{r.event_type}</td>
-                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>{r.number_of_guests || '—'}</td>
-                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>
-                      {r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}
-                    </td>
+                    {activeColumns.map(col => (
+                      <td key={col.key} className="px-4 py-3.5 whitespace-nowrap" style={{color: col.key === 'full_name' ? '#6b4e4e' : col.key === 'event_type' ? '#7a4a3a' : '#a07878'}}>
+                        {col.key === 'status' ? (
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
+                            {r.status}
+                          </span>
+                        ) : col.key === 'full_name' ? (
+                          <span className="font-semibold">{r.full_name}</span>
+                        ) : col.key === 'event_date' ? (
+                          r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'
+                        ) : col.key === 'created_date' ? (
+                          r.created_date ? format(new Date(r.created_date), 'MMM d, yyyy') : '—'
+                        ) : (
+                          r[col.key] || '—'
+                        )}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
