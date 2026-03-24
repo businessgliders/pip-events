@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
-import { Search, Calendar, Grid3X3, List, Plus } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays } from 'lucide-react';
 import { format } from 'date-fns';
 
 const STATUS_COLORS = {
