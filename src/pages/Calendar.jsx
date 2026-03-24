@@ -111,6 +111,7 @@ export default function Calendar() {
               const isToday = isSameDay(day, today);
               const isPast = isBefore(startOfDay(day), startOfDay(today));
               const isDisabled = !isCurrentMonth || isPast;
+              const uniqueTypes = [...new Set(dayEvents.map(e => e.event_type))];
               const eventCount = dayEvents.length;
 
               return (
