@@ -17,7 +17,7 @@ const STATUS_COLORS = {
 const PASSWORD = 'pip6161';
 const PAGE_SIZE = 50;
 
-const COLUMNS = [
+const ALL_COLUMNS = [
   { key: 'status', label: 'Status' },
   { key: 'full_name', label: 'Full Name' },
   { key: 'email', label: 'Email' },
@@ -25,7 +25,10 @@ const COLUMNS = [
   { key: 'event_type', label: 'Event Type' },
   { key: 'number_of_guests', label: 'Guests' },
   { key: 'event_date', label: 'Preferred Date' },
+  { key: 'created_date', label: 'Submitted' },
 ];
+
+const DEFAULT_COLS = ['status', 'full_name', 'email', 'phone', 'event_type', 'number_of_guests', 'event_date'];
 
 export default function Dashboard() {
   const [authed, setAuthed] = useState(false);
