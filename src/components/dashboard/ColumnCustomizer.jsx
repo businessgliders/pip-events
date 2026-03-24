@@ -65,7 +65,8 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
 
           {/* Panel */}
           <div
-            className="absolute right-0 top-12 z-50 w-64 rounded-2xl shadow-xl"
+            className="absolute right-0 top-12 w-64 rounded-2xl shadow-xl"
+            style={{zIndex: 9999}}
             style={{
               background: 'rgba(255,255,255,0.97)',
               backdropFilter: 'blur(20px)',
