@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import HlsVideo from '../components/HlsVideo';
 import { useQuery } from '@tanstack/react-query';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
