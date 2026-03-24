@@ -115,7 +115,27 @@ export default function RequestForm() {
   };
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
+    <div className="min-h-screen relative">
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover"
+        style={{zIndex: 0}}
+      >
+        <source src="https://videos.pexels.com/video-files/6456161/6456161-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+      </video>
+      {/* Pink overlay + blur */}
+      <div className="fixed inset-0" style={{
+        zIndex: 1,
+        background: 'rgba(252, 220, 230, 0.72)',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
+      }} />
+      {/* Content */}
+      <div className="relative" style={{zIndex: 2}}>
       <Navbar />
       <div className="max-w-4xl mx-auto px-6 py-10">
 
