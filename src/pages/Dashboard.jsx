@@ -139,10 +139,10 @@ export default function Dashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Total Requests', value: stats.total, icon: '📋' },
-            { label: 'Pending', value: stats.pending, icon: '⏳' },
-            { label: 'Confirmed', value: stats.confirmed, icon: '✅' },
-            { label: 'Upcoming', value: stats.upcoming, icon: '📅' },
+            { label: 'Total Requests', value: stats.total, Icon: ClipboardList },
+            { label: 'Pending', value: stats.pending, Icon: Clock },
+            { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2 },
+            { label: 'Upcoming', value: stats.upcoming, Icon: CalendarDays },
           ].map(s => (
             <div key={s.label} className="rounded-2xl p-5" style={{
               background: 'rgba(255,255,255,0.6)',
@@ -153,7 +153,9 @@ export default function Dashboard() {
             }}>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-semibold uppercase tracking-wide" style={{color: '#c48a96'}}>{s.label}</p>
-                <span className="text-lg">{s.icon}</span>
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                  <s.Icon className="w-4 h-4" style={{color: '#e86c84'}} />
+                </span>
               </div>
               <p className="text-3xl font-bold" style={{color: '#b67651'}}>{s.value}</p>
             </div>
