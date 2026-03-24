@@ -140,24 +140,19 @@ export default function Calendar() {
                     {format(day, 'd')}
                   </div>
 
-                  {/* Pink dot indicators */}
+                  {/* Event type icons */}
                   {eventCount > 0 && (
-                    <div className="flex gap-1 mt-2 justify-center">
-                      {eventCount === 1 && (
-                        <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b', boxShadow: '0 1px 4px rgba(241,136,155,0.4)'}} />
-                      )}
-                      {eventCount === 2 && (
-                        <>
-                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
-                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
-                        </>
-                      )}
-                      {eventCount >= 3 && (
-                        <>
-                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
-                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
-                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#e86c84'}} />
-                        </>
+                    <div className="flex gap-1 mt-1.5 justify-center flex-wrap">
+                      {uniqueTypes.slice(0, 3).map(type => {
+                        const Icon = EVENT_TYPE_ICONS[type] || Sparkles;
+                        return (
+                          <span key={type} className="inline-flex items-center justify-center w-5 h-5 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                            <Icon className="w-3 h-3" style={{color: '#e86c84'}} />
+                          </span>
+                        );
+                      })}
+                      {uniqueTypes.length > 3 && (
+                        <span className="text-xs font-semibold" style={{color: '#f1889b'}}>+{uniqueTypes.length - 3}</span>
                       )}
                     </div>
                   )}
