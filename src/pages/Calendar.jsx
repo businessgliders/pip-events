@@ -101,24 +101,27 @@ export default function Calendar() {
               const dayEvents = getEventsForDay(day);
               const isCurrentMonth = isSameMonth(day, currentMonth);
               const isToday = isSameDay(day, today);
-              const uniqueTypes = [...new Set(dayEvents.map(e => e.event_type))];
+              const isPast = isBefore(startOfDay(day), startOfDay(today));
+              const isDisabled = !isCurrentMonth || isPast;
+              const eventCount = dayEvents.length;
 
               return (
                 <div
                   key={idx}
-                  onClick={() => isCurrentMonth && setSelectedDay(day)}
-                  className="min-h-[100px] p-2.5 transition-all group"
+                  onClick={() => !isDisabled && setSelectedDay(day)}
+                  className="min-h-[90px] md:min-h-[110px] flex flex-col items-center pt-3 pb-2 transition-all"
                   style={{
                     borderRight: '1px solid rgba(247,177,189,0.12)',
                     borderBottom: '1px solid rgba(247,177,189,0.12)',
-                    cursor: isCurrentMonth ? 'pointer' : 'default',
-                    backgroundColor: isCurrentMonth ? 'transparent' : 'rgba(249,240,242,0.3)',
+                    cursor: isDisabled ? 'default' : 'pointer',
+                    backgroundColor: isPast && isCurrentMonth ? 'rgba(245,240,242,0.5)' : !isCurrentMonth ? 'rgba(249,240,242,0.3)' : 'transparent',
+                    opacity: isDisabled ? 0.45 : 1,
                   }}
-                  onMouseEnter={e => { if (isCurrentMonth) e.currentTarget.style.backgroundColor = 'rgba(251,224,226,0.28)'; }}
-                  onMouseLeave={e => { if (isCurrentMonth) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  onMouseEnter={e => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'rgba(251,224,226,0.28)'; }}
+                  onMouseLeave={e => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
                   <div
-                    className="w-7 h-7 flex items-center justify-center rounded-full text-xs font-semibold mb-1.5"
+                    className="w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold"
                     style={
                       isToday
                         ? {backgroundColor: '#f1889b', color: 'white', boxShadow: '0 2px 8px rgba(241,136,155,0.4)'}
@@ -128,27 +131,27 @@ export default function Calendar() {
                     {format(day, 'd')}
                   </div>
 
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {uniqueTypes.slice(0, 3).map(type => (
-                      <span
-                        key={type}
-                        title={type}
-                        className="inline-flex items-center justify-center rounded-full text-sm leading-none"
-                        style={{
-                          width: '22px',
-                          height: '22px',
-                          background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)',
-                          fontSize: '12px',
-                          boxShadow: '0 1px 4px rgba(241,136,155,0.2)',
-                        }}
-                      >
-                        {EVENT_ICONS[type] || '✨'}
-                      </span>
-                    ))}
-                    {uniqueTypes.length > 3 && (
-                      <span className="text-xs font-semibold" style={{color: '#f1889b'}}>+{uniqueTypes.length - 3}</span>
-                    )}
-                  </div>
+                  {/* Pink dot indicators */}
+                  {eventCount > 0 && (
+                    <div className="flex gap-1 mt-2 justify-center">
+                      {eventCount === 1 && (
+                        <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b', boxShadow: '0 1px 4px rgba(241,136,155,0.4)'}} />
+                      )}
+                      {eventCount === 2 && (
+                        <>
+                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
+                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
+                        </>
+                      )}
+                      {eventCount >= 3 && (
+                        <>
+                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
+                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#f1889b'}} />
+                          <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#e86c84'}} />
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
