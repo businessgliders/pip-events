@@ -249,7 +249,7 @@ export default function RequestForm() {
           {/* Class Selection */}
           <section className="rounded-2xl p-6" style={glassCard}>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">🧘</span>
+              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}><PersonStanding className="w-4 h-4" style={{color: '#e86c84'}} /></span>
               <h2 className="text-lg font-bold" style={{color: '#b67651'}}>Class Selection</h2>
             </div>
             <p className="text-sm mb-5" style={{color: '#c48a96'}}>Choose the classes you'd like for your event (select all that apply)</p>
