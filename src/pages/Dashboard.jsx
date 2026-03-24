@@ -38,9 +38,10 @@ export default function Dashboard() {
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [selected, setSelected] = useState(null);
-  const [sortKey, setSortKey] = useState('event_date');
-  const [sortDir, setSortDir] = useState('asc');
+  const [sortKey, setSortKey] = useState('created_date');
+  const [sortDir, setSortDir] = useState('desc');
   const [showAll, setShowAll] = useState(false);
+  const [visibleCols, setVisibleCols] = useState(DEFAULT_COLS);
   const queryClient = useQueryClient();
 
   const { data: requests = [] } = useQuery({
