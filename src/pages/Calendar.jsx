@@ -7,7 +7,6 @@ import {
 } from 'date-fns';
 import Navbar from '../components/layout/Navbar';
 import DayModal from '../components/calendar/DayModal';
-import { EVENT_ICONS } from '../components/calendar/DayModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
