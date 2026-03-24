@@ -282,92 +282,81 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Table */}
-        <div className="rounded-2xl overflow-hidden" style={{
-          background: 'rgba(255,255,255,0.7)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1.5px solid rgba(247,177,189,0.45)',
-          boxShadow: '0 12px 48px rgba(241,136,155,0.13)',
-        }}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm table-fixed">
-              <thead style={{borderBottom: '1.5px solid rgba(247,177,189,0.35)', background: 'rgba(251,224,226,0.3)'}}>
-                <tr>
-                  {activeColumns.map(col => (
-                    <th
-                      key={col.key}
-                      onClick={() => handleSort(col.key)}
-                      className="text-left px-3 py-3.5 text-xs font-semibold uppercase tracking-wide cursor-pointer select-none overflow-hidden text-ellipsis"
-                      style={{color: sortKey === col.key ? '#f1889b' : '#c48a96'}}
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {col.label}
-                        <SortIcon col={col.key} />
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {paginated.length === 0 ? (
-                  <tr><td colSpan={activeColumns.length} className="text-center py-12 text-sm" style={{color: '#d4b8bb'}}>No requests found</td></tr>
-                ) : paginated.map((r) => (
-                  <tr
-                    key={r.id}
-                    onClick={() => setSelected(r)}
-                    className="cursor-pointer transition-colors"
-                    style={{borderBottom: '1px solid rgba(247,177,189,0.2)'}}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(251,224,226,0.25)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                  >
-                    {activeColumns.map(col => (
-                      <td key={col.key} className="px-3 py-3.5 overflow-hidden text-ellipsis" style={{color: col.key === 'full_name' ? '#6b4e4e' : col.key === 'event_type' ? '#7a4a3a' : '#a07878'}}>
-                        {col.key === 'status' ? (
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
-                            {r.status}
-                          </span>
-                        ) : col.key === 'full_name' ? (
-                          <span className="font-semibold truncate block">{r.full_name}</span>
-                        ) : col.key === 'event_date' ? (
-                          <span className="block truncate">{r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}</span>
-                        ) : col.key === 'created_date' ? (
-                          <span className="block truncate">{r.created_date ? format(new Date(r.created_date), 'MMM d, yyyy') : '—'}</span>
-                        ) : (
-                          <span className="block truncate">{r[col.key] || '—'}</span>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Load More / Year Toggle */}
-          {(hasMore || older.length > 0) && (
-            <div className="px-4 py-4 flex justify-center" style={{borderTop: '1px solid rgba(247,177,189,0.2)'}}>
-              <button
-                onClick={() => {
-                  if (showAll || !older.length) {
-                    setPage(p => p + 1);
-                  } else {
-                    setShowAll(true);
-                    setPage(1);
-                  }
-                }}
-                className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
-                style={{
-                  background: 'linear-gradient(135deg, #f1889b, #e86c84)',
-                  color: 'white',
-                  boxShadow: '0 4px 12px rgba(241,136,155,0.3)',
-                }}
-              >
-                {!showAll && older.length > 0 ? 'Show Older' : 'Load More'}
-              </button>
+        {/* List View by Date */}
+        <div className="space-y-6">
+          {paginated.length === 0 ? (
+            <div className="rounded-2xl p-12 text-center" style={{
+              background: 'rgba(255,255,255,0.6)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1.5px solid rgba(247,177,189,0.45)',
+            }}>
+              <p style={{color: '#d4b8bb'}}>No requests found</p>
             </div>
+          ) : (
+            sortedDateKeys.map(dateKey => (
+              <div key={dateKey}>
+                <h3 className="text-sm font-bold mb-3 uppercase tracking-wide px-2" style={{color: '#b67651'}}>
+                  {dateKey === 'No Date' ? '📋 No Date Set' : format(new Date(dateKey + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
+                </h3>
+                <div className="space-y-3">
+                  {groupedByDate[dateKey].map(r => (
+                    <div
+                      key={r.id}
+                      onClick={() => setSelected(r)}
+                      className="rounded-2xl p-4 cursor-pointer transition-all"
+                      style={{
+                        background: 'rgba(255,255,255,0.65)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1.5px solid rgba(247,177,189,0.4)',
+                        boxShadow: '0 4px 16px rgba(241,136,155,0.08)',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.8)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.65)'}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2.5 mb-2">
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
+                              {r.status}
+                            </span>
+                            <span className="text-xs" style={{color: '#c48a96'}}>{r.event_type}</span>
+                          </div>
+                          <h4 className="font-semibold text-base mb-1 truncate" style={{color: '#6b4e4e'}}>{r.full_name}</h4>
+                          <p className="text-sm truncate" style={{color: '#a07878'}}>{r.email}</p>
+                          {r.phone && <p className="text-sm truncate" style={{color: '#a07878'}}>{r.phone}</p>}
+                          <div className="flex gap-2 mt-2 flex-wrap text-xs" style={{color: '#c48a96'}}>
+                            {r.number_of_guests && <span>👥 {r.number_of_guests} guests</span>}
+                            {r.time_slot && <span>⏰ {r.time_slot === 'Peak Hours (Fri-Sun, 10AM-6PM)' ? 'Peak' : 'Non-Peak'}</span>}
+                            {r.duration && <span>⌛ {r.duration}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
           )}
         </div>
+
+        {/* Load More */}
+        {hasMore && (
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={() => setPage(p => p + 1)}
+              className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
+              style={{
+                background: 'linear-gradient(135deg, #f1889b, #e86c84)',
+                color: 'white',
+                boxShadow: '0 4px 12px rgba(241,136,155,0.3)',
+              }}
+            >
+              Load More
+            </button>
+          </div>
+        )}
       </div>
 
       {selected && (
