@@ -126,8 +126,8 @@ export default function RequestForm() {
         style={{zIndex: 0}}
         crossOrigin="anonymous"
       >
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
         <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-doing-pilates-exercises-on-a-reformer-42973-large.mp4" type="video/mp4" />
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-fitness-instructor-doing-pilates-on-a-mat-42966-large.mp4" type="video/mp4" />
       </video>
       {/* Pink overlay — lighter so video shows through */}
       <div className="fixed inset-0" style={{
