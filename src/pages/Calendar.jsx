@@ -182,6 +182,7 @@ export default function Calendar() {
           onClose={() => setSelectedDay(null)}
         />
       )}
+      </div>
     </div>
   );
 }
