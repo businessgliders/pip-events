@@ -39,6 +39,13 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
 
   const handleOpen = () => {
     setDraft(visibleKeys);
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
     setOpen(true);
   };
 
