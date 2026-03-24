@@ -50,7 +50,14 @@ export default function Calendar() {
   const today = new Date();
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
+    <div className="min-h-screen relative">
+      <HlsVideo
+        src="https://video.squarespace-cdn.com/content/v1/6876866bd3fbe434b6566570/5e57b3a9-5624-4a07-b555-c3847af04b51/playlist.m3u8"
+        className="fixed inset-0 w-full h-full object-cover"
+        style={{zIndex: 0}}
+      />
+      <div className="fixed inset-0" style={{zIndex: 1, background: 'rgba(248, 210, 220, 0.55)'}} />
+      <div className="relative" style={{zIndex: 2}}>
       <Navbar />
       <div className="max-w-7xl mx-auto px-6 py-8">
 
