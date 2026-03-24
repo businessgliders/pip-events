@@ -56,6 +56,7 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         onClick={handleOpen}
         title="Customize columns"
         className="flex items-center justify-center w-10 h-10 rounded-xl transition-all"
