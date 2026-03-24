@@ -59,15 +59,15 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
         <Settings2 className="w-4 h-4" />
       </button>
 
-      {open && (
+      {open && createPortal(
         <>
           {/* Backdrop */}
           <div className="fixed inset-0" style={{zIndex: 9998}} onClick={() => setOpen(false)} />
 
           {/* Panel */}
           <div
-            className="absolute right-0 top-12 w-64 rounded-2xl shadow-xl"
-            style={{zIndex: 9999}}
+            className="fixed w-64 rounded-2xl shadow-xl"
+            style={{zIndex: 9999, top: '200px', right: '24px'}}
             style={{
               background: 'rgba(255,255,255,0.97)',
               backdropFilter: 'blur(20px)',
