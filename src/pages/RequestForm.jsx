@@ -30,7 +30,6 @@ const ADDON_OPTIONS = [
 ];
 
 const EVENT_TYPES = ['Birthday', 'Bridal Shower', 'Bachelorette Party', 'Corporate Wellness Event', 'Private Class', 'Other'];
-const EVENT_ICONS = { Birthday: '🎂', 'Bridal Shower': '💐', 'Bachelorette Party': '🥂', 'Corporate Wellness Event': '💼', 'Private Class': '🧘', Other: '✨' };
 
 const glassCard = {
   background: 'rgba(255,255,255,0.6)',
