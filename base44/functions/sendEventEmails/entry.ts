@@ -174,6 +174,7 @@ Deno.serve(async (req) => {
                 <tr style="background:rgba(241,136,155,0.05);"><td style="padding:5px 0;color:#a07878;">Number of Guests</td><td style="padding:5px 0;font-weight:700;color:#5a3535;">${form.number_of_guests} guests${guestNote}</td></tr>
                 ${form.time_slot ? `<tr><td style="padding:5px 0;color:#a07878;">Time Slot</td><td style="padding:5px 0;font-weight:600;color:#5a3535;">${form.time_slot}</td></tr>` : ''}
                 ${form.duration ? `<tr style="background:rgba(241,136,155,0.05);"><td style="padding:5px 0;color:#a07878;">Duration</td><td style="padding:5px 0;font-weight:600;color:#5a3535;">${form.duration}</td></tr>` : ''}
+                ${form.additional_dates ? `<tr><td style="padding:5px 0;color:#a07878;">Additional Dates</td><td style="padding:5px 0;font-weight:600;color:#5a3535;">${form.additional_dates}</td></tr>` : ''}
               </table>
             </td></tr>
           </table>
