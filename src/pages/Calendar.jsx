@@ -88,16 +88,16 @@ export default function Calendar() {
 
         {/* Calendar Grid */}
         <div className="rounded-2xl overflow-hidden" style={{
-          background: 'rgba(255,255,255,0.88)',
+          background: 'rgba(255,255,255,0.92)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.7)',
-          boxShadow: '0 12px 48px rgba(241,136,155,0.12)',
+          border: '1.5px solid rgba(247,177,189,0.5)',
+          boxShadow: '0 12px 48px rgba(241,136,155,0.15)',
         }}>
           {/* Day Headers */}
-          <div className="grid grid-cols-7" style={{borderBottom: '1px solid rgba(247,177,189,0.25)', background: 'rgba(251,224,226,0.2)'}}>
+          <div className="grid grid-cols-7" style={{borderBottom: '1.5px solid rgba(247,177,189,0.45)', background: 'rgba(251,224,226,0.3)'}}>
             {DAYS_OF_WEEK.map(d => (
-              <div key={d} className="text-center text-xs font-semibold py-3.5 uppercase tracking-widest" style={{color: '#c48a96'}}>
+              <div key={d} className="text-center text-xs font-semibold py-4 uppercase tracking-widest" style={{color: '#c48a96', borderRight: '1px solid rgba(247,177,189,0.25)'}}>
                 {d}
               </div>
             ))}
@@ -118,10 +118,10 @@ export default function Calendar() {
                 <div
                   key={idx}
                   onClick={() => !isDisabled && setSelectedDay(day)}
-                  className="min-h-[90px] md:min-h-[110px] flex flex-col items-center pt-3 pb-2 transition-all"
+                  className="min-h-[110px] md:min-h-[130px] flex flex-col items-center pt-4 pb-3 transition-all"
                   style={{
-                    borderRight: '1px solid rgba(247,177,189,0.12)',
-                    borderBottom: '1px solid rgba(247,177,189,0.12)',
+                    borderRight: '1px solid rgba(247,177,189,0.3)',
+                    borderBottom: '1px solid rgba(247,177,189,0.3)',
                     cursor: isDisabled ? 'default' : 'pointer',
                     backgroundColor: isPast && isCurrentMonth ? 'rgba(245,240,242,0.5)' : !isCurrentMonth ? 'rgba(249,240,242,0.3)' : 'transparent',
                     opacity: isDisabled ? 0.45 : 1,
