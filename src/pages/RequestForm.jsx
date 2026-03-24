@@ -118,17 +118,11 @@ export default function RequestForm() {
   return (
     <div className="min-h-screen relative">
       {/* Background Video */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
+      <HlsVideo
+        src="https://video.squarespace-cdn.com/content/v1/6876866bd3fbe434b6566570/5e57b3a9-5624-4a07-b555-c3847af04b51/playlist.m3u8"
         className="fixed inset-0 w-full h-full object-cover"
         style={{zIndex: 0}}
-      >
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-doing-pilates-exercises-on-a-reformer-42973-large.mp4" type="video/mp4" />
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-fitness-instructor-doing-pilates-on-a-mat-42966-large.mp4" type="video/mp4" />
-      </video>
+      />
       {/* Pink overlay — lighter so video shows through */}
       <div className="fixed inset-0" style={{
         zIndex: 1,
