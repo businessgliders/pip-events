@@ -54,9 +54,6 @@ export default function Dashboard() {
             border: '1px solid rgba(255,255,255,0.7)',
             boxShadow: '0 16px 56px rgba(241,136,155,0.18)',
           }}>
-            <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
-              <span className="text-xl">🔒</span>
-            </div>
             <h2 className="text-2xl font-bold mb-1" style={{color: '#b67651'}}>Dashboard Access</h2>
             <p className="text-sm mb-7" style={{color: '#c48a96'}}>Enter the admin password to continue</p>
 
