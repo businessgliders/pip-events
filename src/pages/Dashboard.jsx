@@ -13,7 +13,7 @@ const STATUS_COLORS = {
   Cancelled: 'bg-gray-100 text-gray-500',
 };
 
-const PASSWORD = 'pip2024';
+const PASSWORD = 'pip6161';
 
 export default function Dashboard() {
   const [authed, setAuthed] = useState(false);
