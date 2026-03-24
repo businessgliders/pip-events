@@ -96,8 +96,10 @@ export default function RequestForm() {
   };
 
   const durationOptions = form.time_slot === 'Peak Hours (Fri-Sun, 10AM-6PM)'
-    ? ['2 Hours', '4 Hours']
-    : ['2 Hours'];
+    ? ['2 Hours', '3 Hours', '4 Hours']
+    : form.time_slot === 'Non-Peak Hours (Mon-Thu, 12:30-3:30PM)'
+    ? ['2 Hours', '3 Hours']
+    : [];
 
   const handleSubmit = async () => {
     setSubmitting(true);
