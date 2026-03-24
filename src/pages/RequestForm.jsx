@@ -2,7 +2,16 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import Navbar from '../components/layout/Navbar';
-import { Info } from 'lucide-react';
+import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles } from 'lucide-react';
+
+const EVENT_TYPE_ICONS = {
+  'Birthday': Cake,
+  'Bridal Shower': Flower2,
+  'Bachelorette Party': Wine,
+  'Corporate Wellness Event': Briefcase,
+  'Private Class': PersonStanding,
+  'Other': Sparkles,
+};
 
 const CLASS_OPTIONS = [
   { name: 'Power in Pink Sculpt', desc: 'High-energy, full-body toning' },
