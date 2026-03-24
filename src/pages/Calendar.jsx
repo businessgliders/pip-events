@@ -62,8 +62,16 @@ export default function Calendar() {
       <div className="max-w-7xl mx-auto px-6 py-8">
 
         <div className="text-center mb-7">
-          <h1 className="text-3xl font-bold" style={{color: '#b67651'}}>Event Calendar</h1>
-          <p className="mt-1.5 text-sm" style={{color: '#f1889b'}}>Pick a date and request your event</p>
+          <div className="inline-block rounded-2xl px-8 py-4" style={{
+            background: 'rgba(255,255,255,0.7)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
+          }}>
+            <h1 className="text-3xl font-bold" style={{color: '#b67651'}}>Event Calendar</h1>
+            <p className="mt-1 text-sm" style={{color: '#f1889b'}}>Pick a date and request your event</p>
+          </div>
         </div>
 
         {/* Month Navigation */}
