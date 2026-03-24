@@ -1,12 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { Settings2, GripVertical, Check, Save, X } from 'lucide-react';
 
 export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(visibleKeys);
-  const [position, setPosition] = useState({ top: 0, right: 0 });
-  const buttonRef = useRef(null);
 
   const toggleCol = (key) => {
     setDraft(d =>
@@ -39,13 +36,6 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
 
   const handleOpen = () => {
     setDraft(visibleKeys);
-    if (buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + 8,
-        right: window.innerWidth - rect.right,
-      });
-    }
     setOpen(true);
   };
 
@@ -56,7 +46,6 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
   return (
     <div className="relative">
       <button
-        ref={buttonRef}
         onClick={handleOpen}
         title="Customize columns"
         className="flex items-center justify-center w-10 h-10 rounded-xl transition-all"
@@ -69,15 +58,14 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
         <Settings2 className="w-4 h-4" />
       </button>
 
-      {open && createPortal(
+      {open && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0" style={{zIndex: 9998}} onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
           {/* Panel */}
           <div
-            className="fixed w-64 rounded-2xl shadow-xl"
-            style={{zIndex: 9999, top: `${position.top}px`, right: `${position.right}px`}}
+            className="absolute right-0 top-12 z-50 w-64 rounded-2xl shadow-xl"
             style={{
               background: 'rgba(255,255,255,0.97)',
               backdropFilter: 'blur(20px)',
@@ -168,8 +156,7 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
               ))}
             </div>
           </div>
-        </>,
-        document.body
+        </>
       )}
     </div>
   );
