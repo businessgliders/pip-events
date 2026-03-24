@@ -15,7 +15,7 @@ const STATUS_COLORS = {
 };
 
 const PASSWORD = 'pip6161';
-const PAGE_SIZE = 50;
+const ROWS_PER_PAGE = 15;
 
 const ALL_COLUMNS = [
   { key: 'status', label: 'Status' },
