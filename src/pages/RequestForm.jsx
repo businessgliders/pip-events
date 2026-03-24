@@ -197,12 +197,12 @@ export default function RequestForm() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-1.5">Number of Guests *</label>
-                    <input type="number" min="1" value={form.number_of_guests} onChange={e => set('number_of_guests', e.target.value)} className={inputClass} placeholder="e.g., 12" />
-                  </div>
-                  <div>
                     <label className="text-sm font-semibold text-gray-600 block mb-1.5">Additional Preferred Dates <span className="font-normal text-gray-400">(Optional)</span></label>
                     <input value={form.additional_dates} onChange={e => set('additional_dates', e.target.value)} className={inputClass} placeholder="e.g., June 15 or June 22" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600 block mb-1.5">Number of Guests *</label>
+                    <input type="number" min="1" value={form.number_of_guests} onChange={e => set('number_of_guests', e.target.value)} className={inputClass} placeholder="e.g., 12" />
                   </div>
                   <div className="flex items-start gap-2.5 rounded-xl p-3.5" style={{background: 'rgba(251,224,226,0.5)', border: '1px solid rgba(247,177,189,0.4)'}}>
                     <Info className="w-4 h-4 mt-0.5 flex-shrink-0" style={{color: '#f1889b'}} />
