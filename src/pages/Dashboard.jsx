@@ -164,7 +164,9 @@ export default function Dashboard() {
     return new Date(r.event_date + 'T12:00:00').getFullYear() < currentYear;
   });
 
-  const visible = showAll ? sorted : thisYear;
+  const baseList = showAll ? sorted : thisYear;
+  const paginated = baseList.slice(0, page * ROWS_PER_PAGE);
+  const hasMore = baseList.length > paginated.length;
 
   const handleSort = (key) => {
     if (sortKey === key) {
