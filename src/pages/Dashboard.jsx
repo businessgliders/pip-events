@@ -319,19 +319,19 @@ export default function Dashboard() {
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     {activeColumns.map(col => (
-                      <td key={col.key} className="px-4 py-3.5 whitespace-nowrap" style={{color: col.key === 'full_name' ? '#6b4e4e' : col.key === 'event_type' ? '#7a4a3a' : '#a07878'}}>
+                      <td key={col.key} className="px-3 py-3.5 overflow-hidden text-ellipsis" style={{color: col.key === 'full_name' ? '#6b4e4e' : col.key === 'event_type' ? '#7a4a3a' : '#a07878'}}>
                         {col.key === 'status' ? (
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
                             {r.status}
                           </span>
                         ) : col.key === 'full_name' ? (
-                          <span className="font-semibold">{r.full_name}</span>
+                          <span className="font-semibold truncate block">{r.full_name}</span>
                         ) : col.key === 'event_date' ? (
-                          r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'
+                          <span className="block truncate">{r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}</span>
                         ) : col.key === 'created_date' ? (
-                          r.created_date ? format(new Date(r.created_date), 'MMM d, yyyy') : '—'
+                          <span className="block truncate">{r.created_date ? format(new Date(r.created_date), 'MMM d, yyyy') : '—'}</span>
                         ) : (
-                          r[col.key] || '—'
+                          <span className="block truncate">{r[col.key] || '—'}</span>
                         )}
                       </td>
                     ))}
