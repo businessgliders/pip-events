@@ -119,7 +119,7 @@ export default function RequestForm() {
           {/* Event Details */}
           <section className="rounded-2xl p-6" style={glassCard}>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">📅</span>
+              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}><Cake className="w-4 h-4" style={{color: '#e86c84'}} /></span>
               <h2 className="text-lg font-bold" style={{color: '#b67651'}}>Event Details</h2>
             </div>
             <p className="text-sm mb-5" style={{color: '#c48a96'}}>Tell us about your event</p>
