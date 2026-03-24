@@ -153,19 +153,23 @@ export default function Dashboard() {
 
   const activeColumns = visibleCols.map(k => ALL_COLUMNS.find(c => c.key === k)).filter(Boolean);
 
-  // Split current year vs older
-  const thisYear = sorted.filter(r => {
-    if (!r.event_date) return true;
-    return new Date(r.event_date + 'T12:00:00').getFullYear() === currentYear;
-  });
-  const older = sorted.filter(r => {
-    if (!r.event_date) return false;
-    return new Date(r.event_date + 'T12:00:00').getFullYear() < currentYear;
-  });
+  // Paginate sorted list
+  const paginated = sorted.slice(0, page * ROWS_PER_PAGE);
+  const hasMore = sorted.length > paginated.length;
 
-  const baseList = showAll ? sorted : thisYear;
-  const paginated = baseList.slice(0, page * ROWS_PER_PAGE);
-  const hasMore = baseList.length > paginated.length;
+  // Group paginated results by event_date
+  const groupedByDate = paginated.reduce((acc, r) => {
+    const dateKey = r.event_date || 'No Date';
+    if (!acc[dateKey]) acc[dateKey] = [];
+    acc[dateKey].push(r);
+    return acc;
+  }, {});
+
+  const sortedDateKeys = Object.keys(groupedByDate).sort((a, b) => {
+    if (a === 'No Date') return 1;
+    if (b === 'No Date') return -1;
+    return new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00');
+  });
 
   const handleSort = (key) => {
     if (sortKey === key) {
