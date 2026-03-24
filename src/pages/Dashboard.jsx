@@ -307,9 +307,9 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {visible.length === 0 ? (
+                {paginated.length === 0 ? (
                   <tr><td colSpan={activeColumns.length} className="text-center py-12 text-sm" style={{color: '#d4b8bb'}}>No requests found</td></tr>
-                ) : visible.map((r) => (
+                ) : paginated.map((r) => (
                   <tr
                     key={r.id}
                     onClick={() => setSelected(r)}
