@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import Navbar from '../components/layout/Navbar';
+import HlsVideo from '../components/HlsVideo';
 import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronRight, ChevronLeft, Check } from 'lucide-react';
 
 const EVENT_TYPE_ICONS = {
