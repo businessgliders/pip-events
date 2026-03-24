@@ -341,23 +341,35 @@ export default function Dashboard() {
             </table>
           </div>
 
-          {/* Show More / Show Less */}
-          {older.length > 0 && (
-            <div className="px-4 py-4 text-center" style={{borderTop: '1px solid rgba(247,177,189,0.2)'}}>
+          {/* Load More / Year Toggle */}
+          <div className="px-4 py-4 flex flex-col gap-3 text-center" style={{borderTop: '1px solid rgba(247,177,189,0.2)'}}>
+            {hasMore && (
               <button
-                onClick={() => setShowAll(v => !v)}
+                onClick={() => setPage(p => p + 1)}
                 className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
                 style={{
-                  background: showAll ? 'rgba(241,136,155,0.1)' : 'linear-gradient(135deg, #f1889b, #e86c84)',
-                  color: showAll ? '#f1889b' : 'white',
-                  border: showAll ? '1.5px solid rgba(241,136,155,0.4)' : 'none',
-                  boxShadow: showAll ? 'none' : '0 4px 12px rgba(241,136,155,0.3)',
+                  background: 'linear-gradient(135deg, #f1889b, #e86c84)',
+                  color: 'white',
+                  boxShadow: '0 4px 12px rgba(241,136,155,0.3)',
                 }}
               >
-                {showAll ? `Show current year only` : `Show ${older.length} more from previous years`}
+                Load More ({paginated.length}/{baseList.length})
               </button>
-            </div>
-          )}
+            )}
+            {older.length > 0 && (
+              <button
+                onClick={() => { setShowAll(v => !v); setPage(1); }}
+                className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  background: showAll ? 'rgba(241,136,155,0.1)' : 'rgba(255,255,255,0.5)',
+                  color: showAll ? '#f1889b' : '#b67651',
+                  border: '1.5px solid rgba(241,136,155,0.4)',
+                }}
+              >
+                {showAll ? `Show current year only` : `Show ${older.length} older entries`}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
