@@ -488,6 +488,7 @@ export default function RequestForm() {
           </div>
         </div>
       </div>
+      </div>{/* end content wrapper */}
     </div>
   );
 }
