@@ -6,14 +6,16 @@ const FROM_EMAIL = 'Pilates in Pink™ Studio <events@pilatesinpink.ca>';
 const FROM_EMAIL_NOREPLY = 'Pilates in Pink™ Studio <no-reply@pilatesinpink.ca>';
 const OWNER_FROM_EMAIL = 'PiP Events App <events@pilatesinpink.ca>';
 
-async function sendEmail({ to, subject, html, from }) {
+async function sendEmail({ to, subject, html, from, reply_to }) {
+  const payload = { from: from || FROM_EMAIL, to, subject, html };
+  if (reply_to) payload.reply_to = reply_to;
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${RESEND_API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ from: from || FROM_EMAIL, to, subject, html }),
+    body: JSON.stringify(payload),
   });
   return res.json();
 }
