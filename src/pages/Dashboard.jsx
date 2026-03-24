@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
-import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, ChevronUp, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 
 const STATUS_COLORS = {
@@ -14,6 +14,17 @@ const STATUS_COLORS = {
 };
 
 const PASSWORD = 'pip6161';
+const PAGE_SIZE = 50;
+
+const COLUMNS = [
+  { key: 'status', label: 'Status' },
+  { key: 'full_name', label: 'Full Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'phone', label: 'Phone Number' },
+  { key: 'event_type', label: 'Event Type' },
+  { key: 'number_of_guests', label: 'Guests' },
+  { key: 'event_date', label: 'Preferred Date' },
+];
 
 export default function Dashboard() {
   const [authed, setAuthed] = useState(false);
@@ -21,7 +32,11 @@ export default function Dashboard() {
   const [pwError, setPwError] = useState(false);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
   const [selected, setSelected] = useState(null);
+  const [sortKey, setSortKey] = useState('event_date');
+  const [sortDir, setSortDir] = useState('asc');
+  const [showAll, setShowAll] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: requests = [] } = useQuery({
@@ -33,12 +48,10 @@ export default function Dashboard() {
   if (!authed) {
     return (
       <div className="min-h-screen flex items-center justify-center relative" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
-        {/* Decorative blobs */}
         <div className="absolute top-[-80px] left-[-80px] w-72 h-72 rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(247,177,189,0.35) 0%, transparent 70%)'}} />
         <div className="absolute bottom-[-60px] right-[-60px] w-64 h-64 rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(241,136,155,0.25) 0%, transparent 70%)'}} />
 
         <div className="w-full max-w-sm mx-4">
-          {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
@@ -89,14 +102,7 @@ export default function Dashboard() {
     );
   }
 
-  const filtered = requests.filter(r => {
-    const matchSearch = !search ||
-      r.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-      r.email?.toLowerCase().includes(search.toLowerCase()) ||
-      r.event_type?.toLowerCase().includes(search.toLowerCase());
-    const matchType = !filterType || r.event_type === filterType;
-    return matchSearch && matchType;
-  });
+  const currentYear = new Date().getFullYear();
 
   const stats = {
     total: requests.length,
@@ -109,6 +115,61 @@ export default function Dashboard() {
   };
 
   const eventTypes = [...new Set(requests.map(r => r.event_type).filter(Boolean))];
+
+  // Filter
+  const filtered = requests.filter(r => {
+    const matchSearch = !search ||
+      r.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      r.email?.toLowerCase().includes(search.toLowerCase()) ||
+      r.event_type?.toLowerCase().includes(search.toLowerCase());
+    const matchType = !filterType || r.event_type === filterType;
+    const matchStatus = !filterStatus || r.status === filterStatus;
+    return matchSearch && matchType && matchStatus;
+  });
+
+  // Sort
+  const sorted = [...filtered].sort((a, b) => {
+    let aVal = a[sortKey] ?? '';
+    let bVal = b[sortKey] ?? '';
+    if (sortKey === 'number_of_guests') {
+      aVal = Number(aVal) || 0;
+      bVal = Number(bVal) || 0;
+    } else {
+      aVal = String(aVal).toLowerCase();
+      bVal = String(bVal).toLowerCase();
+    }
+    if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  // Split current year vs older
+  const thisYear = sorted.filter(r => {
+    if (!r.event_date) return true;
+    return new Date(r.event_date + 'T12:00:00').getFullYear() === currentYear;
+  });
+  const older = sorted.filter(r => {
+    if (!r.event_date) return false;
+    return new Date(r.event_date + 'T12:00:00').getFullYear() < currentYear;
+  });
+
+  const visible = showAll ? sorted : thisYear;
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  const SortIcon = ({ col }) => {
+    if (sortKey !== col) return <ChevronUp className="w-3 h-3 opacity-20 ml-1" />;
+    return sortDir === 'asc'
+      ? <ChevronUp className="w-3 h-3 ml-1" style={{color: '#f1889b'}} />
+      : <ChevronDown className="w-3 h-3 ml-1" style={{color: '#f1889b'}} />;
+  };
 
   return (
     <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
@@ -189,6 +250,15 @@ export default function Dashboard() {
             <option value="">All Event Types</option>
             {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
+          <select
+            value={filterStatus}
+            onChange={e => setFilterStatus(e.target.value)}
+            className="rounded-xl px-3 py-2.5 text-sm bg-white/70 focus:outline-none"
+            style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
+          >
+            <option value="">All Statuses</option>
+            {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
 
         {/* Table */}
@@ -203,15 +273,25 @@ export default function Dashboard() {
             <table className="w-full text-sm">
               <thead style={{borderBottom: '1.5px solid rgba(247,177,189,0.35)', background: 'rgba(251,224,226,0.3)'}}>
                 <tr>
-                  {['Status', 'Full Name', 'Email', 'Phone Number', 'Event Type', 'Number of Guests', 'Preferred Date'].map(h => (
-                    <th key={h} className="text-left px-4 py-3.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap" style={{color: '#c48a96'}}>{h}</th>
+                  {COLUMNS.map(col => (
+                    <th
+                      key={col.key}
+                      onClick={() => handleSort(col.key)}
+                      className="text-left px-4 py-3.5 text-xs font-semibold uppercase tracking-wide whitespace-nowrap cursor-pointer select-none"
+                      style={{color: sortKey === col.key ? '#f1889b' : '#c48a96'}}
+                    >
+                      <span className="inline-flex items-center">
+                        {col.label}
+                        <SortIcon col={col.key} />
+                      </span>
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 ? (
+                {visible.length === 0 ? (
                   <tr><td colSpan={7} className="text-center py-12 text-sm" style={{color: '#d4b8bb'}}>No requests found</td></tr>
-                ) : filtered.map((r, idx) => (
+                ) : visible.map((r) => (
                   <tr
                     key={r.id}
                     onClick={() => setSelected(r)}
@@ -229,7 +309,7 @@ export default function Dashboard() {
                     <td className="px-4 py-3.5" style={{color: '#a07878'}}>{r.email}</td>
                     <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>{r.phone || '—'}</td>
                     <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#7a4a3a'}}>{r.event_type}</td>
-                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>{r.number_of_guests ? `${r.number_of_guests} (1 session)` : '—'}</td>
+                    <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>{r.number_of_guests || '—'}</td>
                     <td className="px-4 py-3.5 whitespace-nowrap" style={{color: '#a07878'}}>
                       {r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}
                     </td>
@@ -238,6 +318,24 @@ export default function Dashboard() {
               </tbody>
             </table>
           </div>
+
+          {/* Show More / Show Less */}
+          {older.length > 0 && (
+            <div className="px-4 py-4 text-center" style={{borderTop: '1px solid rgba(247,177,189,0.2)'}}>
+              <button
+                onClick={() => setShowAll(v => !v)}
+                className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
+                style={{
+                  background: showAll ? 'rgba(241,136,155,0.1)' : 'linear-gradient(135deg, #f1889b, #e86c84)',
+                  color: showAll ? '#f1889b' : 'white',
+                  border: showAll ? '1.5px solid rgba(241,136,155,0.4)' : 'none',
+                  boxShadow: showAll ? 'none' : '0 4px 12px rgba(241,136,155,0.3)',
+                }}
+              >
+                {showAll ? `Show current year only` : `Show ${older.length} more from previous years`}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
