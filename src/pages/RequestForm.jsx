@@ -148,12 +148,12 @@ export default function RequestForm() {
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center justify-center mb-10 rounded-2xl px-6 py-4 mx-auto" style={{
+        <div className="flex items-center mb-10 rounded-2xl px-6 py-3" style={{
           background: 'rgba(255,255,255,0.35)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
           border: '1px solid rgba(255,255,255,0.45)',
-          maxWidth: 'fit-content',
+          width: 'fit-content',
         }}>
           {STEPS.map((s, i) => {
             const Icon = s.icon;
@@ -161,18 +161,18 @@ export default function RequestForm() {
             const isDone = i < step;
             return (
               <div key={i} className="flex items-center">
-                <div className="flex flex-col items-center gap-1.5">
+                <div className="flex items-center gap-2.5">
                   <div
-                    className="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300"
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0"
                     style={{
-                      background: isDone ? 'linear-gradient(135deg, #f1889b, #e86c84)' : isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
+                      background: isDone || isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
                       border: isDone || isActive ? 'none' : '2px solid rgba(247,177,189,0.6)',
                       boxShadow: isActive ? '0 4px 16px rgba(241,136,155,0.4)' : 'none',
                     }}
                   >
                     {isDone
-                      ? <Check className="w-5 h-5 text-white" />
-                      : <Icon className="w-5 h-5" style={{color: isActive ? 'white' : '#c48a96'}} />
+                      ? <Check className="w-4 h-4 text-white" />
+                      : <Icon className="w-4 h-4" style={{color: isActive ? 'white' : '#c48a96'}} />
                     }
                   </div>
                   <span className="text-xs font-semibold whitespace-nowrap" style={{color: isActive || isDone ? '#e86c84' : '#c4909a'}}>
@@ -180,7 +180,7 @@ export default function RequestForm() {
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className="w-20 md:w-32 h-0.5 mb-5 mx-2 rounded-full transition-all duration-300"
+                  <div className="w-10 md:w-16 h-0.5 mx-3 rounded-full transition-all duration-300"
                     style={{background: i < step ? 'linear-gradient(90deg, #f1889b, #e86c84)' : 'rgba(247,177,189,0.4)'}} />
                 )}
               </div>
