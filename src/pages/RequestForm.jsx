@@ -344,11 +344,11 @@ export default function RequestForm() {
               {/* Add-Ons */}
               <div>
                 <SectionHeader icon={Sparkles} title="Add-Ons" subtitle="Enhance your event experience" />
-                <div className="space-y-2.5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {ADDON_OPTIONS.map(a => {
                     const checked = form.add_ons.includes(a.name);
                     return (
-                      <label key={a.name} className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
+                      <label key={a.name} className="flex items-center gap-3.5 p-4 rounded-xl cursor-pointer transition-all"
                         style={{
                           border: checked ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.4)',
                           background: checked ? 'rgba(241,136,155,0.06)' : 'rgba(255,255,255,0.4)',
