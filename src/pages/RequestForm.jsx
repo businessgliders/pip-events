@@ -143,14 +143,7 @@ export default function RequestForm() {
             boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
           }}>
             <h1 className="text-4xl font-bold mb-1" style={{color: '#b67651'}}>Book Your Special Event</h1>
-            <p className="text-base mb-3" style={{color: '#c48a96'}}>We're thrilled you're considering us for your special occasion.</p>
-            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium" style={{
-              background: 'rgba(247,177,189,0.2)',
-              border: '1px solid rgba(247,177,189,0.4)',
-              color: '#f1889b',
-            }}>
-              ✨ Let's create something beautiful together
-            </div>
+            <p className="text-base" style={{color: '#c48a96'}}>We're thrilled you're considering us for your special occasion.</p>
           </div>
         </div>
 
