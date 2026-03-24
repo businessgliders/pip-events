@@ -4,6 +4,7 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
 const FROM_EMAIL = 'Pilates in Pink™ Studio <events@pilatesinpink.ca>';
 const FROM_EMAIL_NOREPLY = 'Pilates in Pink™ Studio <no-reply@pilatesinpink.ca>';
+const OWNER_FROM_EMAIL = 'PiP Events App <events@pilatesinpink.ca>';
 
 async function sendEmail({ to, subject, html, from }) {
   const res = await fetch('https://api.resend.com/emails', {
