@@ -342,10 +342,17 @@ export default function Dashboard() {
           </div>
 
           {/* Load More / Year Toggle */}
-          <div className="px-4 py-4 flex flex-col gap-3 text-center" style={{borderTop: '1px solid rgba(247,177,189,0.2)'}}>
-            {hasMore && (
+          {(hasMore || older.length > 0) && (
+            <div className="px-4 py-4 flex justify-center" style={{borderTop: '1px solid rgba(247,177,189,0.2)'}}>
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => {
+                  if (showAll || !older.length) {
+                    setPage(p => p + 1);
+                  } else {
+                    setShowAll(true);
+                    setPage(1);
+                  }
+                }}
                 className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
                 style={{
                   background: 'linear-gradient(135deg, #f1889b, #e86c84)',
@@ -353,23 +360,10 @@ export default function Dashboard() {
                   boxShadow: '0 4px 12px rgba(241,136,155,0.3)',
                 }}
               >
-                Load More ({paginated.length}/{baseList.length})
+                {!showAll && older.length > 0 ? 'Show Older' : 'Load More'}
               </button>
-            )}
-            {older.length > 0 && (
-              <button
-                onClick={() => { setShowAll(v => !v); setPage(1); }}
-                className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
-                style={{
-                  background: showAll ? 'rgba(241,136,155,0.1)' : 'rgba(255,255,255,0.5)',
-                  color: showAll ? '#f1889b' : '#b67651',
-                  border: '1.5px solid rgba(241,136,155,0.4)',
-                }}
-              >
-                {showAll ? `Show current year only` : `Show ${older.length} older entries`}
-              </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
