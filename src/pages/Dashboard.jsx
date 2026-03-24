@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [sortDir, setSortDir] = useState('desc');
   const [showAll, setShowAll] = useState(false);
   const [visibleCols, setVisibleCols] = useState(DEFAULT_COLS);
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
 
   const { data: requests = [] } = useQuery({
