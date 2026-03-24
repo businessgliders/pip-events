@@ -238,6 +238,7 @@ Deno.serve(async (req) => {
       to: form.email,
       subject: `Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`,
       html: submitterHtml,
+      from: FROM_EMAIL_NOREPLY,
     }),
     sendEmail({
       to: OWNER_EMAIL,
