@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Settings2, GripVertical, Check, Save, X } from 'lucide-react';
 
 export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
