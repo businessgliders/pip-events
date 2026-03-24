@@ -139,6 +139,9 @@ export default function Dashboard() {
     if (sortKey === 'number_of_guests') {
       aVal = Number(aVal) || 0;
       bVal = Number(bVal) || 0;
+    } else if (sortKey === 'created_date' || sortKey === 'event_date') {
+      aVal = aVal ? new Date(aVal).getTime() : 0;
+      bVal = bVal ? new Date(bVal).getTime() : 0;
     } else {
       aVal = String(aVal).toLowerCase();
       bVal = String(bVal).toLowerCase();
@@ -147,6 +150,8 @@ export default function Dashboard() {
     if (aVal > bVal) return sortDir === 'asc' ? 1 : -1;
     return 0;
   });
+
+  const activeColumns = visibleCols.map(k => ALL_COLUMNS.find(c => c.key === k)).filter(Boolean);
 
   // Split current year vs older
   const thisYear = sorted.filter(r => {
