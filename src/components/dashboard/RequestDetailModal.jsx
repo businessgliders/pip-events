@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { X, Mail, Phone, Trash2 } from 'lucide-react';
+import { X, Mail, Phone, Trash2, User, Calendar, Clock, Users, Tag, Sparkles, StickyNote, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 import EmailCommsPanel from './EmailCommsPanel';
 
 const STATUS_OPTIONS = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
+
+const STATUS_STYLES = {
+  Pending:   { bg: 'rgba(254,249,195,0.9)', text: '#854d0e', border: 'rgba(253,224,71,0.6)' },
+  Confirmed: { bg: 'rgba(219,234,254,0.9)', text: '#1e40af', border: 'rgba(147,197,253,0.6)' },
+  Completed: { bg: 'rgba(220,252,231,0.9)', text: '#166534', border: 'rgba(134,239,172,0.6)' },
+  Cancelled: { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
+};
 
 export default function RequestDetailModal({ request, onClose, onUpdate }) {
   const [status, setStatus] = useState(request.status || 'Pending');
@@ -26,6 +33,9 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
     onUpdate();
   };
 
+  const sc = STATUS_STYLES[status] || STATUS_STYLES.Pending;
+  const submittedAt = request.submitted_date || request.created_date;
+
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div
@@ -38,28 +48,42 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
           className="flex items-center justify-between px-6 py-4 flex-shrink-0"
           style={{
             borderBottom: '1px solid rgba(247,177,189,0.3)',
-            background: 'linear-gradient(135deg, rgba(251,224,226,0.4), rgba(255,255,255,0.9))',
+            background: 'linear-gradient(135deg, rgba(251,224,226,0.5), rgba(255,255,255,0.95))',
           }}
         >
-          <div>
-            <h2 className="text-lg font-bold" style={{ color: '#6b4e4e' }}>{request.full_name}</h2>
-            <p className="text-xs mt-0.5" style={{ color: '#c48a96' }}>
-              {request.event_type} · {request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'}
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)' }}>
+              <User className="w-5 h-5" style={{ color: '#e86c84' }} />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold leading-tight" style={{ color: '#6b4e4e' }}>{request.full_name}</h2>
+              <p className="text-xs mt-0.5" style={{ color: '#c48a96' }}>
+                {request.event_type} · {request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'}
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors">
-            <X className="w-5 h-5" style={{ color: '#c48a96' }} />
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
+              {status}
+            </span>
+            <button onClick={onClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors ml-1">
+              <X className="w-5 h-5" style={{ color: '#c48a96' }} />
+            </button>
+          </div>
         </div>
 
         {/* ── Two-column body ── */}
         <div className="flex-1 flex min-h-0 overflow-hidden">
 
           {/* LEFT — Details */}
-          <div className="flex flex-col overflow-y-auto px-6 py-5" style={{ width: '42%', borderRight: '1px solid rgba(247,177,189,0.25)', flexShrink: 0 }}>
-            {/* Status */}
-            <div className="mb-5">
-              <label className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: '#c48a96' }}>Update Status</label>
+          <div
+            className="flex flex-col overflow-y-auto"
+            style={{ width: '42%', borderRight: '1px solid rgba(247,177,189,0.25)', flexShrink: 0 }}
+          >
+            {/* Status update */}
+            <div className="px-5 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(247,177,189,0.2)' }}>
+              <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: '#c48a96' }}>Update Status</p>
               <div className="flex gap-2">
                 <select
                   value={status}
@@ -71,71 +95,81 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
+                  className="text-white px-5 py-2 rounded-xl text-sm font-medium disabled:opacity-60"
                   style={{ background: 'linear-gradient(135deg, #f1889b, #e86c84)' }}
                 >
-                  {saving ? '...' : 'Save'}
+                  {saving ? '…' : 'Save'}
                 </button>
               </div>
             </div>
 
-            {/* Contact */}
-            <Section title="Contact">
-              <InfoRow icon={<Mail className="w-3.5 h-3.5 text-gray-400" />} value={request.email} />
-              {request.phone && <InfoRow icon={<Phone className="w-3.5 h-3.5 text-gray-400" />} value={request.phone} />}
-            </Section>
+            <div className="px-5 py-4 space-y-5 flex-1">
 
-            {/* Event Details */}
-            <div className="mt-4">
-              <Section title="Event Details">
-                <DetailRow label="Event Date" value={request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'} />
-                {request.preferred_times && <DetailRow label="Preferred Time(s)" value={request.preferred_times} />}
-                <DetailRow label="Number of Guests" value={request.number_of_guests ? `${request.number_of_guests} guests` : '—'} />
-                {request.time_slot && <DetailRow label="Time Slot" value={request.time_slot} />}
-                {request.duration && <DetailRow label="Duration" value={request.duration} />}
-              </Section>
-            </div>
+              {/* Contact */}
+              <InfoBlock icon={<User className="w-3.5 h-3.5" />} title="Contact">
+                <div className="grid grid-cols-1 gap-2">
+                  <ContactChip icon={<Mail className="w-3 h-3" />} value={request.email} href={`mailto:${request.email}`} />
+                  {request.phone && <ContactChip icon={<Phone className="w-3 h-3" />} value={request.phone} href={`tel:${request.phone}`} />}
+                </div>
+              </InfoBlock>
 
-            {/* Classes */}
-            {request.selected_classes?.length > 0 && (
-              <div className="mt-4">
-                <Section title="Selected Classes">
-                  <ul className="space-y-1">
-                    {request.selected_classes.map(c => <li key={c} className="text-sm text-gray-700">• {c}</li>)}
-                  </ul>
-                </Section>
-              </div>
-            )}
+              {/* Event details — 2-col grid */}
+              <InfoBlock icon={<Calendar className="w-3.5 h-3.5" />} title="Event Details">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+                  <Field label="Event Date" value={request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'} />
+                  <Field label="Guests" value={request.number_of_guests ? `${request.number_of_guests} guests` : '—'} />
+                  {request.time_slot && <Field label="Time Slot" value={request.time_slot} span />}
+                  {request.duration && <Field label="Duration" value={request.duration} />}
+                  {request.preferred_times && <Field label="Pref. Times" value={request.preferred_times} />}
+                </div>
+              </InfoBlock>
 
-            {/* Add-Ons */}
-            <div className="mt-4">
-              <Section title="Add-Ons">
+              {/* Classes */}
+              {request.selected_classes?.length > 0 && (
+                <InfoBlock icon={<Sparkles className="w-3.5 h-3.5" />} title="Classes">
+                  <div className="flex flex-wrap gap-1.5">
+                    {request.selected_classes.map(c => (
+                      <span key={c} className="text-xs px-2.5 py-1 rounded-full font-medium"
+                        style={{ background: 'rgba(241,136,155,0.1)', color: '#e86c84', border: '1px solid rgba(241,136,155,0.25)' }}>
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </InfoBlock>
+              )}
+
+              {/* Add-ons */}
+              <InfoBlock icon={<Tag className="w-3.5 h-3.5" />} title="Add-Ons">
                 {request.add_ons?.length > 0 ? (
-                  <ul className="space-y-1">
-                    {request.add_ons.map(a => <li key={a} className="text-sm text-gray-700">• {a}</li>)}
-                  </ul>
-                ) : <p className="text-sm text-gray-300 italic">None selected</p>}
-              </Section>
-            </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {request.add_ons.map(a => (
+                      <span key={a} className="text-xs px-2.5 py-1 rounded-full font-medium"
+                        style={{ background: 'rgba(182,118,81,0.08)', color: '#b67651', border: '1px solid rgba(182,118,81,0.2)' }}>
+                        {a}
+                      </span>
+                    ))}
+                  </div>
+                ) : <p className="text-xs italic" style={{ color: '#d4b8bc' }}>None selected</p>}
+              </InfoBlock>
 
-            {/* Budget & Notes */}
-            <div className="mt-4">
-              <Section title="Budget & Notes">
-                {request.budget && <DetailRow label="Budget" value={request.budget} />}
-                {request.notes && <p className="text-sm text-gray-600 mt-1">{request.notes}</p>}
-                <p className="text-xs text-gray-300 mt-3">
-                  Submitted{' '}
-                  {request.submitted_date
-                    ? format(new Date(request.submitted_date), "MMM d, yyyy 'at' h:mm a")
-                    : request.created_date
-                      ? format(new Date(request.created_date), "MMM d, yyyy 'at' h:mm a")
-                      : '—'}
-                </p>
-              </Section>
+              {/* Budget & Notes */}
+              {(request.budget || request.notes) && (
+                <InfoBlock icon={<StickyNote className="w-3.5 h-3.5" />} title="Budget & Notes">
+                  {request.budget && (
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <DollarSign className="w-3 h-3" style={{ color: '#c48a96' }} />
+                      <span className="text-sm font-medium" style={{ color: '#6b4e4e' }}>{request.budget}</span>
+                    </div>
+                  )}
+                  {request.notes && (
+                    <p className="text-sm leading-relaxed" style={{ color: '#7a5555' }}>{request.notes}</p>
+                  )}
+                </InfoBlock>
+              )}
             </div>
 
             {/* Footer actions */}
-            <div className="mt-auto pt-5 flex gap-2">
+            <div className="px-5 py-4 flex gap-2" style={{ borderTop: '1px solid rgba(247,177,189,0.2)' }}>
               {request.phone && (
                 <button
                   onClick={() => window.open(`tel:${request.phone}`)}
@@ -145,10 +179,15 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
                   <Phone className="w-4 h-4" /> Call
                 </button>
               )}
+              {submittedAt && (
+                <p className="flex-1 text-xs self-center text-center" style={{ color: '#d4b8bc' }}>
+                  Submitted {format(new Date(submittedAt), "MMM d, yyyy")}
+                </p>
+              )}
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="flex items-center justify-center gap-1 border border-red-100 text-red-400 hover:bg-red-50 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
+                className="flex items-center justify-center gap-1 border border-red-100 text-red-400 hover:bg-red-50 px-4 py-2 rounded-xl text-sm transition-colors disabled:opacity-60"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -165,32 +204,37 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
   );
 }
 
-function Section({ title, children }) {
+function InfoBlock({ icon, title, children }) {
   return (
     <div>
-      <h3 className="text-xs font-semibold uppercase tracking-wide mb-2 flex items-center gap-1" style={{ color: '#c48a96' }}>
-        <span className="w-3 h-0.5 bg-pink-200 rounded-full inline-block"></span>
-        {title}
-      </h3>
+      <div className="flex items-center gap-1.5 mb-2">
+        <span style={{ color: '#f1889b' }}>{icon}</span>
+        <h3 className="text-xs font-bold uppercase tracking-wide" style={{ color: '#c48a96' }}>{title}</h3>
+      </div>
       {children}
     </div>
   );
 }
 
-function DetailRow({ label, value }) {
+function Field({ label, value, span }) {
   return (
-    <div className="flex flex-col mb-2">
-      <span className="text-xs text-gray-400">{label}</span>
-      <span className="text-sm text-gray-700 font-medium">{value}</span>
+    <div className={span ? 'col-span-2' : ''}>
+      <p className="text-xs mb-0.5" style={{ color: '#c48a96' }}>{label}</p>
+      <p className="text-sm font-semibold" style={{ color: '#6b4e4e' }}>{value}</p>
     </div>
   );
 }
 
-function InfoRow({ icon, value }) {
+function ContactChip({ icon, value, href }) {
   return (
-    <div className="flex items-center gap-2 text-sm text-gray-600 mb-1.5">
-      {icon}
-      <span>{value}</span>
-    </div>
+    <a
+      href={href}
+      className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors"
+      style={{ background: 'rgba(251,224,226,0.3)', border: '1px solid rgba(247,177,189,0.3)', color: '#7a4a3a' }}
+      onClick={e => e.stopPropagation()}
+    >
+      <span style={{ color: '#f1889b' }}>{icon}</span>
+      <span className="truncate">{value}</span>
+    </a>
   );
 }

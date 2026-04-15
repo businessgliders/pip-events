@@ -3,12 +3,13 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal.jsx';
-import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
 import ListView from '../components/dashboard/ListView.jsx';
 import TableView from '../components/dashboard/TableView.jsx';
 import CalendarView from '../components/dashboard/CalendarView.jsx';
+import SettingsPanel from '../components/dashboard/SettingsPanel.jsx';
 
 const PASSWORD = 'pip6161';
 const ROWS_PER_PAGE = 15;
@@ -30,6 +31,7 @@ export default function Dashboard() {
   const [authed, setAuthed] = useState(false);
   const [pwInput, setPwInput] = useState('');
   const [pwError, setPwError] = useState(false);
+  const [dashTab, setDashTab] = useState('requests'); // 'requests' | 'settings'
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -201,7 +203,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
+    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #f5c6d3 0%, #f9e8ed 50%, #f5c6d3 100%)'}}>
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 py-10">
 
@@ -214,17 +216,51 @@ export default function Dashboard() {
             border: '1px solid rgba(255,255,255,0.6)',
             boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
           }}>
-            <h1 className="text-2xl font-bold" style={{color: '#b67651'}}>Event Requests Dashboard</h1>
-            <p className="text-sm mt-0.5" style={{color: '#c48a96'}}>Manage and track all event bookings</p>
+            <h1 className="text-2xl font-bold" style={{color: '#b67651'}}>Admin Dashboard</h1>
+            <p className="text-sm mt-0.5" style={{color: '#c48a96'}}>Manage event bookings and settings</p>
           </div>
-          <button
-            onClick={() => { window.location.href = '/RequestForm'; }}
-            className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all self-start"
-            style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
-          >
-            <Plus className="w-4 h-4" /> New Request
-          </button>
+          <div className="flex items-center gap-3 self-start">
+            {/* Tab toggle */}
+            <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)', background: 'rgba(255,255,255,0.7)'}}>
+              <button
+                onClick={() => setDashTab('requests')}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
+                style={{
+                  background: dashTab === 'requests' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'transparent',
+                  color: dashTab === 'requests' ? 'white' : '#b67651',
+                }}
+              >
+                <ClipboardList className="w-4 h-4" /> Requests
+              </button>
+              <button
+                onClick={() => setDashTab('settings')}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
+                style={{
+                  background: dashTab === 'settings' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'transparent',
+                  color: dashTab === 'settings' ? 'white' : '#b67651',
+                  borderLeft: '1px solid rgba(220,200,205,0.6)',
+                }}
+              >
+                <Settings className="w-4 h-4" /> Settings
+              </button>
+            </div>
+            {dashTab === 'requests' && (
+              <button
+                onClick={() => { window.location.href = '/RequestForm'; }}
+                className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+              >
+                <Plus className="w-4 h-4" /> New Request
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Settings tab */}
+        {dashTab === 'settings' && <SettingsPanel />}
+
+        {/* Requests tab content */}
+        {dashTab === 'requests' && <>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -359,6 +395,8 @@ export default function Dashboard() {
             onSelect={setSelected}
           />
         )}
+
+        </>}
       </div>
 
       {selected && (
