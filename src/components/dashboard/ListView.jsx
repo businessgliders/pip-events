@@ -62,7 +62,7 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
             <div className="flex items-center gap-3 mb-3">
               <div className="rounded-xl px-3 py-1.5 text-xs font-bold uppercase tracking-wide"
                 style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)', color: '#b67651'}}>
-                {groupBySubmitted ? '📬 Submitted' : '📅 Event Date'}: {dateLabel}
+                {groupBySubmitted ? 'Submitted' : 'Event Date'}: {dateLabel}
               </div>
               <div className="flex-1 h-px" style={{background: 'rgba(247,177,189,0.4)'}} />
               <span className="text-xs font-medium" style={{color: '#c48a96'}}>{items.length} request{items.length !== 1 ? 's' : ''}</span>
@@ -111,8 +111,8 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
                     </span>
 
                     {/* Status badge */}
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
-                      style={{background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`}}>
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-center"
+                      style={{background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`, width: '82px'}}>
                       {r.status}
                     </span>
                   </div>

@@ -327,21 +327,22 @@ export default function Dashboard() {
           {/* View toggle */}
           <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
             {[
-              { mode: 'list', Icon: LayoutList, label: 'List' },
-              { mode: 'table', Icon: Table2, label: 'Table' },
-              { mode: 'calendar', Icon: Calendar, label: 'Calendar' },
-            ].map(({ mode, Icon, label }, i) => (
+              { mode: 'list', Icon: LayoutList, title: 'List' },
+              { mode: 'table', Icon: Table2, title: 'Table' },
+              { mode: 'calendar', Icon: Calendar, title: 'Calendar' },
+            ].map(({ mode, Icon, title }, i) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
+                title={title}
+                className="flex items-center justify-center w-9 h-9 transition-all"
                 style={{
                   background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
                   color: viewMode === mode ? 'white' : '#b67651',
                   borderLeft: i > 0 ? '1px solid rgba(220,200,205,0.6)' : 'none',
                 }}
               >
-                <Icon className="w-3.5 h-3.5" /> {label}
+                <Icon className="w-4 h-4" />
               </button>
             ))}
           </div>
