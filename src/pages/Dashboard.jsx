@@ -157,9 +157,16 @@ export default function Dashboard() {
   const paginated = sorted.slice(0, page * ROWS_PER_PAGE);
   const hasMore = sorted.length > paginated.length;
 
-  // Group paginated results by event_date
+  // Group paginated results — by submitted_date when sorting by submission, otherwise by event_date
+  const groupBySubmitted = sortKey === 'submitted_date';
+
   const groupedByDate = paginated.reduce((acc, r) => {
-    const dateKey = r.event_date || 'No Date';
+    let dateKey;
+    if (groupBySubmitted) {
+      dateKey = r.submitted_date ? r.submitted_date.substring(0, 10) : 'No Date';
+    } else {
+      dateKey = r.event_date || 'No Date';
+    }
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(r);
     return acc;
@@ -168,7 +175,9 @@ export default function Dashboard() {
   const sortedDateKeys = Object.keys(groupedByDate).sort((a, b) => {
     if (a === 'No Date') return 1;
     if (b === 'No Date') return -1;
-    return new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00');
+    return sortDir === 'asc'
+      ? new Date(a + 'T12:00:00') - new Date(b + 'T12:00:00')
+      : new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00');
   });
 
   const handleSort = (key) => {
@@ -297,7 +306,9 @@ export default function Dashboard() {
             sortedDateKeys.map(dateKey => (
               <div key={dateKey}>
                 <h3 className="text-sm font-bold mb-3 uppercase tracking-wide px-2" style={{color: '#b67651'}}>
-                  {dateKey === 'No Date' ? '📋 No Date Set' : format(new Date(dateKey + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
+                  {dateKey === 'No Date' ? '📋 No Date Set' : groupBySubmitted
+                    ? `Submitted ${format(new Date(dateKey + 'T12:00:00'), 'MMMM d, yyyy')}`
+                    : format(new Date(dateKey + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
                 </h3>
                 <div className="space-y-3">
                   {groupedByDate[dateKey].map(r => (
