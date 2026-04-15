@@ -38,7 +38,7 @@ export default function Dashboard() {
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [selected, setSelected] = useState(null);
-  const [sortKey, setSortKey] = useState('created_date');
+  const [sortKey, setSortKey] = useState('submitted_date');
   const [sortDir, setSortDir] = useState('desc');
   const [visibleCols, setVisibleCols] = useState(DEFAULT_COLS);
   const [page, setPage] = useState(1);
@@ -139,7 +139,7 @@ export default function Dashboard() {
     if (sortKey === 'number_of_guests') {
       aVal = Number(aVal) || 0;
       bVal = Number(bVal) || 0;
-    } else if (sortKey === 'created_date' || sortKey === 'event_date') {
+    } else if (sortKey === 'submitted_date' || sortKey === 'created_date' || sortKey === 'event_date') {
       aVal = aVal ? new Date(aVal).getTime() : 0;
       bVal = bVal ? new Date(bVal).getTime() : 0;
     } else {
