@@ -6,8 +6,8 @@ import RequestDetailModal from '../components/dashboard/RequestDetailModal';
 import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2 } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
-import ListView from '../components/dashboard/ListView';
-import TableView from '../components/dashboard/TableView';
+import ListView from '../components/dashboard/ListView.jsx';
+import TableView from '../components/dashboard/TableView.jsx';
 
 const PASSWORD = 'pip6161';
 const ROWS_PER_PAGE = 15;
