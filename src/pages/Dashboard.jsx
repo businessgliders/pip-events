@@ -25,7 +25,7 @@ const ALL_COLUMNS = [
   { key: 'event_type', label: 'Event Type' },
   { key: 'number_of_guests', label: 'Guests' },
   { key: 'event_date', label: 'Preferred Date' },
-  { key: 'created_date', label: 'Submitted' },
+  { key: 'submitted_date', label: 'Submitted' },
 ];
 
 const DEFAULT_COLS = ['status', 'full_name', 'email', 'phone', 'event_type', 'number_of_guests', 'event_date'];

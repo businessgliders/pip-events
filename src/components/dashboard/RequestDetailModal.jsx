@@ -91,7 +91,7 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
               {request.budget && <DetailRow label="Budget" value={request.budget} />}
               {request.notes && <p className="text-sm text-gray-600 mt-1">{request.notes}</p>}
               <p className="text-xs text-gray-300 mt-3">
-                Submitted {request.created_date ? format(new Date(request.created_date), 'MMMM d, yyyy \'at\' h:mm a') : '—'}
+                Submitted {request.submitted_date ? format(new Date(request.submitted_date), 'MMMM d, yyyy \'at\' h:mm a') : request.created_date ? format(new Date(request.created_date), 'MMMM d, yyyy \'at\' h:mm a') : '—'}
               </p>
               {request.updated_date && (
                 <p className="text-xs text-gray-300">
