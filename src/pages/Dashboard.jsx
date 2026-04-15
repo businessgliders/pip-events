@@ -121,12 +121,7 @@ export default function Dashboard() {
     total: enriched.length,
     pending: enriched.filter(r => r.status === 'Pending').length,
     confirmed: enriched.filter(r => r.status === 'Confirmed').length,
-    upcoming: enriched.filter(r => {
-      if (!r.event_date) return false;
-      const d = new Date(r.event_date + 'T12:00:00');
-      d.setHours(0, 0, 0, 0);
-      return d >= today;
-    }).length,
+    completed: enriched.filter(r => r.status === 'Completed').length,
   };
 
   const eventTypes = [...new Set(enriched.map(r => r.event_type).filter(Boolean))];
@@ -136,10 +131,7 @@ export default function Dashboard() {
     if (tileKey === 'total') { setFilterStatus(''); }
     else if (tileKey === 'pending') { setFilterStatus(filterStatus === 'Pending' ? '' : 'Pending'); }
     else if (tileKey === 'confirmed') { setFilterStatus(filterStatus === 'Confirmed' ? '' : 'Confirmed'); }
-    else if (tileKey === 'upcoming') {
-      // upcoming = future event dates — handled via a special filter flag
-      setFilterStatus(filterStatus === '__upcoming__' ? '' : '__upcoming__');
-    }
+    else if (tileKey === 'completed') { setFilterStatus(filterStatus === 'Completed' ? '' : 'Completed'); }
   };
 
   // Filter
@@ -149,17 +141,7 @@ export default function Dashboard() {
       r.email?.toLowerCase().includes(search.toLowerCase()) ||
       r.event_type?.toLowerCase().includes(search.toLowerCase());
     const matchType = !filterType || r.event_type === filterType;
-    let matchStatus;
-    if (filterStatus === '__upcoming__') {
-      if (!r.event_date) { matchStatus = false; }
-      else {
-        const d = new Date(r.event_date + 'T12:00:00');
-        d.setHours(0, 0, 0, 0);
-        matchStatus = d >= today;
-      }
-    } else {
-      matchStatus = !filterStatus || r.status === filterStatus;
-    }
+    const matchStatus = !filterStatus || r.status === filterStatus;
     return matchSearch && matchType && matchStatus;
   });
 
@@ -250,13 +232,13 @@ export default function Dashboard() {
             { label: 'Total Requests', value: stats.total, Icon: ClipboardList, key: 'total' },
             { label: 'Pending', value: stats.pending, Icon: Clock, key: 'pending' },
             { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2, key: 'confirmed' },
-            { label: 'Upcoming Events', value: stats.upcoming, Icon: CalendarDays, key: 'upcoming' },
+            { label: 'Completed', value: stats.completed, Icon: CalendarDays, key: 'completed' },
           ].map(s => {
             const isActive =
               (s.key === 'total' && !filterStatus) ||
               (s.key === 'pending' && filterStatus === 'Pending') ||
               (s.key === 'confirmed' && filterStatus === 'Confirmed') ||
-              (s.key === 'upcoming' && filterStatus === '__upcoming__');
+              (s.key === 'completed' && filterStatus === 'Completed');
             return (
               <button
                 key={s.label}
@@ -311,7 +293,7 @@ export default function Dashboard() {
             {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
           <select
-            value={filterStatus === '__upcoming__' ? '' : filterStatus}
+            value={filterStatus}
             onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
             className="rounded-xl px-3 py-2.5 text-sm bg-white/70 focus:outline-none"
             style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
