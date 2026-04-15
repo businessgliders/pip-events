@@ -103,28 +103,62 @@ export default function Dashboard() {
     );
   }
 
-  const currentYear = new Date().getFullYear();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Derive effective status: future event_date → Pending (unless Confirmed/Cancelled), past/today → Completed
+  const enriched = requests.map(r => {
+    if (!r.event_date) return r;
+    const eventDay = new Date(r.event_date + 'T12:00:00');
+    eventDay.setHours(0, 0, 0, 0);
+    if (r.status === 'Confirmed' || r.status === 'Cancelled') return r;
+    if (eventDay > today) return { ...r, status: 'Pending' };
+    return { ...r, status: 'Completed' };
+  });
 
   const stats = {
-    total: requests.length,
-    pending: requests.filter(r => r.status === 'Pending').length,
-    confirmed: requests.filter(r => r.status === 'Confirmed').length,
-    upcoming: requests.filter(r => {
+    total: enriched.length,
+    pending: enriched.filter(r => r.status === 'Pending').length,
+    confirmed: enriched.filter(r => r.status === 'Confirmed').length,
+    upcoming: enriched.filter(r => {
       if (!r.event_date) return false;
-      return new Date(r.event_date + 'T12:00:00') >= new Date();
+      const d = new Date(r.event_date + 'T12:00:00');
+      d.setHours(0, 0, 0, 0);
+      return d >= today;
     }).length,
   };
 
-  const eventTypes = [...new Set(requests.map(r => r.event_type).filter(Boolean))];
+  const eventTypes = [...new Set(enriched.map(r => r.event_type).filter(Boolean))];
+
+  const handleTileClick = (tileKey) => {
+    setPage(1);
+    if (tileKey === 'total') { setFilterStatus(''); }
+    else if (tileKey === 'pending') { setFilterStatus(filterStatus === 'Pending' ? '' : 'Pending'); }
+    else if (tileKey === 'confirmed') { setFilterStatus(filterStatus === 'Confirmed' ? '' : 'Confirmed'); }
+    else if (tileKey === 'upcoming') {
+      // upcoming = future event dates — handled via a special filter flag
+      setFilterStatus(filterStatus === '__upcoming__' ? '' : '__upcoming__');
+    }
+  };
 
   // Filter
-  const filtered = requests.filter(r => {
+  const filtered = enriched.filter(r => {
     const matchSearch = !search ||
       r.full_name?.toLowerCase().includes(search.toLowerCase()) ||
       r.email?.toLowerCase().includes(search.toLowerCase()) ||
       r.event_type?.toLowerCase().includes(search.toLowerCase());
     const matchType = !filterType || r.event_type === filterType;
-    const matchStatus = !filterStatus || r.status === filterStatus;
+    let matchStatus;
+    if (filterStatus === '__upcoming__') {
+      if (!r.event_date) { matchStatus = false; }
+      else {
+        const d = new Date(r.event_date + 'T12:00:00');
+        d.setHours(0, 0, 0, 0);
+        matchStatus = d >= today;
+      }
+    } else {
+      matchStatus = !filterStatus || r.status === filterStatus;
+    }
     return matchSearch && matchType && matchStatus;
   });
 
@@ -212,27 +246,40 @@ export default function Dashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Total Requests', value: stats.total, Icon: ClipboardList },
-            { label: 'Pending', value: stats.pending, Icon: Clock },
-            { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2 },
-            { label: 'Upcoming', value: stats.upcoming, Icon: CalendarDays },
-          ].map(s => (
-            <div key={s.label} className="rounded-2xl p-5" style={{
-              background: 'rgba(255,255,255,0.6)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.65)',
-              boxShadow: '0 8px 32px rgba(241,136,155,0.1)',
-            }}>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{color: '#c48a96'}}>{s.label}</p>
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
-                  <s.Icon className="w-4 h-4" style={{color: '#e86c84'}} />
-                </span>
-              </div>
-              <p className="text-3xl font-bold" style={{color: '#b67651'}}>{s.value}</p>
-            </div>
-          ))}
+            { label: 'Total Requests', value: stats.total, Icon: ClipboardList, key: 'total' },
+            { label: 'Pending', value: stats.pending, Icon: Clock, key: 'pending' },
+            { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2, key: 'confirmed' },
+            { label: 'Upcoming Events', value: stats.upcoming, Icon: CalendarDays, key: 'upcoming' },
+          ].map(s => {
+            const isActive =
+              (s.key === 'total' && !filterStatus) ||
+              (s.key === 'pending' && filterStatus === 'Pending') ||
+              (s.key === 'confirmed' && filterStatus === 'Confirmed') ||
+              (s.key === 'upcoming' && filterStatus === '__upcoming__');
+            return (
+              <button
+                key={s.label}
+                onClick={() => handleTileClick(s.key)}
+                className="rounded-2xl p-5 text-left transition-all"
+                style={{
+                  background: isActive ? 'linear-gradient(135deg, rgba(241,136,155,0.18), rgba(232,108,132,0.12))' : 'rgba(255,255,255,0.6)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: isActive ? '1.5px solid rgba(241,136,155,0.5)' : '1px solid rgba(255,255,255,0.65)',
+                  boxShadow: isActive ? '0 8px 32px rgba(241,136,155,0.2)' : '0 8px 32px rgba(241,136,155,0.1)',
+                  cursor: 'pointer',
+                }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide" style={{color: isActive ? '#e86c84' : '#c48a96'}}>{s.label}</p>
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full" style={{background: isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                    <s.Icon className="w-4 h-4" style={{color: isActive ? 'white' : '#e86c84'}} />
+                  </span>
+                </div>
+                <p className="text-3xl font-bold" style={{color: isActive ? '#e86c84' : '#b67651'}}>{s.value}</p>
+              </button>
+            );
+          })}
         </div>
 
         {/* Filters */}
@@ -263,8 +310,8 @@ export default function Dashboard() {
             {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
           <select
-            value={filterStatus}
-            onChange={e => setFilterStatus(e.target.value)}
+            value={filterStatus === '__upcoming__' ? '' : filterStatus}
+            onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
             className="rounded-xl px-3 py-2.5 text-sm bg-white/70 focus:outline-none"
             style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
           >

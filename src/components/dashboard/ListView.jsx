@@ -1,0 +1,120 @@
+import { format } from 'date-fns';
+import { Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronDown } from 'lucide-react';
+
+const EVENT_TYPE_ICONS = {
+  'Birthday': Cake,
+  'Bridal Shower': Flower2,
+  'Bachelorette Party': Wine,
+  'Corporate Wellness Event': Briefcase,
+  'Private Class': PersonStanding,
+  'Other': Sparkles,
+};
+
+const STATUS_COLORS = {
+  Pending: { bg: 'rgba(254,249,195,0.8)', text: '#854d0e', border: 'rgba(253,224,71,0.5)' },
+  Confirmed: { bg: 'rgba(219,234,254,0.8)', text: '#1e40af', border: 'rgba(147,197,253,0.5)' },
+  Completed: { bg: 'rgba(220,252,231,0.8)', text: '#166534', border: 'rgba(134,239,172,0.5)' },
+  Cancelled: { bg: 'rgba(243,244,246,0.8)', text: '#6b7280', border: 'rgba(209,213,219,0.5)' },
+};
+
+export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitted, onSelect, hasMore, onLoadMore }) {
+  if (sortedDateKeys.length === 0) {
+    return (
+      <div className="text-center py-20 rounded-2xl" style={{background: 'rgba(255,255,255,0.5)'}}>
+        <p className="text-sm" style={{color: '#c48a96'}}>No requests found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {sortedDateKeys.map(dateKey => {
+        const items = groupedByDate[dateKey];
+        let dateLabel = dateKey;
+        if (dateKey !== 'No Date') {
+          try {
+            dateLabel = format(new Date(dateKey + 'T12:00:00'), 'EEEE, MMMM d, yyyy');
+          } catch {}
+        }
+
+        return (
+          <div key={dateKey}>
+            {/* Date header */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="rounded-xl px-3 py-1.5 text-xs font-bold uppercase tracking-wide"
+                style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)', color: '#b67651'}}>
+                {groupBySubmitted ? '📬 Submitted' : '📅 Event Date'}: {dateLabel}
+              </div>
+              <div className="flex-1 h-px" style={{background: 'rgba(247,177,189,0.4)'}} />
+              <span className="text-xs font-medium" style={{color: '#c48a96'}}>{items.length} request{items.length !== 1 ? 's' : ''}</span>
+            </div>
+
+            {/* Cards */}
+            <div className="space-y-2">
+              {items.map(r => {
+                const Icon = EVENT_TYPE_ICONS[r.event_type] || Sparkles;
+                const sc = STATUS_COLORS[r.status] || STATUS_COLORS.Pending;
+                return (
+                  <div
+                    key={r.id}
+                    onClick={() => onSelect(r)}
+                    className="flex items-center gap-4 px-5 py-4 rounded-2xl cursor-pointer transition-all hover:shadow-md"
+                    style={{
+                      background: 'rgba(255,255,255,0.75)',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255,255,255,0.65)',
+                      boxShadow: '0 2px 12px rgba(241,136,155,0.08)',
+                    }}
+                  >
+                    {/* Icon */}
+                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0"
+                      style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                      <Icon className="w-4 h-4" style={{color: '#e86c84'}} />
+                    </span>
+
+                    {/* Name & type */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" style={{color: '#6b4e4e'}}>{r.full_name}</p>
+                      <p className="text-xs truncate" style={{color: '#c48a96'}}>{r.event_type} · {r.email}</p>
+                    </div>
+
+                    {/* Guests */}
+                    {r.number_of_guests && (
+                      <span className="text-xs hidden sm:block flex-shrink-0" style={{color: '#a07878'}}>
+                        {r.number_of_guests} guests
+                      </span>
+                    )}
+
+                    {/* Event date */}
+                    <span className="text-xs hidden md:block flex-shrink-0 font-medium" style={{color: '#b67651'}}>
+                      {r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}
+                    </span>
+
+                    {/* Status badge */}
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
+                      style={{background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`}}>
+                      {r.status}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {hasMore && (
+        <div className="text-center pt-2">
+          <button
+            onClick={onLoadMore}
+            className="flex items-center gap-2 mx-auto text-sm font-medium px-6 py-2.5 rounded-xl transition-all"
+            style={{background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(247,177,189,0.5)', color: '#b67651'}}
+          >
+            <ChevronDown className="w-4 h-4" /> Load more
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
