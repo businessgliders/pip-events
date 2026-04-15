@@ -1,18 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
-import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, ChevronUp, ChevronDown } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2 } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
-
-const STATUS_COLORS = {
-  Pending: 'bg-yellow-100 text-yellow-700',
-  Confirmed: 'bg-blue-100 text-blue-700',
-  Completed: 'bg-pink-500 text-white',
-  Cancelled: 'bg-gray-100 text-gray-500',
-};
+import ListView from '../components/dashboard/ListView';
+import TableView from '../components/dashboard/TableView';
 
 const PASSWORD = 'pip6161';
 const ROWS_PER_PAGE = 15;
@@ -42,6 +37,7 @@ export default function Dashboard() {
   const [sortDir, setSortDir] = useState('desc');
   const [visibleCols, setVisibleCols] = useState(DEFAULT_COLS);
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'table'
   const queryClient = useQueryClient();
 
   const { data: requests = [] } = useQuery({
@@ -151,8 +147,6 @@ export default function Dashboard() {
     return 0;
   });
 
-  const activeColumns = visibleCols.map(k => ALL_COLUMNS.find(c => c.key === k)).filter(Boolean);
-
   // Paginate sorted list
   const paginated = sorted.slice(0, page * ROWS_PER_PAGE);
   const hasMore = sorted.length > paginated.length;
@@ -185,15 +179,8 @@ export default function Dashboard() {
       setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     } else {
       setSortKey(key);
-      setSortDir('asc');
+      setSortDir('desc');
     }
-  };
-
-  const SortIcon = ({ col }) => {
-    if (sortKey !== col) return <ChevronUp className="w-3 h-3 opacity-20 ml-1" />;
-    return sortDir === 'asc'
-      ? <ChevronUp className="w-3 h-3 ml-1" style={{color: '#f1889b'}} />
-      : <ChevronDown className="w-3 h-3 ml-1" style={{color: '#f1889b'}} />;
   };
 
   return (
@@ -289,84 +276,53 @@ export default function Dashboard() {
             visibleKeys={visibleCols}
             onSave={setVisibleCols}
           />
-        </div>
-
-        {/* List View by Date */}
-        <div className="space-y-6">
-          {paginated.length === 0 ? (
-            <div className="rounded-2xl p-12 text-center" style={{
-              background: 'rgba(255,255,255,0.6)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1.5px solid rgba(247,177,189,0.45)',
-            }}>
-              <p style={{color: '#d4b8bb'}}>No requests found</p>
-            </div>
-          ) : (
-            sortedDateKeys.map(dateKey => (
-              <div key={dateKey}>
-                <h3 className="text-sm font-bold mb-3 uppercase tracking-wide px-2" style={{color: '#b67651'}}>
-                  {dateKey === 'No Date' ? '📋 No Date Set' : groupBySubmitted
-                    ? `Submitted ${format(new Date(dateKey + 'T12:00:00'), 'MMMM d, yyyy')}`
-                    : format(new Date(dateKey + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
-                </h3>
-                <div className="space-y-3">
-                  {groupedByDate[dateKey].map(r => (
-                    <div
-                      key={r.id}
-                      onClick={() => setSelected(r)}
-                      className="rounded-2xl p-4 cursor-pointer transition-all"
-                      style={{
-                        background: 'rgba(255,255,255,0.65)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: '1.5px solid rgba(247,177,189,0.4)',
-                        boxShadow: '0 4px 16px rgba(241,136,155,0.08)',
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.8)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.65)'}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2.5 mb-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block ${STATUS_COLORS[r.status] || 'bg-gray-100 text-gray-500'}`}>
-                              {r.status}
-                            </span>
-                            <span className="text-xs" style={{color: '#c48a96'}}>{r.event_type}</span>
-                          </div>
-                          <h4 className="font-semibold text-base mb-1 truncate" style={{color: '#6b4e4e'}}>{r.full_name}</h4>
-                          <p className="text-sm truncate" style={{color: '#a07878'}}>{r.email}</p>
-                          {r.phone && <p className="text-sm truncate" style={{color: '#a07878'}}>{r.phone}</p>}
-                          <div className="flex gap-2 mt-2 flex-wrap text-xs" style={{color: '#c48a96'}}>
-                            {r.number_of_guests && <span>👥 {r.number_of_guests} guests</span>}
-                            {r.time_slot && <span>⏰ {r.time_slot === 'Peak Hours (Fri-Sun, 10AM-6PM)' ? 'Peak' : 'Non-Peak'}</span>}
-                            {r.duration && <span>⌛ {r.duration}</span>}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Load More */}
-        {hasMore && (
-          <div className="flex justify-center mt-8">
+          {/* View toggle */}
+          <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
             <button
-              onClick={() => setPage(p => p + 1)}
-              className="px-6 py-2 rounded-xl text-sm font-semibold transition-all"
+              onClick={() => setViewMode('list')}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
               style={{
-                background: 'linear-gradient(135deg, #f1889b, #e86c84)',
-                color: 'white',
-                boxShadow: '0 4px 12px rgba(241,136,155,0.3)',
+                background: viewMode === 'list' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
+                color: viewMode === 'list' ? 'white' : '#b67651',
               }}
             >
-              Load More
+              <LayoutList className="w-3.5 h-3.5" /> List
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
+              style={{
+                background: viewMode === 'table' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
+                color: viewMode === 'table' ? 'white' : '#b67651',
+                borderLeft: '1px solid rgba(220,200,205,0.6)',
+              }}
+            >
+              <Table2 className="w-3.5 h-3.5" /> Table
             </button>
           </div>
+        </div>
+
+        {/* Views */}
+        {viewMode === 'list' ? (
+          <ListView
+            sortedDateKeys={sortedDateKeys}
+            groupedByDate={groupedByDate}
+            groupBySubmitted={groupBySubmitted}
+            onSelect={setSelected}
+            hasMore={hasMore}
+            onLoadMore={() => setPage(p => p + 1)}
+          />
+        ) : (
+          <TableView
+            rows={paginated}
+            visibleCols={visibleCols}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSort={handleSort}
+            onSelect={setSelected}
+            hasMore={hasMore}
+            onLoadMore={() => setPage(p => p + 1)}
+          />
         )}
       </div>
 
