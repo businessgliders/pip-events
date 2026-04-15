@@ -61,11 +61,12 @@ export default function ColumnCustomizer({ allColumns, visibleKeys, onSave }) {
       {open && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed inset-0" style={{zIndex: 99998}} onClick={() => setOpen(false)} />
 
           {/* Panel */}
           <div
-            className="absolute right-0 top-12 z-50 w-64 rounded-2xl shadow-xl"
+            className="absolute right-0 top-12 w-64 rounded-2xl shadow-xl"
+            style={{zIndex: 99999}}
             style={{
               background: 'rgba(255,255,255,0.97)',
               backdropFilter: 'blur(20px)',

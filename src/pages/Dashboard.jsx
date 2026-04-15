@@ -3,11 +3,12 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
-import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2 } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
 import ListView from '../components/dashboard/ListView.jsx';
 import TableView from '../components/dashboard/TableView.jsx';
+import CalendarView from '../components/dashboard/CalendarView.jsx';
 
 const PASSWORD = 'pip6161';
 const ROWS_PER_PAGE = 15;
@@ -325,32 +326,29 @@ export default function Dashboard() {
           />
           {/* View toggle */}
           <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
-            <button
-              onClick={() => setViewMode('list')}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
-              style={{
-                background: viewMode === 'list' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
-                color: viewMode === 'list' ? 'white' : '#b67651',
-              }}
-            >
-              <LayoutList className="w-3.5 h-3.5" /> List
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
-              style={{
-                background: viewMode === 'table' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
-                color: viewMode === 'table' ? 'white' : '#b67651',
-                borderLeft: '1px solid rgba(220,200,205,0.6)',
-              }}
-            >
-              <Table2 className="w-3.5 h-3.5" /> Table
-            </button>
+            {[
+              { mode: 'list', Icon: LayoutList, label: 'List' },
+              { mode: 'table', Icon: Table2, label: 'Table' },
+              { mode: 'calendar', Icon: Calendar, label: 'Calendar' },
+            ].map(({ mode, Icon, label }, i) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold transition-all"
+                style={{
+                  background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
+                  color: viewMode === mode ? 'white' : '#b67651',
+                  borderLeft: i > 0 ? '1px solid rgba(220,200,205,0.6)' : 'none',
+                }}
+              >
+                <Icon className="w-3.5 h-3.5" /> {label}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Views */}
-        {viewMode === 'list' ? (
+        {viewMode === 'list' && (
           <ListView
             sortedDateKeys={sortedDateKeys}
             groupedByDate={groupedByDate}
@@ -359,7 +357,8 @@ export default function Dashboard() {
             hasMore={hasMore}
             onLoadMore={() => setPage(p => p + 1)}
           />
-        ) : (
+        )}
+        {viewMode === 'table' && (
           <TableView
             rows={paginated}
             visibleCols={visibleCols}
@@ -369,6 +368,12 @@ export default function Dashboard() {
             onSelect={setSelected}
             hasMore={hasMore}
             onLoadMore={() => setPage(p => p + 1)}
+          />
+        )}
+        {viewMode === 'calendar' && (
+          <CalendarView
+            requests={filtered}
+            onSelect={setSelected}
           />
         )}
       </div>

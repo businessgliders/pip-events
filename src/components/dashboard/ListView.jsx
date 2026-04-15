@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, differenceInCalendarDays, startOfWeek, endOfWeek, startOfDay } from 'date-fns';
 import { Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronDown } from 'lucide-react';
 
 const EVENT_TYPE_ICONS = {
@@ -17,6 +17,25 @@ const STATUS_COLORS = {
   Cancelled: { bg: 'rgba(243,244,246,0.8)', text: '#6b7280', border: 'rgba(209,213,219,0.5)' },
 };
 
+function relativeLabel(dateKey) {
+  const today = startOfDay(new Date());
+  const d = startOfDay(new Date(dateKey + 'T12:00:00'));
+  const diff = differenceInCalendarDays(d, today);
+  if (diff === 0) return 'Today';
+  if (diff === -1) return 'Yesterday';
+  if (diff === 1) return 'Tomorrow';
+  const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+  const thisWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
+  if (d >= thisWeekStart && d <= thisWeekEnd) return 'This week · ' + format(d, 'EEEE, MMM d');
+  const lastWeekStart = new Date(thisWeekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+  const lastWeekEnd = new Date(thisWeekEnd); lastWeekEnd.setDate(lastWeekEnd.getDate() - 7);
+  if (d >= lastWeekStart && d <= lastWeekEnd) return 'Last week · ' + format(d, 'EEEE, MMM d');
+  const nextWeekStart = new Date(thisWeekStart); nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+  const nextWeekEnd = new Date(thisWeekEnd); nextWeekEnd.setDate(nextWeekEnd.getDate() + 7);
+  if (d >= nextWeekStart && d <= nextWeekEnd) return 'Next week · ' + format(d, 'EEEE, MMM d');
+  return format(d, 'EEEE, MMMM d, yyyy');
+}
+
 export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitted, onSelect, hasMore, onLoadMore }) {
   if (sortedDateKeys.length === 0) {
     return (
@@ -33,7 +52,7 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
         let dateLabel = dateKey;
         if (dateKey !== 'No Date') {
           try {
-            dateLabel = format(new Date(dateKey + 'T12:00:00'), 'EEEE, MMMM d, yyyy');
+            dateLabel = groupBySubmitted ? relativeLabel(dateKey) : format(new Date(dateKey + 'T12:00:00'), 'EEEE, MMMM d, yyyy');
           } catch {}
         }
 
