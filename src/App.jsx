@@ -9,6 +9,7 @@ import Calendar from './pages/Calendar';
 import RequestForm from './pages/RequestForm';
 import Confirmation from './pages/Confirmation';
 import Dashboard from './pages/Dashboard';
+import Settings from './pages/Settings';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -37,6 +38,7 @@ const AuthenticatedApp = () => {
       <Route path="/RequestForm" element={<RequestForm />} />
       <Route path="/Confirmation" element={<Confirmation />} />
       <Route path="/Dashboard" element={<Dashboard />} />
+      <Route path="/Settings" element={<Settings />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
-import RequestDetailModal from '../components/dashboard/RequestDetailModal';
+import RequestDetailModal from '../components/dashboard/RequestDetailModal.jsx';
 import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';

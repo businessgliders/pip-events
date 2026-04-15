@@ -99,6 +99,13 @@
           },
           "subject": {
             "type": "string"
+          },
+          "body_html": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string",
+            "description": "outbound or initial"
           }
         }
       }

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Settings } from 'lucide-react';
 
 export default function Navbar() {
   const location = useLocation();
@@ -41,18 +41,31 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Right — Dashboard icon only */}
-        <Link
-          to="/Dashboard"
-          className="p-2.5 rounded-full transition-all"
-          title="Dashboard"
-          style={{
-            color: location.pathname === '/Dashboard' ? '#f1889b' : '#b67651',
-            background: location.pathname === '/Dashboard' ? 'rgba(241,136,155,0.12)' : 'transparent',
-          }}
-        >
-          <LayoutDashboard className="w-5 h-5" />
-        </Link>
+        {/* Right — Dashboard + Settings icons */}
+        <div className="flex items-center gap-1">
+          <Link
+            to="/Dashboard"
+            className="p-2.5 rounded-full transition-all"
+            title="Dashboard"
+            style={{
+              color: location.pathname === '/Dashboard' ? '#f1889b' : '#b67651',
+              background: location.pathname === '/Dashboard' ? 'rgba(241,136,155,0.12)' : 'transparent',
+            }}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+          </Link>
+          <Link
+            to="/Settings"
+            className="p-2.5 rounded-full transition-all"
+            title="Settings"
+            style={{
+              color: location.pathname === '/Settings' ? '#f1889b' : '#b67651',
+              background: location.pathname === '/Settings' ? 'rgba(241,136,155,0.12)' : 'transparent',
+            }}
+          >
+            <Settings className="w-5 h-5" />
+          </Link>
+        </div>
       </div>
     </nav>
   );

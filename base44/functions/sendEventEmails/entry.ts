@@ -236,10 +236,12 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
+  const confirmationSubject = `Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
+
   const [submitterResult, ownerResult] = await Promise.all([
     sendEmail({
       to: form.email,
-      subject: `Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`,
+      subject: confirmationSubject,
       html: submitterHtml,
       from: FROM_EMAIL_NOREPLY,
       reply_to: OWNER_EMAIL,
@@ -251,6 +253,26 @@ Deno.serve(async (req) => {
       from: OWNER_FROM_EMAIL,
     }),
   ]);
+
+  // Log the initial confirmation email on the EventRequest record
+  try {
+    const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date });
+    if (records && records.length > 0) {
+      const record = records[0];
+      const existingLog = record.email_log || [];
+      await base44.asServiceRole.entities.EventRequest.update(record.id, {
+        email_log: [...existingLog, {
+          sent_at: new Date().toISOString(),
+          direction: 'initial',
+          template_name: 'Auto-Confirmation',
+          subject: confirmationSubject,
+          body_html: submitterHtml,
+        }]
+      });
+    }
+  } catch (e) {
+    console.error('Could not log initial email:', e.message);
+  }
 
   return Response.json({ success: true, submitterResult, ownerResult });
 });
