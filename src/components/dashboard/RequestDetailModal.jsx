@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { X, Mail, Phone, Trash2, ClipboardList, MessageSquare } from 'lucide-react';
+import { X, Mail, Phone, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import EmailCommsPanel from './EmailCommsPanel';
 
@@ -10,7 +10,6 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
   const [status, setStatus] = useState(request.status || 'Pending');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState('details'); // 'details' | 'email'
 
   const handleSave = async () => {
     setSaving(true);
@@ -31,148 +30,135 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div
         className="bg-white rounded-2xl shadow-2xl w-full flex flex-col"
-        style={{maxWidth: '880px', maxHeight: '90vh', overflow: 'hidden'}}
+        style={{ maxWidth: '1100px', maxHeight: '90vh', overflow: 'hidden' }}
         onClick={e => e.stopPropagation()}
       >
         {/* ── Top bar ── */}
-        <div className="flex items-center justify-between px-6 py-4 flex-shrink-0"
-          style={{borderBottom: '1px solid rgba(247,177,189,0.3)', background: 'linear-gradient(135deg, rgba(251,224,226,0.4), rgba(255,255,255,0.9))'}}>
+        <div
+          className="flex items-center justify-between px-6 py-4 flex-shrink-0"
+          style={{
+            borderBottom: '1px solid rgba(247,177,189,0.3)',
+            background: 'linear-gradient(135deg, rgba(251,224,226,0.4), rgba(255,255,255,0.9))',
+          }}
+        >
           <div>
-            <h2 className="text-lg font-bold" style={{color: '#6b4e4e'}}>{request.full_name}</h2>
-            <p className="text-xs mt-0.5" style={{color: '#c48a96'}}>{request.event_type} · {request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'}</p>
+            <h2 className="text-lg font-bold" style={{ color: '#6b4e4e' }}>{request.full_name}</h2>
+            <p className="text-xs mt-0.5" style={{ color: '#c48a96' }}>
+              {request.event_type} · {request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'}
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            {/* Tab toggles */}
-            <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
-              <button
-                onClick={() => setActiveTab('details')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-all"
-                style={{
-                  background: activeTab === 'details' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'white',
-                  color: activeTab === 'details' ? 'white' : '#b67651',
-                }}
-              >
-                <ClipboardList className="w-3.5 h-3.5" /> Details
-              </button>
-              <button
-                onClick={() => setActiveTab('email')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-all"
-                style={{
-                  background: activeTab === 'email' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'white',
-                  color: activeTab === 'email' ? 'white' : '#b67651',
-                  borderLeft: '1px solid rgba(220,200,205,0.6)',
-                }}
-              >
-                <MessageSquare className="w-3.5 h-3.5" /> Emails
-                {(request.email_log?.length || 0) > 0 && (
-                  <span className="ml-1 rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold"
-                    style={{background: activeTab === 'email' ? 'rgba(255,255,255,0.3)' : 'rgba(241,136,155,0.15)', color: activeTab === 'email' ? 'white' : '#e86c84', fontSize: '10px'}}>
-                    {request.email_log.length}
-                  </span>
-                )}
-              </button>
-            </div>
-            <button onClick={onClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors">
-              <X className="w-5 h-5" style={{color: '#c48a96'}} />
-            </button>
-          </div>
+          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors">
+            <X className="w-5 h-5" style={{ color: '#c48a96' }} />
+          </button>
         </div>
 
-        {/* ── Body ── */}
-        <div className="flex-1 overflow-hidden flex min-h-0">
-          {activeTab === 'details' ? (
-            <div className="flex-1 overflow-y-auto px-6 py-5">
-              {/* Status Update */}
-              <div className="mb-5">
-                <label className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{color: '#c48a96'}}>Update Status</label>
-                <div className="flex gap-2">
-                  <select value={status} onChange={e => setStatus(e.target.value)}
-                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white">
-                    {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                  <button onClick={handleSave} disabled={saving}
-                    className="text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
-                    style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}>
-                    {saving ? '...' : 'Save'}
-                  </button>
-                </div>
-              </div>
+        {/* ── Two-column body ── */}
+        <div className="flex-1 flex min-h-0 overflow-hidden">
 
-              {/* Two column grid for details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Left */}
-                <div className="space-y-4">
-                  <Section title="Contact">
-                    <InfoRow icon={<Mail className="w-3.5 h-3.5 text-gray-400" />} value={request.email} />
-                    {request.phone && <InfoRow icon={<Phone className="w-3.5 h-3.5 text-gray-400" />} value={request.phone} />}
-                  </Section>
-
-                  <Section title="Event Details">
-                    <DetailRow label="Event Date" value={request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'} />
-                    {request.preferred_times && <DetailRow label="Preferred Time(s)" value={request.preferred_times} />}
-                    <DetailRow label="Number of Guests" value={request.number_of_guests ? `${request.number_of_guests} guests` : '—'} />
-                    {request.time_slot && <DetailRow label="Time Slot" value={request.time_slot} />}
-                    {request.duration && <DetailRow label="Duration" value={request.duration} />}
-                  </Section>
-                </div>
-
-                {/* Right */}
-                <div className="space-y-4">
-                  {request.selected_classes?.length > 0 && (
-                    <Section title="Selected Classes">
-                      <ul className="space-y-1">
-                        {request.selected_classes.map(c => <li key={c} className="text-sm text-gray-700">• {c}</li>)}
-                      </ul>
-                    </Section>
-                  )}
-
-                  <Section title="Add-Ons">
-                    {request.add_ons?.length > 0 ? (
-                      <ul className="space-y-1">
-                        {request.add_ons.map(a => <li key={a} className="text-sm text-gray-700">• {a}</li>)}
-                      </ul>
-                    ) : <p className="text-sm text-gray-300 italic">None selected</p>}
-                  </Section>
-
-                  <Section title="Budget & Notes">
-                    {request.budget && <DetailRow label="Budget" value={request.budget} />}
-                    {request.notes && <p className="text-sm text-gray-600 mt-1">{request.notes}</p>}
-                    <p className="text-xs text-gray-300 mt-3">
-                      Submitted {request.submitted_date
-                        ? format(new Date(request.submitted_date), 'MMM d, yyyy \'at\' h:mm a')
-                        : request.created_date
-                          ? format(new Date(request.created_date), 'MMM d, yyyy \'at\' h:mm a')
-                          : '—'}
-                    </p>
-                  </Section>
-                </div>
+          {/* LEFT — Details */}
+          <div className="flex flex-col overflow-y-auto px-6 py-5" style={{ width: '42%', borderRight: '1px solid rgba(247,177,189,0.25)', flexShrink: 0 }}>
+            {/* Status */}
+            <div className="mb-5">
+              <label className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: '#c48a96' }}>Update Status</label>
+              <div className="flex gap-2">
+                <select
+                  value={status}
+                  onChange={e => setStatus(e.target.value)}
+                  className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-200 bg-white"
+                >
+                  {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
+                  style={{ background: 'linear-gradient(135deg, #f1889b, #e86c84)' }}
+                >
+                  {saving ? '...' : 'Save'}
+                </button>
               </div>
             </div>
-          ) : (
-            <div className="flex-1 min-h-0 flex flex-col">
-              <EmailCommsPanel request={request} onUpdate={onUpdate} />
-            </div>
-          )}
-        </div>
 
-        {/* ── Footer ── */}
-        <div className="flex-shrink-0 px-6 py-3 flex gap-2" style={{borderTop: '1px solid rgba(247,177,189,0.25)'}}>
-          <button onClick={() => setActiveTab('email')}
-            className="flex-1 flex items-center justify-center gap-2 border hover:border-pink-200 text-gray-600 hover:text-pink-500 py-2 rounded-xl text-sm font-medium transition-colors"
-            style={{borderColor: 'rgba(220,200,205,0.7)'}}>
-            <Mail className="w-4 h-4" /> Email Client
-          </button>
-          {request.phone && (
-            <button onClick={() => window.open(`tel:${request.phone}`)}
-              className="flex-1 flex items-center justify-center gap-2 border hover:border-blue-200 text-gray-600 hover:text-blue-500 py-2 rounded-xl text-sm font-medium transition-colors"
-              style={{borderColor: 'rgba(220,200,205,0.7)'}}>
-              <Phone className="w-4 h-4" /> Call Client
-            </button>
-          )}
-          <button onClick={handleDelete} disabled={deleting}
-            className="flex items-center justify-center gap-1 border border-red-100 text-red-400 hover:bg-red-50 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60">
-            <Trash2 className="w-4 h-4" />
-          </button>
+            {/* Contact */}
+            <Section title="Contact">
+              <InfoRow icon={<Mail className="w-3.5 h-3.5 text-gray-400" />} value={request.email} />
+              {request.phone && <InfoRow icon={<Phone className="w-3.5 h-3.5 text-gray-400" />} value={request.phone} />}
+            </Section>
+
+            {/* Event Details */}
+            <div className="mt-4">
+              <Section title="Event Details">
+                <DetailRow label="Event Date" value={request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'} />
+                {request.preferred_times && <DetailRow label="Preferred Time(s)" value={request.preferred_times} />}
+                <DetailRow label="Number of Guests" value={request.number_of_guests ? `${request.number_of_guests} guests` : '—'} />
+                {request.time_slot && <DetailRow label="Time Slot" value={request.time_slot} />}
+                {request.duration && <DetailRow label="Duration" value={request.duration} />}
+              </Section>
+            </div>
+
+            {/* Classes */}
+            {request.selected_classes?.length > 0 && (
+              <div className="mt-4">
+                <Section title="Selected Classes">
+                  <ul className="space-y-1">
+                    {request.selected_classes.map(c => <li key={c} className="text-sm text-gray-700">• {c}</li>)}
+                  </ul>
+                </Section>
+              </div>
+            )}
+
+            {/* Add-Ons */}
+            <div className="mt-4">
+              <Section title="Add-Ons">
+                {request.add_ons?.length > 0 ? (
+                  <ul className="space-y-1">
+                    {request.add_ons.map(a => <li key={a} className="text-sm text-gray-700">• {a}</li>)}
+                  </ul>
+                ) : <p className="text-sm text-gray-300 italic">None selected</p>}
+              </Section>
+            </div>
+
+            {/* Budget & Notes */}
+            <div className="mt-4">
+              <Section title="Budget & Notes">
+                {request.budget && <DetailRow label="Budget" value={request.budget} />}
+                {request.notes && <p className="text-sm text-gray-600 mt-1">{request.notes}</p>}
+                <p className="text-xs text-gray-300 mt-3">
+                  Submitted{' '}
+                  {request.submitted_date
+                    ? format(new Date(request.submitted_date), "MMM d, yyyy 'at' h:mm a")
+                    : request.created_date
+                      ? format(new Date(request.created_date), "MMM d, yyyy 'at' h:mm a")
+                      : '—'}
+                </p>
+              </Section>
+            </div>
+
+            {/* Footer actions */}
+            <div className="mt-auto pt-5 flex gap-2">
+              {request.phone && (
+                <button
+                  onClick={() => window.open(`tel:${request.phone}`)}
+                  className="flex-1 flex items-center justify-center gap-2 border py-2 rounded-xl text-sm font-medium transition-colors text-gray-600 hover:text-blue-500 hover:border-blue-200"
+                  style={{ borderColor: 'rgba(220,200,205,0.7)' }}
+                >
+                  <Phone className="w-4 h-4" /> Call
+                </button>
+              )}
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center justify-center gap-1 border border-red-100 text-red-400 hover:bg-red-50 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT — Email comms */}
+          <div className="flex-1 flex flex-col min-h-0 min-w-0">
+            <EmailCommsPanel request={request} onUpdate={onUpdate} />
+          </div>
         </div>
       </div>
     </div>
@@ -182,7 +168,7 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
 function Section({ title, children }) {
   return (
     <div>
-      <h3 className="text-xs font-semibold uppercase tracking-wide mb-2 flex items-center gap-1" style={{color: '#c48a96'}}>
+      <h3 className="text-xs font-semibold uppercase tracking-wide mb-2 flex items-center gap-1" style={{ color: '#c48a96' }}>
         <span className="w-3 h-0.5 bg-pink-200 rounded-full inline-block"></span>
         {title}
       </h3>
