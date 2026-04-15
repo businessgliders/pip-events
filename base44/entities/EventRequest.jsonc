@@ -1,0 +1,113 @@
+{
+  "name": "EventRequest",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "Birthday",
+        "Bridal Shower",
+        "Bachelorette Party",
+        "Corporate Wellness Event",
+        "Private Class",
+        "Other"
+      ]
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "additional_dates": {
+      "type": "string"
+    },
+    "preferred_times": {
+      "type": "string"
+    },
+    "number_of_guests": {
+      "type": "number"
+    },
+    "time_slot": {
+      "type": "string",
+      "enum": [
+        "Peak Hours (Fri-Sun, 10AM-6PM)",
+        "Non-Peak Hours (Mon-Thu, 12:30-3:30PM)"
+      ]
+    },
+    "duration": {
+      "type": "string",
+      "enum": [
+        "2 Hours",
+        "3 Hours",
+        "4 Hours"
+      ]
+    },
+    "selected_classes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "add_ons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "budget": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Confirmed",
+        "Completed",
+        "Cancelled"
+      ],
+      "default": "Pending"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Original submission date from the client's form or CSV"
+    },
+    "email_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sent_at": {
+            "type": "string"
+          },
+          "template_name": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "full_name",
+    "email",
+    "event_type",
+    "event_date"
+  ]
+}
