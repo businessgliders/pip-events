@@ -12,13 +12,20 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
+  // Log full payload for debugging
+  console.log('Inbound payload:', JSON.stringify(payload));
+
   // Resend inbound webhook payload shape:
   // { type: "email.received", data: { from, to, subject, html, text, headers, ... } }
   const data = payload?.data || payload;
 
   const fromRaw = data?.from || '';
   const subject = data?.subject || '(no subject)';
-  const bodyHtml = data?.html || data?.text || '';
+  // Resend may send html or text body
+  const textFallback = data?.text ? '<pre style="white-space:pre-wrap;font-family:sans-serif;">' + data.text + '</pre>' : '';
+  const bodyHtml = data?.html || textFallback || '';
+
+  console.log('Parsed - from:', fromRaw, 'subject:', subject, 'bodyHtml length:', bodyHtml.length);
 
   // Extract sender email address from "Name <email>" format
   const emailMatch = fromRaw.match(/<(.+?)>/) || [null, fromRaw];

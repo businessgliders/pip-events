@@ -158,7 +158,8 @@ export default function EmailCommsPanel({ request, onUpdate }) {
             return (
             <div key={i} className={`flex ${isInitial || isInbound ? 'justify-start' : 'justify-end'}`}>
               <div
-                className="max-w-[85%] rounded-2xl px-4 py-3"
+                className="max-w-[85%] rounded-2xl px-4 py-3 group relative cursor-pointer"
+                onClick={() => setPreviewLog(log)}
                 style={isInbound ? {
                   background: 'rgba(122,107,143,0.08)',
                   border: '1px solid rgba(122,107,143,0.2)',
@@ -180,13 +181,10 @@ export default function EmailCommsPanel({ request, onUpdate }) {
                   </div>
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-xs font-semibold mb-1" style={{color: '#7a4a3a'}}>{log.subject}</p>
-                    <button
-                      onClick={() => setPreviewLog(log)}
-                      className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full flex-shrink-0 transition-all hover:opacity-80"
-                      style={{background: 'rgba(241,136,155,0.12)', color: '#e86c84', border: '1px solid rgba(241,136,155,0.25)'}}
-                    >
+                    <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{background: 'rgba(241,136,155,0.12)', color: '#e86c84', border: '1px solid rgba(241,136,155,0.25)'}}>
                       <Eye className="w-3 h-3" /> View
-                    </button>
+                    </span>
                   </div>
                   {log.body_html ? (
                     <div
