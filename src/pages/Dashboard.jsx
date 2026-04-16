@@ -229,30 +229,13 @@ export default function Dashboard() {
                 <Plus className="w-4 h-4" /> New Request
               </button>
             )}
-            {/* Tab toggle */}
-            <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)', background: 'rgba(255,255,255,0.7)'}}>
-              <button
-                onClick={() => setDashTab('requests')}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
-                style={{
-                  background: dashTab === 'requests' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'transparent',
-                  color: dashTab === 'requests' ? 'white' : '#b67651',
-                }}
-              >
-                <ClipboardList className="w-4 h-4" /> Requests
-              </button>
-              <button
-                onClick={() => setDashTab('settings')}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all"
-                style={{
-                  background: dashTab === 'settings' ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'transparent',
-                  color: dashTab === 'settings' ? 'white' : '#b67651',
-                  borderLeft: '1px solid rgba(220,200,205,0.6)',
-                }}
-              >
-                <Settings className="w-4 h-4" /> Settings
-              </button>
-            </div>
+            <button
+              onClick={() => setDashTab(dashTab === 'requests' ? 'settings' : 'requests')}
+              className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+              style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+            >
+              <Settings className="w-4 h-4" /> Settings
+            </button>
           </div>
         </div>
 
