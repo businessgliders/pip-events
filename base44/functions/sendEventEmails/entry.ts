@@ -1,21 +1,29 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
-const FROM_EMAIL = 'Pilates in Pink™ Studio <events@pilatesinpink.ca>';
-const FROM_EMAIL_NOREPLY = 'Pilates in Pink™ Studio <no-reply@pilatesinpink.ca>';
-const OWNER_FROM_EMAIL = 'PiP Events App <events@pilatesinpink.ca>';
 
-async function sendEmail({ to, subject, html, from, reply_to }) {
-  const payload = { from: from || FROM_EMAIL, to, subject, html };
-  if (reply_to) payload.reply_to = reply_to;
-  const res = await fetch('https://api.resend.com/emails', {
+function buildRaw({ to, subject, html, replyTo }) {
+  const lines = [
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    `Content-Type: text/html; charset=utf-8`,
+    `MIME-Version: 1.0`,
+  ];
+  if (replyTo) lines.push(`Reply-To: ${replyTo}`);
+  lines.push('', html);
+  return btoa(unescape(encodeURIComponent(lines.join('\r\n'))))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function sendGmail(accessToken, { to, subject, html, replyTo }) {
+  const raw = buildRaw({ to, subject, html, replyTo });
+  const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${RESEND_API_KEY}`,
+      'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ raw }),
   });
   return res.json();
 }
@@ -23,6 +31,8 @@ async function sendEmail({ to, subject, html, from, reply_to }) {
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
   const { form } = await req.json();
+
+  const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
   const guestNote = form.number_of_guests > 9
     ? `<p style="margin:4px 0;font-size:12px;color:#e86c84;">⚠️ Group larger than 9 — multiple sessions may be needed</p>`
@@ -146,7 +156,6 @@ Deno.serve(async (req) => {
         <!-- Body -->
         <tr><td style="background:rgba(255,255,255,0.97);padding:32px;">
 
-          <!-- Alert banner -->
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff3cd;border-radius:12px;border:1px solid #ffc107;margin-bottom:24px;">
             <tr><td style="padding:14px 20px;">
               <p style="margin:0;font-size:14px;color:#856404;">
@@ -155,7 +164,6 @@ Deno.serve(async (req) => {
             </td></tr>
           </table>
 
-          <!-- Contact Info -->
           <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#b67651;text-transform:uppercase;letter-spacing:1px;">👤 Contact Information</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf2f7;border-radius:14px;border:1px solid #f7b1bd;margin-bottom:20px;">
             <tr><td style="padding:20px 24px;">
@@ -167,7 +175,6 @@ Deno.serve(async (req) => {
             </td></tr>
           </table>
 
-          <!-- Event Details -->
           <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#b67651;text-transform:uppercase;letter-spacing:1px;">📅 Event Details</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf2f7;border-radius:14px;border:1px solid #f7b1bd;margin-bottom:20px;">
             <tr><td style="padding:20px 24px;">
@@ -184,7 +191,6 @@ Deno.serve(async (req) => {
           </table>
 
           ${form.selected_classes?.length ? `
-          <!-- Classes -->
           <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#b67651;text-transform:uppercase;letter-spacing:1px;">🧘 Selected Classes</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf2f7;border-radius:14px;border:1px solid #f7b1bd;margin-bottom:20px;">
             <tr><td style="padding:16px 24px;">
@@ -193,7 +199,6 @@ Deno.serve(async (req) => {
           </table>` : ''}
 
           ${form.add_ons?.length ? `
-          <!-- Add-Ons -->
           <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#b67651;text-transform:uppercase;letter-spacing:1px;">✨ Add-Ons Requested</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf2f7;border-radius:14px;border:1px solid #f7b1bd;margin-bottom:20px;">
             <tr><td style="padding:16px 24px;">
@@ -202,7 +207,6 @@ Deno.serve(async (req) => {
           </table>` : ''}
 
           ${form.budget || form.notes ? `
-          <!-- Budget & Notes -->
           <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#b67651;text-transform:uppercase;letter-spacing:1px;">💬 Budget & Notes</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf2f7;border-radius:14px;border:1px solid #f7b1bd;margin-bottom:24px;">
             <tr><td style="padding:20px 24px;">
@@ -211,12 +215,11 @@ Deno.serve(async (req) => {
             </td></tr>
           </table>` : ''}
 
-          <!-- CTA -->
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td align="center" style="padding:8px;">
                 <a href="mailto:${form.email}?subject=Re: Your ${form.event_type} Request at Pilates in Pink Studio"
-                  style="display:inline-block;background:linear-gradient(135deg,#f1889b,#e86c84);color:white;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;margin-right:8px;">
+                  style="display:inline-block;background:linear-gradient(135deg,#f1889b,#e86c84);color:white;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;">
                   ✉️ Reply to ${form.full_name}
                 </a>
               </td>
@@ -239,39 +242,33 @@ Deno.serve(async (req) => {
   const confirmationSubject = `Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
 
   const [submitterResult, ownerResult] = await Promise.all([
-    sendEmail({
+    sendGmail(accessToken, {
       to: form.email,
       subject: confirmationSubject,
       html: submitterHtml,
-      from: FROM_EMAIL_NOREPLY,
-      reply_to: OWNER_EMAIL,
+      replyTo: OWNER_EMAIL,
     }),
-    sendEmail({
+    sendGmail(accessToken, {
       to: OWNER_EMAIL,
       subject: `🎉 New Event Request: ${form.event_type} — ${form.full_name} (${form.event_date})`,
       html: ownerHtml,
-      from: OWNER_FROM_EMAIL,
     }),
   ]);
 
   // Log the initial confirmation email on the EventRequest record
-  try {
-    const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date });
-    if (records && records.length > 0) {
-      const record = records[0];
-      const existingLog = record.email_log || [];
-      await base44.asServiceRole.entities.EventRequest.update(record.id, {
-        email_log: [...existingLog, {
-          sent_at: new Date().toISOString(),
-          direction: 'initial',
-          template_name: 'Auto-Confirmation',
-          subject: confirmationSubject,
-          body_html: submitterHtml,
-        }]
-      });
-    }
-  } catch (e) {
-    console.error('Could not log initial email:', e.message);
+  const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date });
+  if (records && records.length > 0) {
+    const record = records[0];
+    const existingLog = record.email_log || [];
+    await base44.asServiceRole.entities.EventRequest.update(record.id, {
+      email_log: [...existingLog, {
+        sent_at: new Date().toISOString(),
+        direction: 'initial',
+        template_name: 'Auto-Confirmation',
+        subject: confirmationSubject,
+        body_html: submitterHtml,
+      }]
+    });
   }
 
   return Response.json({ success: true, submitterResult, ownerResult });
