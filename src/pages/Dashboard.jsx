@@ -209,39 +209,40 @@ export default function Dashboard() {
 
         {/* Page Header */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:gap-4 gap-3">
-            <div className="inline-block rounded-2xl px-4 sm:px-6 py-3 sm:py-4" style={{
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:gap-4 gap-2">
+            <div className="flex items-center gap-3 flex-1 sm:flex-none rounded-2xl px-4 sm:px-6 py-3 sm:py-4" style={{
               background: 'rgba(255,255,255,0.7)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
               border: '1px solid rgba(255,255,255,0.6)',
               boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
             }}>
-              <h1 className="text-xl sm:text-2xl font-bold" style={{color: '#b67651'}}>Events Dashboard</h1>
-              <p className="text-xs sm:text-sm mt-0.5" style={{color: '#c48a96'}}>Manage event bookings and settings</p>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3 self-start">
-              {dashTab === 'requests' && (
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg sm:text-2xl font-bold leading-tight" style={{color: '#b67651'}}>Events Dashboard</h1>
+                <p className="text-xs sm:text-sm mt-0.5" style={{color: '#c48a96'}}>Manage bookings</p>
+              </div>
+              <div className="flex items-center gap-1.5 sm:hidden flex-shrink-0">
+                {dashTab === 'requests' && (
+                  <button
+                    onClick={() => { window.location.href = '/RequestForm'; }}
+                    className="p-2 text-white rounded-lg transition-all"
+                    style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
+                    title="New Request"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                )}
                 <button
-                  onClick={() => { window.location.href = '/RequestForm'; }}
-                  className="flex sm:flex-none items-center gap-2 text-white px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
-                  style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
-                  title="New Request"
+                  onClick={() => setDashTab(dashTab === 'requests' ? 'settings' : 'requests')}
+                  className="p-2 text-white rounded-lg transition-all"
+                  style={{background: 'linear-gradient(135deg, #7a6b8f, #6b5b80)'}}
+                  title="Settings"
                 >
-                  <Plus className="w-4 h-4" /> 
-                  <span className="hidden sm:inline">New Request</span>
+                  <Settings className="w-4 h-4" />
                 </button>
-              )}
-              <button
-                onClick={() => setDashTab(dashTab === 'requests' ? 'settings' : 'requests')}
-                className="flex sm:flex-none items-center gap-2 text-white px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
-                style={{background: 'linear-gradient(135deg, #7a6b8f, #6b5b80)', boxShadow: '0 4px 16px rgba(122,107,143,0.35)'}}
-                title="Settings"
-              >
-                <Settings className="w-4 h-4" />
-                <span className="hidden sm:inline">Settings</span>
-              </button>
+              </div>
             </div>
+            <div className="hidden sm:flex items-center gap-2 sm:gap-3 self-start">
           </div>
         </div>
 
@@ -347,7 +348,7 @@ export default function Dashboard() {
               onSave={setVisibleCols}
             />
             {/* Desktop view toggle */}
-            <div className="flex rounded-xl overflow-hidden ml-auto" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
+            <div className="hidden sm:flex rounded-xl overflow-hidden ml-auto" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
               {[
                 { mode: 'list', Icon: LayoutList, title: 'List' },
                 { mode: 'table', Icon: Table2, title: 'Table' },
@@ -392,28 +393,7 @@ export default function Dashboard() {
                 {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
-            {/* Mobile view toggle - full width */}
-            <div className="flex gap-2 w-full">
-              {[
-                { mode: 'list', Icon: LayoutList, title: 'List' },
-                { mode: 'table', Icon: Table2, title: 'Table' },
-                { mode: 'calendar', Icon: Calendar, title: 'Calendar' },
-              ].map(({ mode, Icon, title }) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  title={title}
-                  className="flex-1 flex items-center justify-center py-2 rounded-lg transition-all"
-                  style={{
-                    background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
-                    color: viewMode === mode ? 'white' : '#b67651',
-                    border: viewMode === mode ? 'none' : '1px solid rgba(220,200,205,0.6)',
-                  }}
-                >
-                  <Icon className="w-4 h-4" />
-                </button>
-              ))}
-            </div>
+  
           </div>
         </div>
 
