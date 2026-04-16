@@ -26,13 +26,13 @@ function relativeLabel(dateKey) {
   if (diff === 1) return 'Tomorrow';
   const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 });
   const thisWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
-  if (d >= thisWeekStart && d <= thisWeekEnd) return 'This week · ' + format(d, 'EEEE, MMM d');
+  if (d >= thisWeekStart && d <= thisWeekEnd) return format(d, 'EEEE, MMM d');
   const lastWeekStart = new Date(thisWeekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
   const lastWeekEnd = new Date(thisWeekEnd); lastWeekEnd.setDate(lastWeekEnd.getDate() - 7);
-  if (d >= lastWeekStart && d <= lastWeekEnd) return 'Last week · ' + format(d, 'EEEE, MMM d');
+  if (d >= lastWeekStart && d <= lastWeekEnd) return format(d, 'EEEE, MMM d');
   const nextWeekStart = new Date(thisWeekStart); nextWeekStart.setDate(nextWeekStart.getDate() + 7);
   const nextWeekEnd = new Date(thisWeekEnd); nextWeekEnd.setDate(nextWeekEnd.getDate() + 7);
-  if (d >= nextWeekStart && d <= nextWeekEnd) return 'Next week · ' + format(d, 'EEEE, MMM d');
+  if (d >= nextWeekStart && d <= nextWeekEnd) return format(d, 'EEEE, MMM d');
   return format(d, 'EEEE, MMMM d, yyyy');
 }
 
@@ -62,7 +62,7 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
             <div className="flex items-center gap-3 mb-3">
               <div className="rounded-xl px-3 py-1.5 text-xs font-bold uppercase tracking-wide"
                 style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)', color: '#b67651'}}>
-                {groupBySubmitted ? 'Submitted' : 'Event Date'}: {dateLabel}
+                {dateLabel}
               </div>
               <div className="flex-1 h-px" style={{background: 'rgba(247,177,189,0.4)'}} />
               <span className="text-xs font-medium" style={{color: '#c48a96'}}>{items.length} request{items.length !== 1 ? 's' : ''}</span>
@@ -102,15 +102,31 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
                       </span>
                     </div>
 
-                    {/* Detail chips - simplified for mobile */}
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 pl-11 text-xs" style={{color: '#9a7878'}}>
-                      {r.email && <span className="truncate">{r.email}</span>}
+                    {/* Detail chips - show booking data */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 pl-11 text-xs" style={{color: '#9a7878'}}>
                       {r.event_date && (
-                        <span className="font-medium" style={{color: '#b67651'}}>
-                          {format(new Date(r.event_date + 'T12:00:00'), 'MMM d')}
+                        <span className="font-medium flex items-center gap-1" style={{color: '#b67651'}}>
+                          <Clock className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
+                          {format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy')}
                         </span>
                       )}
-                      {r.number_of_guests && <span>{r.number_of_guests} guests</span>}
+                      {r.duration && (
+                        <span className="flex items-center gap-1">
+                          <span style={{color: '#c48a96'}}>•</span>
+                          {r.duration}
+                        </span>
+                      )}
+                      {r.number_of_guests && (
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
+                          {r.number_of_guests} guests
+                        </span>
+                      )}
+                      {r.time_slot && (
+                        <span className="text-xs" style={{color: '#c48a96'}}>
+                          {r.time_slot.includes('Non') ? 'Non-Peak' : 'Peak'}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );

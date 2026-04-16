@@ -203,7 +203,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(to bottom, #fce4ec 0%, #d4839a 100%)'}}>
+    <div className="min-h-screen" style={{background: 'linear-gradient(to bottom, #fce4ec 0%, #e8a4b5 100%)'}}>
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 py-10">
 
@@ -224,18 +224,22 @@ export default function Dashboard() {
               {dashTab === 'requests' && (
                 <button
                   onClick={() => { window.location.href = '/RequestForm'; }}
-                  className="flex items-center gap-2 text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+                  className="flex sm:flex-none items-center gap-2 text-white px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
                   style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+                  title="New Request"
                 >
-                  <Plus className="w-4 h-4" /> New Request
+                  <Plus className="w-4 h-4" /> 
+                  <span className="hidden sm:inline">New Request</span>
                 </button>
               )}
               <button
                 onClick={() => setDashTab(dashTab === 'requests' ? 'settings' : 'requests')}
-                className="flex items-center gap-2 text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+                className="flex sm:flex-none items-center gap-2 text-white px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
                 style={{background: 'linear-gradient(135deg, #7a6b8f, #6b5b80)', boxShadow: '0 4px 16px rgba(122,107,143,0.35)'}}
+                title="Settings"
               >
-                <Settings className="w-4 h-4" /> Settings
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Settings</span>
               </button>
             </div>
           </div>
@@ -261,7 +265,7 @@ export default function Dashboard() {
         {dashTab === 'requests' && <>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        <div className="hidden sm:grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {[
             { label: 'Pending', value: stats.pending, Icon: Clock, key: 'pending' },
             { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2, key: 'confirmed' },
