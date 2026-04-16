@@ -243,6 +243,25 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="hidden sm:flex items-center gap-2 sm:gap-3 self-start">
+              {dashTab === 'requests' && (
+                <button
+                  onClick={() => { window.location.href = '/RequestForm'; }}
+                  className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                  style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+                  title="New Request"
+                >
+                  <Plus className="w-4 h-4" /> New Request
+                </button>
+              )}
+              <button
+                onClick={() => setDashTab(dashTab === 'requests' ? 'settings' : 'requests')}
+                className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                style={{background: 'linear-gradient(135deg, #7a6b8f, #6b5b80)', boxShadow: '0 4px 16px rgba(122,107,143,0.35)'}}
+                title="Settings"
+              >
+                <Settings className="w-4 h-4" /> Settings
+              </button>
+            </div>
           </div>
         </div>
 
