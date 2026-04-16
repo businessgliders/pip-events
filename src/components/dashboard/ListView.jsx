@@ -1,5 +1,5 @@
 import { format, differenceInCalendarDays, startOfWeek, endOfWeek, startOfDay } from 'date-fns';
-import { Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronDown } from 'lucide-react';
+import { Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronDown, Mail, Phone, Users, Clock } from 'lucide-react';
 
 const EVENT_TYPE_ICONS = {
   'Birthday': Cake,
@@ -77,44 +77,64 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
                   <div
                     key={r.id}
                     onClick={() => onSelect(r)}
-                    className="flex items-center gap-4 px-5 py-4 rounded-2xl cursor-pointer transition-all hover:shadow-md"
+                    className="px-5 py-4 rounded-2xl cursor-pointer transition-all hover:shadow-md"
                     style={{
                       background: 'rgba(255,255,255,0.75)',
                       backdropFilter: 'blur(12px)',
                       WebkitBackdropFilter: 'blur(12px)',
                       border: '1px solid rgba(255,255,255,0.65)',
-                      boxShadow: '0 2px 12px rgba(241,136,155,0.08)',
+                      boxShadow: '0 2px 12px rgba(180,80,100,0.1)',
                     }}
                   >
-                    {/* Icon */}
-                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0"
-                      style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
-                      <Icon className="w-4 h-4" style={{color: '#e86c84'}} />
-                    </span>
-
-                    {/* Name & type */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold truncate" style={{color: '#6b4e4e'}}>{r.full_name}</p>
-                      <p className="text-xs truncate" style={{color: '#c48a96'}}>{r.event_type} · {r.email}</p>
+                    {/* Top row */}
+                    <div className="flex items-center gap-3 mb-2.5">
+                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0"
+                        style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                        <Icon className="w-4 h-4" style={{color: '#e86c84'}} />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold truncate" style={{color: '#6b4e4e'}}>{r.full_name}</p>
+                        <p className="text-xs truncate" style={{color: '#c48a96'}}>{r.event_type}</p>
+                      </div>
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
+                        style={{background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`}}>
+                        {r.status}
+                      </span>
                     </div>
 
-                    {/* Guests */}
-                    {r.number_of_guests && (
-                      <span className="text-xs hidden sm:block flex-shrink-0" style={{color: '#a07878'}}>
-                        {r.number_of_guests} guests
-                      </span>
-                    )}
-
-                    {/* Event date */}
-                    <span className="text-xs hidden md:block flex-shrink-0 font-medium" style={{color: '#b67651'}}>
-                      {r.event_date ? format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}
-                    </span>
-
-                    {/* Status badge */}
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-center"
-                      style={{background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`, width: '82px'}}>
-                      {r.status}
-                    </span>
+                    {/* Detail chips */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 pl-12">
+                      {r.email && (
+                        <span className="flex items-center gap-1 text-xs" style={{color: '#a07878'}}>
+                          <Mail className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
+                          {r.email}
+                        </span>
+                      )}
+                      {r.phone && (
+                        <span className="flex items-center gap-1 text-xs" style={{color: '#a07878'}}>
+                          <Phone className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
+                          {r.phone}
+                        </span>
+                      )}
+                      {r.number_of_guests && (
+                        <span className="flex items-center gap-1 text-xs" style={{color: '#a07878'}}>
+                          <Users className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
+                          {r.number_of_guests} guests
+                        </span>
+                      )}
+                      {r.event_date && (
+                        <span className="flex items-center gap-1 text-xs font-medium" style={{color: '#b67651'}}>
+                          <Clock className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
+                          {format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy')}
+                          {r.duration ? ` · ${r.duration}` : ''}
+                        </span>
+                      )}
+                      {r.time_slot && (
+                        <span className="text-xs" style={{color: '#c48a96'}}>
+                          {r.time_slot.includes('Peak') ? (r.time_slot.includes('Non') ? 'Non-Peak' : 'Peak Hours') : r.time_slot}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}

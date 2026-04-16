@@ -203,7 +203,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #f5c6d3 0%, #f9e8ed 50%, #f5c6d3 100%)'}}>
+    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #d4839a 0%, #e8a0b0 40%, #d4839a 100%)'}}>
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 py-10">
 
@@ -220,6 +220,15 @@ export default function Dashboard() {
             <p className="text-sm mt-0.5" style={{color: '#c48a96'}}>Manage event bookings and settings</p>
           </div>
           <div className="flex items-center gap-3 self-start">
+            {dashTab === 'requests' && (
+              <button
+                onClick={() => { window.location.href = '/RequestForm'; }}
+                className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+              >
+                <Plus className="w-4 h-4" /> New Request
+              </button>
+            )}
             {/* Tab toggle */}
             <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)', background: 'rgba(255,255,255,0.7)'}}>
               <button
@@ -244,15 +253,6 @@ export default function Dashboard() {
                 <Settings className="w-4 h-4" /> Settings
               </button>
             </div>
-            {dashTab === 'requests' && (
-              <button
-                onClick={() => { window.location.href = '/RequestForm'; }}
-                className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
-              >
-                <Plus className="w-4 h-4" /> New Request
-              </button>
-            )}
           </div>
         </div>
 
@@ -263,15 +263,13 @@ export default function Dashboard() {
         {dashTab === 'requests' && <>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           {[
-            { label: 'Total Requests', value: stats.total, Icon: ClipboardList, key: 'total' },
             { label: 'Pending', value: stats.pending, Icon: Clock, key: 'pending' },
             { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2, key: 'confirmed' },
             { label: 'Completed', value: stats.completed, Icon: CalendarDays, key: 'completed' },
           ].map(s => {
             const isActive =
-              (s.key === 'total' && !filterStatus) ||
               (s.key === 'pending' && filterStatus === 'Pending') ||
               (s.key === 'confirmed' && filterStatus === 'Confirmed') ||
               (s.key === 'completed' && filterStatus === 'Completed');
@@ -281,11 +279,11 @@ export default function Dashboard() {
                 onClick={() => handleTileClick(s.key)}
                 className="rounded-2xl p-5 text-left transition-all"
                 style={{
-                  background: isActive ? 'linear-gradient(135deg, rgba(241,136,155,0.18), rgba(232,108,132,0.12))' : 'rgba(255,255,255,0.6)',
+                  background: isActive ? 'linear-gradient(135deg, rgba(241,136,155,0.25), rgba(232,108,132,0.18))' : 'rgba(255,255,255,0.65)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
-                  border: isActive ? '1.5px solid rgba(241,136,155,0.5)' : '1px solid rgba(255,255,255,0.65)',
-                  boxShadow: isActive ? '0 8px 32px rgba(241,136,155,0.2)' : '0 8px 32px rgba(241,136,155,0.1)',
+                  border: isActive ? '1.5px solid rgba(241,136,155,0.6)' : '1px solid rgba(255,255,255,0.7)',
+                  boxShadow: isActive ? '0 8px 32px rgba(241,136,155,0.25)' : '0 8px 32px rgba(180,80,100,0.12)',
                   cursor: 'pointer',
                 }}
               >
