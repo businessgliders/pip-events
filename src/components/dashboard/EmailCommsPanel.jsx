@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Send, ChevronDown, Eye, X } from 'lucide-react';
+import { Send, ChevronDown, Eye, X, Paperclip } from 'lucide-react';
 import { format } from 'date-fns';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -66,6 +66,8 @@ export default function EmailCommsPanel({ request, onUpdate }) {
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [previewLog, setPreviewLog] = useState(null);
+  const [attachments, setAttachments] = useState([]);
+  const fileInputRef = useRef(null);
   const bottomRef = useRef(null);
 
   const { data: templates = [] } = useQuery({
@@ -97,6 +99,28 @@ export default function EmailCommsPanel({ request, onUpdate }) {
     return `<div style="margin-top:24px;padding-top:16px;border-top:1px solid #f7b1bd;">${signature}</div>`;
   };
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const base64Data = ev.target.result.split(',')[1];
+        setAttachments(prev => [...prev, {
+          filename: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          base64Data,
+          size: file.size,
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  };
+
+  const removeAttachment = (idx) => {
+    setAttachments(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const handleLoadTemplate = (t) => {
     setSelectedTemplate(t);
     setSubject(interpolate(t.subject, request));
@@ -120,18 +144,21 @@ export default function EmailCommsPanel({ request, onUpdate }) {
       subject,
       html: fullHtml,
       requestId: request.id,
+      attachments: attachments.map(a => ({ filename: a.filename, mimeType: a.mimeType, base64Data: a.base64Data })),
       logEntry: {
         sent_at: new Date().toISOString(),
         direction: 'outbound',
         template_name: selectedTemplate?.name || 'Custom',
         subject,
         body_html: fullHtml,
+        attachments: attachments.map(a => ({ filename: a.filename, size: a.size })),
       },
     });
 
     setSubject(defaultSubject);
     setBody('');
     setSelectedTemplate(null);
+    setAttachments([]);
     setSending(false);
     onUpdate();
   };
@@ -281,8 +308,36 @@ export default function EmailCommsPanel({ request, onUpdate }) {
             />
           </div>
 
+          {/* Attachments */}
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {attachments.map((att, idx) => (
+                <div key={idx} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                  style={{background: 'rgba(241,136,155,0.1)', border: '1px solid rgba(241,136,155,0.3)', color: '#e86c84'}}>
+                  <Paperclip className="w-3 h-3" />
+                  <span className="max-w-[120px] truncate">{att.filename}</span>
+                  <span style={{color: '#c4b0b5'}}>({(att.size / 1024).toFixed(0)}KB)</span>
+                  <button onClick={() => removeAttachment(idx)} className="ml-0.5 hover:text-red-400 transition-colors">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
-            <p className="text-xs" style={{color: '#d4b8bc'}}>Signature will be appended automatically</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs" style={{color: '#d4b8bc'}}>Signature auto-appended</p>
+              <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileChange} />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                title="Attach files"
+                className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full transition-all"
+                style={{background: 'rgba(220,200,205,0.2)', border: '1px solid rgba(220,200,205,0.5)', color: '#c48a96'}}
+              >
+                <Paperclip className="w-3 h-3" /> Attach
+              </button>
+            </div>
             <button
               onClick={handleSend}
               disabled={sending || !subject.trim() || !body.replace(/<[^>]*>/g, '').trim()}
