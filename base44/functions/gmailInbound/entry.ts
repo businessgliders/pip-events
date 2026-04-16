@@ -34,6 +34,12 @@ Deno.serve(async (req) => {
     const fromEmail = (from.match(/<(.+?)>/) || [null, from])[1]?.trim().toLowerCase();
     if (!fromEmail) continue;
 
+    // Skip if the sender is our own studio email
+    if (fromEmail === 'info@pilatesinpinkstudio.com') {
+      console.log(`Skipping outbound email sent by studio: ${fromEmail}`);
+      continue;
+    }
+
     // Find matching EventRequest by sender email
     const records = await base44.asServiceRole.entities.EventRequest.filter({ email: fromEmail });
     if (!records || records.length === 0) {
