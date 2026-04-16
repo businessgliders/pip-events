@@ -135,7 +135,7 @@ export default function Calendar() {
                   key={idx}
                   onClick={() => !isDisabled && setSelectedDay(day)}
                   className="flex flex-col items-center pt-1 pb-1 sm:pt-4 sm:pb-3 transition-all"
-                  style={{minHeight: days.length > 35 ? '50px' : '65px'}}
+                  style={{minHeight: '60px'}}
                   style={{
                     borderRight: '1px solid rgba(247,177,189,0.3)',
                     borderBottom: '1px solid rgba(247,177,189,0.3)',
