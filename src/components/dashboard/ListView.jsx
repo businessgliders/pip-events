@@ -87,8 +87,8 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
                     }}
                   >
                     {/* Top row */}
-                    <div className="flex items-center gap-3 mb-2.5">
-                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-full flex-shrink-0"
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-full flex-shrink-0"
                         style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
                         <Icon className="w-4 h-4" style={{color: '#e86c84'}} />
                       </span>
@@ -96,44 +96,21 @@ export default function ListView({ sortedDateKeys, groupedByDate, groupBySubmitt
                         <p className="text-sm font-bold truncate" style={{color: '#6b4e4e'}}>{r.full_name}</p>
                         <p className="text-xs truncate" style={{color: '#c48a96'}}>{r.event_type}</p>
                       </div>
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
+                      <span className="text-xs font-semibold px-2 py-1 rounded-full flex-shrink-0 whitespace-nowrap"
                         style={{background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`}}>
                         {r.status}
                       </span>
                     </div>
 
-                    {/* Detail chips */}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 pl-12">
-                      {r.email && (
-                        <span className="flex items-center gap-1 text-xs" style={{color: '#a07878'}}>
-                          <Mail className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
-                          {r.email}
-                        </span>
-                      )}
-                      {r.phone && (
-                        <span className="flex items-center gap-1 text-xs" style={{color: '#a07878'}}>
-                          <Phone className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
-                          {r.phone}
-                        </span>
-                      )}
-                      {r.number_of_guests && (
-                        <span className="flex items-center gap-1 text-xs" style={{color: '#a07878'}}>
-                          <Users className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
-                          {r.number_of_guests} guests
-                        </span>
-                      )}
+                    {/* Detail chips - simplified for mobile */}
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 pl-11 text-xs" style={{color: '#9a7878'}}>
+                      {r.email && <span className="truncate">{r.email}</span>}
                       {r.event_date && (
-                        <span className="flex items-center gap-1 text-xs font-medium" style={{color: '#b67651'}}>
-                          <Clock className="w-3 h-3 flex-shrink-0" style={{color: '#f1889b'}} />
-                          {format(new Date(r.event_date + 'T12:00:00'), 'MMM d, yyyy')}
-                          {r.duration ? ` · ${r.duration}` : ''}
+                        <span className="font-medium" style={{color: '#b67651'}}>
+                          {format(new Date(r.event_date + 'T12:00:00'), 'MMM d')}
                         </span>
                       )}
-                      {r.time_slot && (
-                        <span className="text-xs" style={{color: '#c48a96'}}>
-                          {r.time_slot.includes('Peak') ? (r.time_slot.includes('Non') ? 'Non-Peak' : 'Peak Hours') : r.time_slot}
-                        </span>
-                      )}
+                      {r.number_of_guests && <span>{r.number_of_guests} guests</span>}
                     </div>
                   </div>
                 );

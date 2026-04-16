@@ -275,7 +275,7 @@ export default function Dashboard() {
               <button
                 key={s.label}
                 onClick={() => handleTileClick(s.key)}
-                className="rounded-xl sm:rounded-2xl p-3 sm:p-5 text-left transition-all"
+                className="rounded-xl sm:rounded-2xl p-2.5 sm:p-5 text-left transition-all"
                 style={{
                   background: isActive ? 'linear-gradient(135deg, rgba(241,136,155,0.35), rgba(232,108,132,0.28))' : 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75))',
                   backdropFilter: 'blur(24px)',
@@ -286,12 +286,12 @@ export default function Dashboard() {
                 }}
               >
                 <div className="flex items-center justify-between mb-1 sm:mb-2">
-                  <p className="text-xs font-semibold uppercase tracking-widest" style={{color: isActive ? '#e86c84' : '#c48a96', fontSize: '10px'}}>{s.label}</p>
-                  <span className="inline-flex items-center justify-center w-6 sm:w-8 h-6 sm:h-8 rounded-full flex-shrink-0" style={{background: isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                  <p className="text-xs font-semibold uppercase tracking-widest hidden sm:block" style={{color: isActive ? '#e86c84' : '#c48a96', fontSize: '10px'}}>{s.label}</p>
+                  <span className="inline-flex items-center justify-center w-5 sm:w-8 h-5 sm:h-8 rounded-full flex-shrink-0 sm:ml-auto" style={{background: isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
                     <s.Icon className="w-3 sm:w-4 h-3 sm:h-4" style={{color: isActive ? 'white' : '#e86c84'}} />
                   </span>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold" style={{color: isActive ? '#e86c84' : '#b67651'}}>{s.value}</p>
+                <p className="text-xl sm:text-3xl font-bold" style={{color: isActive ? '#e86c84' : '#b67651'}}>{s.value}</p>
               </button>
             );
           })}
@@ -398,15 +398,15 @@ export default function Dashboard() {
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-medium transition-all"
+                  title={title}
+                  className="flex-1 flex items-center justify-center py-2 rounded-lg transition-all"
                   style={{
                     background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
                     color: viewMode === mode ? 'white' : '#b67651',
                     border: viewMode === mode ? 'none' : '1px solid rgba(220,200,205,0.6)',
                   }}
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span className="hidden">{title}</span>
+                  <Icon className="w-4 h-4" />
                 </button>
               ))}
             </div>
