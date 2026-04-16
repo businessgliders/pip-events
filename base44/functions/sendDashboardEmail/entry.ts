@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
       to,
       subject,
       html,
+      reply_to: 'reply@pilatesinpink.ca',
     }),
   });
 
