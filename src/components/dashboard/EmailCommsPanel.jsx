@@ -1,10 +1,53 @@
 import { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Send, ChevronDown, Paperclip, Bold, Italic, List, Smile } from 'lucide-react';
+import { Send, ChevronDown, Eye, X } from 'lucide-react';
 import { format } from 'date-fns';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+function EmailPreviewModal({ log, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)'}}
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl overflow-hidden"
+        style={{background: 'white', boxShadow: '0 24px 80px rgba(0,0,0,0.25)'}}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Modal header */}
+        <div className="flex items-center justify-between px-5 py-3 flex-shrink-0" style={{borderBottom: '1px solid rgba(247,177,189,0.4)', background: 'rgba(251,224,226,0.2)'}}>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{color: '#b67651'}}>Email Preview</p>
+            <p className="text-sm font-semibold mt-0.5" style={{color: '#6b4e4e'}}>{log.subject}</p>
+            <p className="text-xs mt-0.5" style={{color: '#c48a96'}}>
+              {log.direction === 'inbound' ? `From: ${log.from || 'Client'}` : `To: client`}
+              {log.sent_at ? ` · ${format(new Date(log.sent_at), 'MMM d, yyyy h:mm a')}` : ''}
+            </p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-xl hover:bg-pink-50 transition-colors" style={{color: '#c48a96'}}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        {/* Email body */}
+        <div className="flex-1 overflow-y-auto p-5">
+          {log.body_html ? (
+            <div
+              className="prose prose-sm max-w-none"
+              style={{fontFamily: "'Helvetica Neue', Arial, sans-serif", fontSize: '14px', lineHeight: '1.6', color: '#333'}}
+              dangerouslySetInnerHTML={{ __html: log.body_html }}
+            />
+          ) : (
+            <p className="text-sm" style={{color: '#9a7070'}}>No email body available.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const LOGO_URL = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png';
 
@@ -21,6 +64,7 @@ export default function EmailCommsPanel({ request, onUpdate }) {
   const [sending, setSending] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [previewLog, setPreviewLog] = useState(null);
   const bottomRef = useRef(null);
 
   const { data: templates = [] } = useQuery({
@@ -93,6 +137,7 @@ export default function EmailCommsPanel({ request, onUpdate }) {
 
   return (
     <div className="flex flex-col h-full">
+      {previewLog && <EmailPreviewModal log={previewLog} onClose={() => setPreviewLog(null)} />}
       {/* Header */}
       <div className="px-5 py-3 flex-shrink-0" style={{borderBottom: '1px solid rgba(247,177,189,0.3)', background: 'rgba(251,224,226,0.15)'}}>
         <p className="text-xs font-bold uppercase tracking-wide" style={{color: '#b67651'}}>Email Communications</p>
@@ -133,12 +178,21 @@ export default function EmailCommsPanel({ request, onUpdate }) {
                       {log.sent_at ? format(new Date(log.sent_at), 'MMM d, h:mm a') : ''}
                     </span>
                   </div>
-                  <p className="text-xs font-semibold mb-1" style={{color: '#7a4a3a'}}>{log.subject}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-xs font-semibold mb-1" style={{color: '#7a4a3a'}}>{log.subject}</p>
+                    <button
+                      onClick={() => setPreviewLog(log)}
+                      className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full flex-shrink-0 transition-all hover:opacity-80"
+                      style={{background: 'rgba(241,136,155,0.12)', color: '#e86c84', border: '1px solid rgba(241,136,155,0.25)'}}
+                    >
+                      <Eye className="w-3 h-3" /> View
+                    </button>
+                  </div>
                   {log.body_html ? (
                     <div
                       className="text-xs leading-relaxed email-preview"
-                      style={{color: '#9a7070', maxHeight: '120px', overflow: 'hidden', position: 'relative'}}
-                      dangerouslySetInnerHTML={{ __html: log.body_html.replace(/<[^>]*>/g, ' ').substring(0, 200) + '...' }}
+                      style={{color: '#9a7070', maxHeight: '60px', overflow: 'hidden'}}
+                      dangerouslySetInnerHTML={{ __html: log.body_html.replace(/<[^>]*>/g, ' ').substring(0, 150) + '...' }}
                     />
                   ) : (
                     <p className="text-xs" style={{color: '#9a7070'}}>
