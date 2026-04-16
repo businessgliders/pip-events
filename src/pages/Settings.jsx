@@ -140,10 +140,23 @@ export default function SettingsPage() {
       <Navbar />
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
 
-        {/* Header */}
-        <div className="inline-block rounded-2xl px-6 py-4" style={glassCard}>
-          <h1 className="text-2xl font-bold" style={{color: '#b67651'}}>Settings</h1>
-          <p className="text-sm mt-0.5" style={{color: '#c48a96'}}>Manage email templates and signature</p>
+        {/* Page Header */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:gap-4 gap-3">
+            <div className="inline-block rounded-2xl px-4 sm:px-6 py-3 sm:py-4" style={glassCard}>
+              <h1 className="text-xl sm:text-2xl font-bold" style={{color: '#b67651'}}>Settings</h1>
+              <p className="text-xs sm:text-sm mt-0.5" style={{color: '#c48a96'}}>Manage email templates and signature</p>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 self-start">
+              <button
+                onClick={() => { window.location.href = '/RequestForm'; }}
+                className="flex items-center gap-2 text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+                style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+              >
+                <Plus className="w-4 h-4" /> New Request
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* ── EMAIL SIGNATURE ── */}
