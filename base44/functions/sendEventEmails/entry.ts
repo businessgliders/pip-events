@@ -2,11 +2,15 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
 
+function encodeHeader(str) {
+  return `=?UTF-8?B?${btoa(unescape(encodeURIComponent(str)))}?=`;
+}
+
 function buildRaw({ to, subject, html, replyTo }) {
   const lines = [
-    `From: Events Pilates in Pink™ <info@pilatesinpinkstudio.com>`,
+    `From: ${encodeHeader('Events Pilates in Pink™')} <info@pilatesinpinkstudio.com>`,
     `To: ${to}`,
-    `Subject: ${subject}`,
+    `Subject: ${encodeHeader(subject)}`,
     `Content-Type: text/html; charset=utf-8`,
     `MIME-Version: 1.0`,
   ];

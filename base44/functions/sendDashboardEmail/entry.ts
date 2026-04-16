@@ -19,10 +19,12 @@ Deno.serve(async (req) => {
 
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
+  const encodeHeader = (str) => `=?UTF-8?B?${btoa(unescape(encodeURIComponent(str)))}?=`;
+
   const lines = [
-    `From: Events Pilates in Pink™ <info@pilatesinpinkstudio.com>`,
+    `From: ${encodeHeader('Events Pilates in Pink™')} <info@pilatesinpinkstudio.com>`,
     `To: ${to}`,
-    `Subject: ${subject}`,
+    `Subject: ${encodeHeader(subject)}`,
     `Content-Type: text/html; charset=utf-8`,
     `MIME-Version: 1.0`,
     '',
