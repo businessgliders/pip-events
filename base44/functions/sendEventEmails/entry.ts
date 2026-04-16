@@ -4,6 +4,7 @@ const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
 
 function buildRaw({ to, subject, html, replyTo }) {
   const lines = [
+    `From: Events Pilates in Pink™ <info@pilatesinpinkstudio.com>`,
     `To: ${to}`,
     `Subject: ${subject}`,
     `Content-Type: text/html; charset=utf-8`,

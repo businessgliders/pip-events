@@ -20,6 +20,7 @@ Deno.serve(async (req) => {
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
   const lines = [
+    `From: Events Pilates in Pink™ <info@pilatesinpinkstudio.com>`,
     `To: ${to}`,
     `Subject: ${subject}`,
     `Content-Type: text/html; charset=utf-8`,
