@@ -109,21 +109,25 @@ export default function EmailCommsPanel({ request, onUpdate }) {
         ) : (
           emailLog.map((log, i) => {
             const isInitial = log.direction === 'initial';
+            const isInbound = log.direction === 'inbound';
             return (
-              <div key={i} className={`flex ${isInitial ? 'justify-start' : 'justify-end'}`}>
-                <div
-                  className="max-w-[85%] rounded-2xl px-4 py-3"
-                  style={isInitial ? {
-                    background: 'rgba(241,136,155,0.08)',
-                    border: '1px solid rgba(241,136,155,0.2)',
-                  } : {
-                    background: 'linear-gradient(135deg, rgba(241,136,155,0.15), rgba(232,108,132,0.1))',
-                    border: '1px solid rgba(241,136,155,0.3)',
-                  }}
+            <div key={i} className={`flex ${isInitial || isInbound ? 'justify-start' : 'justify-end'}`}>
+              <div
+                className="max-w-[85%] rounded-2xl px-4 py-3"
+                style={isInbound ? {
+                  background: 'rgba(122,107,143,0.08)',
+                  border: '1px solid rgba(122,107,143,0.2)',
+                } : isInitial ? {
+                  background: 'rgba(241,136,155,0.08)',
+                  border: '1px solid rgba(241,136,155,0.2)',
+                } : {
+                  background: 'linear-gradient(135deg, rgba(241,136,155,0.15), rgba(232,108,132,0.1))',
+                  border: '1px solid rgba(241,136,155,0.3)',
+                }}
                 >
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-xs font-semibold" style={{color: isInitial ? '#c48a96' : '#e86c84'}}>
-                      {isInitial ? '📬 Auto-Confirmation' : '✉️ You'}
+                    <span className="text-xs font-semibold" style={{color: isInitial ? '#c48a96' : log.direction === 'inbound' ? '#7a6b8f' : '#e86c84'}}>
+                      {isInitial ? '📬 Auto-Confirmation' : log.direction === 'inbound' ? '↩️ Client Reply' : '✉️ You'}
                     </span>
                     <span className="text-xs" style={{color: '#d4b8bc'}}>
                       {log.sent_at ? format(new Date(log.sent_at), 'MMM d, h:mm a') : ''}
