@@ -58,16 +58,9 @@ export default function Navbar() {
       </div>
 
       {/* ── Mobile layout ── */}
-      <div className="flex sm:hidden items-center justify-between h-12">
+      <div className="flex sm:hidden items-center justify-between h-12 relative">
         {/* Left: nav icons */}
         <div className="flex items-center gap-1">
-          <Link to="/Calendar" className="mr-1">
-            <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
-              alt="Pilates in Pink"
-              className="w-10 h-10 object-contain drop-shadow-sm"
-            />
-          </Link>
           <Link
             to="/Calendar"
             className="p-2.5 rounded-full transition-all"
@@ -91,6 +84,15 @@ export default function Navbar() {
             <ClipboardList className="w-5 h-5" />
           </Link>
         </div>
+
+        {/* Centre: logo absolutely centered */}
+        <Link to="/Calendar" className="absolute left-1/2 -translate-x-1/2">
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
+            alt="Pilates in Pink"
+            className="w-10 h-10 object-contain drop-shadow-sm"
+          />
+        </Link>
 
         {/* Right: dashboard */}
         <Link

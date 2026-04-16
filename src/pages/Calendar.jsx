@@ -59,44 +59,44 @@ export default function Calendar() {
       <div className="fixed inset-0" style={{zIndex: 1, background: 'rgba(248, 210, 220, 0.75)'}} />
       <div className="relative" style={{zIndex: 2}}>
       <Navbar />
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 py-4 sm:py-8">
 
-        <div className="text-center mb-7">
-          <div className="inline-block rounded-2xl px-8 py-4" style={{
+        <div className="text-center mb-4">
+          <div className="inline-block rounded-xl px-5 py-2.5" style={{
             background: 'rgba(255,255,255,0.7)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
             border: '1px solid rgba(255,255,255,0.6)',
             boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
           }}>
-            <h1 className="text-3xl font-bold" style={{color: '#b67651'}}>Event Calendar</h1>
-            <p className="mt-1 text-sm" style={{color: '#f1889b'}}>Pick a date and request your event</p>
+            <h1 className="text-lg font-bold" style={{color: '#b67651'}}>Event Calendar</h1>
+            <p className="text-xs" style={{color: '#f1889b'}}>Pick a date and request your event</p>
           </div>
         </div>
 
         {/* Month Navigation */}
-        <div className="flex items-center justify-between mb-5 rounded-2xl px-5 py-3" style={glassCard}>
+        <div className="flex items-center justify-between mb-3 rounded-2xl px-3 py-2" style={glassCard}>
           <button
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            className="p-2 rounded-full transition-colors hover:bg-pink-100/50"
+            className="p-1.5 rounded-full transition-colors hover:bg-pink-100/50 flex-shrink-0"
           >
             <ChevronLeft className="w-5 h-5" style={{color: '#b67651'}} />
           </button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setCurrentMonth(new Date())}
-              className="text-xs rounded-full px-3.5 py-1 font-medium transition-all"
+              className="text-xs rounded-full px-2.5 py-1 font-medium transition-all flex-shrink-0"
               style={{color: '#f1889b', border: '1px solid #f7b1bd', background: 'rgba(251,224,226,0.4)'}}
             >
               Today
             </button>
-            <h2 className="text-lg font-semibold w-44 text-center" style={{color: '#7a4a3a'}}>
+            <h2 className="text-sm sm:text-lg font-semibold text-center whitespace-nowrap" style={{color: '#7a4a3a'}}>
               {format(currentMonth, 'MMMM yyyy')}
             </h2>
           </div>
           <button
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            className="p-2 rounded-full transition-colors hover:bg-pink-100/50"
+            className="p-1.5 rounded-full transition-colors hover:bg-pink-100/50 flex-shrink-0"
           >
             <ChevronRight className="w-5 h-5" style={{color: '#b67651'}} />
           </button>
@@ -113,7 +113,7 @@ export default function Calendar() {
           {/* Day Headers */}
           <div className="grid grid-cols-7" style={{borderBottom: '1.5px solid rgba(247,177,189,0.45)', background: 'rgba(251,224,226,0.3)'}}>
             {DAYS_OF_WEEK.map(d => (
-              <div key={d} className="text-center text-xs font-semibold py-4 uppercase tracking-widest" style={{color: '#c48a96', borderRight: '1px solid rgba(247,177,189,0.25)'}}>
+              <div key={d} className="text-center text-xs font-semibold py-2 sm:py-4 uppercase tracking-widest" style={{color: '#c48a96', borderRight: '1px solid rgba(247,177,189,0.25)'}}>
                 {d}
               </div>
             ))}
@@ -134,7 +134,7 @@ export default function Calendar() {
                 <div
                   key={idx}
                   onClick={() => !isDisabled && setSelectedDay(day)}
-                  className="min-h-[110px] md:min-h-[130px] flex flex-col items-center pt-4 pb-3 transition-all"
+                  className="min-h-[70px] sm:min-h-[110px] md:min-h-[130px] flex flex-col items-center pt-2 sm:pt-4 pb-2 sm:pb-3 transition-all"
                   style={{
                     borderRight: '1px solid rgba(247,177,189,0.3)',
                     borderBottom: '1px solid rgba(247,177,189,0.3)',
@@ -146,7 +146,7 @@ export default function Calendar() {
                   onMouseLeave={e => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
                   <div
-                    className="w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold"
+                    className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xs sm:text-sm font-bold"
                     style={
                       isToday
                         ? {backgroundColor: '#f1889b', color: 'white', boxShadow: '0 2px 8px rgba(241,136,155,0.4)'}
