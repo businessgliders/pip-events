@@ -208,19 +208,43 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto px-6 py-10">
 
         {/* Page Header */}
-        <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
-          <div className="inline-block rounded-2xl px-6 py-4" style={{
-            background: 'rgba(255,255,255,0.7)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255,255,255,0.6)',
-            boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
-          }}>
-            <h1 className="text-2xl font-bold" style={{color: '#b67651'}}>Events Dashboard</h1>
-            <p className="text-sm mt-0.5" style={{color: '#c48a96'}}>Manage event bookings and settings</p>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between sm:gap-4 gap-3">
+            <div className="inline-block rounded-2xl px-4 sm:px-6 py-3 sm:py-4" style={{
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255,255,255,0.6)',
+              boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
+            }}>
+              <h1 className="text-xl sm:text-2xl font-bold" style={{color: '#b67651'}}>Events Dashboard</h1>
+              <p className="text-xs sm:text-sm mt-0.5" style={{color: '#c48a96'}}>Manage event bookings and settings</p>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 self-start">
+              {dashTab === 'requests' && (
+                <button
+                  onClick={() => { window.location.href = '/RequestForm'; }}
+                  className="flex items-center gap-2 text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+                  style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
+                >
+                  <Plus className="w-4 h-4" /> New Request
+                </button>
+              )}
+              <button
+                onClick={() => setDashTab(dashTab === 'requests' ? 'settings' : 'requests')}
+                className="flex items-center gap-2 text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+                style={{background: 'linear-gradient(135deg, #7a6b8f, #6b5b80)', boxShadow: '0 4px 16px rgba(122,107,143,0.35)'}}
+              >
+                <Settings className="w-4 h-4" /> Settings
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-3 self-start">
-            {dashTab === 'requests' && (
+        </div>
+
+        {/* Settings tab */}
+        {dashTab === 'settings' && (
+          <>
+            <div className="mb-6">
               <button
                 onClick={() => { window.location.href = '/RequestForm'; }}
                 className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
@@ -228,25 +252,16 @@ export default function Dashboard() {
               >
                 <Plus className="w-4 h-4" /> New Request
               </button>
-            )}
-            <button
-              onClick={() => setDashTab(dashTab === 'requests' ? 'settings' : 'requests')}
-              className="flex items-center gap-2 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-              style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
-            >
-              <Settings className="w-4 h-4" /> Settings
-            </button>
-          </div>
-        </div>
-
-        {/* Settings tab */}
-        {dashTab === 'settings' && <SettingsPanel />}
+            </div>
+            <SettingsPanel />
+          </>
+        )}
 
         {/* Requests tab content */}
         {dashTab === 'requests' && <>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {[
             { label: 'Pending', value: stats.pending, Icon: Clock, key: 'pending' },
             { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2, key: 'confirmed' },
@@ -260,7 +275,7 @@ export default function Dashboard() {
               <button
                 key={s.label}
                 onClick={() => handleTileClick(s.key)}
-                className="rounded-2xl p-5 text-left transition-all"
+                className="rounded-xl sm:rounded-2xl p-3 sm:p-5 text-left transition-all"
                 style={{
                   background: isActive ? 'linear-gradient(135deg, rgba(241,136,155,0.35), rgba(232,108,132,0.28))' : 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75))',
                   backdropFilter: 'blur(24px)',
@@ -270,13 +285,13 @@ export default function Dashboard() {
                   cursor: 'pointer',
                 }}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold uppercase tracking-wide" style={{color: isActive ? '#e86c84' : '#c48a96'}}>{s.label}</p>
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full" style={{background: isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
-                    <s.Icon className="w-4 h-4" style={{color: isActive ? 'white' : '#e86c84'}} />
+                <div className="flex items-center justify-between mb-1 sm:mb-2">
+                  <p className="text-xs font-semibold uppercase tracking-widest" style={{color: isActive ? '#e86c84' : '#c48a96', fontSize: '10px'}}>{s.label}</p>
+                  <span className="inline-flex items-center justify-center w-6 sm:w-8 h-6 sm:h-8 rounded-full flex-shrink-0" style={{background: isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                    <s.Icon className="w-3 sm:w-4 h-3 sm:h-4" style={{color: isActive ? 'white' : '#e86c84'}} />
                   </span>
                 </div>
-                <p className="text-3xl font-bold" style={{color: isActive ? '#e86c84' : '#b67651'}}>{s.value}</p>
+                <p className="text-2xl sm:text-3xl font-bold" style={{color: isActive ? '#e86c84' : '#b67651'}}>{s.value}</p>
               </button>
             );
           })}
@@ -302,7 +317,7 @@ export default function Dashboard() {
               />
             </div>
           </div>
-          <div className="flex gap-3 flex-wrap sm:flex-nowrap items-center">
+          <div className="flex gap-3 flex-wrap sm:flex-nowrap items-center mb-4">
             <select
               value={filterType}
               onChange={e => setFilterType(e.target.value)}
