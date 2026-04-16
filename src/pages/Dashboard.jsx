@@ -297,7 +297,7 @@ export default function Dashboard() {
           })}
         </div>
 
-        {/* Filters */}
+        {/* Filters - Mobile optimized */}
         <div className="rounded-2xl p-4 mb-5" style={{
           background: 'rgba(255,255,255,0.55)',
           backdropFilter: 'blur(16px)',
@@ -305,23 +305,24 @@ export default function Dashboard() {
           border: '1px solid rgba(255,255,255,0.6)',
           boxShadow: '0 4px 16px rgba(241,136,155,0.08)',
         }}>
-          <div className="flex flex-col sm:flex-row gap-3 mb-3 sm:mb-0">
-            <div className="flex-1 min-w-0 relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{color: '#f1889b'}} />
-              <input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search by name, email, or event type..."
-                className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl focus:outline-none bg-white/70 placeholder-gray-400"
-                style={{border: '1.5px solid rgba(220,200,205,0.6)'}}
-              />
-            </div>
+          {/* Search bar - full width */}
+          <div className="relative mb-4">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{color: '#f1889b'}} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl focus:outline-none bg-white/70 placeholder-gray-400"
+              style={{border: '1.5px solid rgba(220,200,205,0.6)'}}
+            />
           </div>
-          <div className="flex gap-3 flex-wrap sm:flex-nowrap items-center mb-4">
+
+          {/* Desktop filters */}
+          <div className="hidden sm:flex gap-3 items-center">
             <select
               value={filterType}
               onChange={e => setFilterType(e.target.value)}
-              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 sm:flex-auto min-w-[140px]"
+              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 min-w-[140px]"
               style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
             >
               <option value="">All Event Types</option>
@@ -330,7 +331,7 @@ export default function Dashboard() {
             <select
               value={filterStatus}
               onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 sm:flex-auto min-w-[120px]"
+              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 min-w-[120px]"
               style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
             >
               <option value="">All Statuses</option>
@@ -341,7 +342,7 @@ export default function Dashboard() {
               visibleKeys={visibleCols}
               onSave={setVisibleCols}
             />
-            {/* View toggle */}
+            {/* Desktop view toggle */}
             <div className="flex rounded-xl overflow-hidden ml-auto" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
               {[
                 { mode: 'list', Icon: LayoutList, title: 'List' },
@@ -360,6 +361,52 @@ export default function Dashboard() {
                   }}
                 >
                   <Icon className="w-4 h-4" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile filters - compact */}
+          <div className="sm:hidden space-y-3">
+            <div className="flex gap-2">
+              <select
+                value={filterType}
+                onChange={e => setFilterType(e.target.value)}
+                className="flex-1 rounded-lg px-2 py-2 text-xs bg-white/70 focus:outline-none"
+                style={{border: '1px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
+              >
+                <option value="">All Types</option>
+                {eventTypes.map(t => <option key={t} value={t}>{t.substring(0, 12)}</option>)}
+              </select>
+              <select
+                value={filterStatus}
+                onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
+                className="flex-1 rounded-lg px-2 py-2 text-xs bg-white/70 focus:outline-none"
+                style={{border: '1px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
+              >
+                <option value="">All Status</option>
+                {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            {/* Mobile view toggle - full width */}
+            <div className="flex gap-2 w-full">
+              {[
+                { mode: 'list', Icon: LayoutList, title: 'List' },
+                { mode: 'table', Icon: Table2, title: 'Table' },
+                { mode: 'calendar', Icon: Calendar, title: 'Calendar' },
+              ].map(({ mode, Icon, title }) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-medium transition-all"
+                  style={{
+                    background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
+                    color: viewMode === mode ? 'white' : '#b67651',
+                    border: viewMode === mode ? 'none' : '1px solid rgba(220,200,205,0.6)',
+                  }}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span className="hidden">{title}</span>
                 </button>
               ))}
             </div>
