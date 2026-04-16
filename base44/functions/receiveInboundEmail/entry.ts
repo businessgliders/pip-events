@@ -56,6 +56,8 @@ Deno.serve(async (req) => {
   const record = sorted[0];
   const existingLog = record.email_log || [];
 
+  const gmailMessageId = data?.message_id || data?.headers?.find?.(h => h?.name?.toLowerCase() === 'message-id')?.value || null;
+
   await base44.asServiceRole.entities.EventRequest.update(record.id, {
     email_log: [...existingLog, {
       sent_at: new Date().toISOString(),
@@ -64,6 +66,7 @@ Deno.serve(async (req) => {
       subject,
       body_html: bodyHtml,
       from: fromRaw,
+      gmail_message_id: gmailMessageId,
     }],
   });
 

@@ -1,19 +1,10 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { X, Mail, Phone, Trash2, User, Calendar, Clock, Users, Tag, Sparkles, StickyNote, DollarSign, Lock, ExternalLink } from 'lucide-react';
+import { X, Mail, Phone, Trash2, User, Calendar, Tag, Sparkles, StickyNote, DollarSign, Lock, ExternalLink, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import EmailCommsPanel from './EmailCommsPanel';
 
 const EMAIL_BETA_PASSWORD = 'admin123';
-
-function buildGmailReplyUrl(request) {
-  const eventDate = request.event_date
-    ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy')
-    : 'TBD';
-  const subject = encodeURIComponent(`Re: ${request.event_type || 'Event'} on ${eventDate} — ${request.full_name || ''}`);
-  const to = encodeURIComponent(request.email || '');
-  return `https://mail.google.com/mail/?view=cm&to=${to}&su=${subject}`;
-}
 
 const STATUS_OPTIONS = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
 
@@ -31,6 +22,30 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
   const [emailUnlocked, setEmailUnlocked] = useState(false);
   const [betaPw, setBetaPw] = useState('');
   const [betaPwError, setBetaPwError] = useState(false);
+  const [replyBody, setReplyBody] = useState('');
+  const [replySending, setReplySending] = useState(false);
+  const [replySent, setReplySent] = useState(false);
+
+  const buildReplySubject = () => {
+    const eventDate = request.event_date
+      ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy')
+      : 'TBD';
+    return `Re: ${request.event_type || 'Event'} on ${eventDate} — ${request.full_name || ''}`;
+  };
+
+  const handleGmailReply = async () => {
+    if (!replyBody.trim()) return;
+    setReplySending(true);
+    await base44.functions.invoke('gmailReply', {
+      to: request.email,
+      subject: buildReplySubject(),
+      body: replyBody.replace(/\n/g, '<br/>'),
+    });
+    setReplySending(false);
+    setReplySent(true);
+    setReplyBody('');
+    setTimeout(() => setReplySent(false), 3000);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -217,9 +232,9 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
               <div
                 className="absolute inset-0 flex items-center justify-center p-6"
                 style={{
-                  background: 'rgba(255,255,255,0.55)',
-                  backdropFilter: 'blur(14px)',
-                  WebkitBackdropFilter: 'blur(14px)',
+                  background: 'rgba(255,255,255,0.35)',
+                  backdropFilter: 'blur(4px)',
+                  WebkitBackdropFilter: 'blur(4px)',
                   zIndex: 10,
                 }}
               >
@@ -235,7 +250,7 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
                     style={{ background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)' }}>
                     <Lock className="w-5 h-5" style={{ color: '#e86c84' }} />
                   </div>
-                  <h3 className="text-base font-bold mb-1" style={{ color: '#b67651' }}>Beta — Coming Soon</h3>
+                  <h3 className="text-base font-bold mb-1" style={{ color: '#b67651' }}>Email back and forth coming soon.</h3>
                   <p className="text-xs mb-4" style={{ color: '#c48a96' }}>
                     In-app email communications are in beta. Enter the password to preview, or reply via Gmail meanwhile.
                   </p>
@@ -271,23 +286,31 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
 
                   <div className="flex items-center gap-2 my-3">
                     <div className="flex-1 h-px" style={{ background: 'rgba(247,177,189,0.35)' }} />
-                    <span className="text-xs" style={{ color: '#d4b8bc' }}>or</span>
+                    <span className="text-xs" style={{ color: '#d4b8bc' }}>reply now via Gmail</span>
                     <div className="flex-1 h-px" style={{ background: 'rgba(247,177,189,0.35)' }} />
                   </div>
 
-                  <a
-                    href={buildGmailReplyUrl(request)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all"
+                  <textarea
+                    value={replyBody}
+                    onChange={e => setReplyBody(e.target.value)}
+                    placeholder={`Reply to ${request.full_name}…`}
+                    rows={3}
+                    className="w-full rounded-xl px-3 py-2.5 text-sm mb-2 focus:outline-none resize-none bg-white/80 placeholder-gray-400"
+                    style={{ border: '1.5px solid rgba(220,200,205,0.7)', color: '#6b4e4e' }}
+                  />
+
+                  <button
+                    onClick={handleGmailReply}
+                    disabled={replySending || !replyBody.trim()}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all disabled:opacity-50"
                     style={{
-                      background: 'rgba(255,255,255,0.9)',
-                      border: '1.5px solid rgba(220,200,205,0.7)',
-                      color: '#b67651',
+                      background: replySent ? 'rgba(134,239,172,0.3)' : 'rgba(255,255,255,0.9)',
+                      border: replySent ? '1.5px solid rgba(134,239,172,0.6)' : '1.5px solid rgba(220,200,205,0.7)',
+                      color: replySent ? '#166534' : '#b67651',
                     }}
                   >
-                    <Mail className="w-4 h-4" /> Reply via Gmail <ExternalLink className="w-3 h-3" />
-                  </a>
+                    {replySent ? '✓ Sent!' : replySending ? 'Sending…' : <><Mail className="w-4 h-4" /> Send via Gmail</>}
+                  </button>
                 </div>
               </div>
             )}
