@@ -70,22 +70,18 @@ export default function EmailCommsPanel({ request, onUpdate }) {
       </div>
     `;
 
-    await base44.integrations.Core.SendEmail({
+    await base44.functions.invoke('sendDashboardEmail', {
       to: request.email,
       subject,
-      body: fullHtml,
-      from_name: 'Pilates in Pink™ Studio',
-    });
-
-    const log = request.email_log || [];
-    await base44.entities.EventRequest.update(request.id, {
-      email_log: [...log, {
+      html: fullHtml,
+      requestId: request.id,
+      logEntry: {
         sent_at: new Date().toISOString(),
         direction: 'outbound',
         template_name: selectedTemplate?.name || 'Custom',
         subject,
         body_html: fullHtml,
-      }]
+      },
     });
 
     setSubject('');
