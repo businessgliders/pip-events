@@ -79,7 +79,7 @@ export default function EmailCommsPanel({ request, onUpdate }) {
 
   const signature = settingsRows.find(s => s.key === 'signature')?.value || '';
 
-  // Build the email log (include initial submission email as first entry)
+  // Always use the latest email_log from the request prop (kept live via subscription in parent)
   const emailLog = request.email_log || [];
 
   useEffect(() => {

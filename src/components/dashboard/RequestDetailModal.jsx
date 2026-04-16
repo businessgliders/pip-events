@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { X, Mail, Phone, Trash2, User, Calendar, Tag, Sparkles, StickyNote, DollarSign, Lock, ExternalLink, Send } from 'lucide-react';
 import { format } from 'date-fns';
@@ -15,8 +15,19 @@ const STATUS_STYLES = {
   Cancelled: { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
 };
 
-export default function RequestDetailModal({ request, onClose, onUpdate }) {
-  const [status, setStatus] = useState(request.status || 'Pending');
+export default function RequestDetailModal({ request: initialRequest, onClose, onUpdate }) {
+  const [request, setRequest] = useState(initialRequest);
+  const [status, setStatus] = useState(initialRequest.status || 'Pending');
+
+  // Subscribe to live updates for this specific record
+  useEffect(() => {
+    const unsubscribe = base44.entities.EventRequest.subscribe((event) => {
+      if (event.id === initialRequest.id && event.data) {
+        setRequest(event.data);
+      }
+    });
+    return unsubscribe;
+  }, [initialRequest.id]);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [emailUnlocked, setEmailUnlocked] = useState(false);
