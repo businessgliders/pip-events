@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, ClipboardList } from 'lucide-react';
 
 export default function Navbar() {
   const location = useLocation();
@@ -12,7 +12,9 @@ export default function Navbar() {
       borderBottom: '1px solid rgba(247,177,189,0.35)',
       boxShadow: '0 4px 24px rgba(241,136,155,0.08)',
     }}>
-      <div className="flex items-center justify-between relative h-12">
+
+      {/* ── Desktop layout ── */}
+      <div className="hidden sm:flex items-center justify-between relative h-12">
         {/* Left */}
         <div className="flex items-center gap-5">
           <Link to="/Calendar">
@@ -32,7 +34,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Center Logo - absolutely centered */}
+        {/* Center Logo */}
         <Link to="/Calendar" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
@@ -41,7 +43,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Right — Dashboard icon only */}
+        {/* Right — Dashboard icon */}
         <Link
           to="/Dashboard"
           className="p-2.5 rounded-full transition-all"
@@ -54,6 +56,59 @@ export default function Navbar() {
           <LayoutDashboard className="w-5 h-5" />
         </Link>
       </div>
+
+      {/* ── Mobile layout ── */}
+      <div className="flex sm:hidden flex-col items-center pt-1 pb-0.5">
+        {/* Logo centered */}
+        <Link to="/Calendar" className="mb-2">
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
+            alt="Pilates in Pink"
+            className="w-12 h-12 object-contain drop-shadow-sm"
+          />
+        </Link>
+
+        {/* Icons row: left nav + right dashboard */}
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-1">
+            <Link
+              to="/Calendar"
+              className="p-2.5 rounded-full transition-all"
+              title="Calendar"
+              style={{
+                color: location.pathname === '/Calendar' ? '#f1889b' : '#b67651',
+                background: location.pathname === '/Calendar' ? 'rgba(241,136,155,0.12)' : 'transparent',
+              }}
+            >
+              <CalendarDays className="w-5 h-5" />
+            </Link>
+            <Link
+              to="/RequestForm"
+              className="p-2.5 rounded-full transition-all"
+              title="Submit Request"
+              style={{
+                color: location.pathname === '/RequestForm' ? '#f1889b' : '#b67651',
+                background: location.pathname === '/RequestForm' ? 'rgba(241,136,155,0.12)' : 'transparent',
+              }}
+            >
+              <ClipboardList className="w-5 h-5" />
+            </Link>
+          </div>
+
+          <Link
+            to="/Dashboard"
+            className="p-2.5 rounded-full transition-all"
+            title="Dashboard"
+            style={{
+              color: location.pathname === '/Dashboard' ? '#f1889b' : '#b67651',
+              background: location.pathname === '/Dashboard' ? 'rgba(241,136,155,0.12)' : 'transparent',
+            }}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+          </Link>
+        </div>
+      </div>
+
     </nav>
   );
 }
