@@ -1,8 +1,19 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { X, Mail, Phone, Trash2, User, Calendar, Clock, Users, Tag, Sparkles, StickyNote, DollarSign } from 'lucide-react';
+import { X, Mail, Phone, Trash2, User, Calendar, Clock, Users, Tag, Sparkles, StickyNote, DollarSign, Lock, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import EmailCommsPanel from './EmailCommsPanel';
+
+const EMAIL_BETA_PASSWORD = 'admin123';
+
+function buildGmailReplyUrl(request) {
+  const eventDate = request.event_date
+    ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy')
+    : 'TBD';
+  const subject = encodeURIComponent(`Re: ${request.event_type || 'Event'} on ${eventDate} — ${request.full_name || ''}`);
+  const to = encodeURIComponent(request.email || '');
+  return `https://mail.google.com/mail/?view=cm&to=${to}&su=${subject}`;
+}
 
 const STATUS_OPTIONS = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
 
@@ -17,6 +28,9 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
   const [status, setStatus] = useState(request.status || 'Pending');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [emailUnlocked, setEmailUnlocked] = useState(false);
+  const [betaPw, setBetaPw] = useState('');
+  const [betaPwError, setBetaPwError] = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -195,8 +209,88 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
           </div>
 
           {/* RIGHT — Email comms */}
-          <div className="flex-1 flex flex-col min-h-0 min-w-0">
+          <div className="flex-1 flex flex-col min-h-0 min-w-0 relative">
             <EmailCommsPanel request={request} onUpdate={onUpdate} />
+
+            {/* Beta lock overlay */}
+            {!emailUnlocked && (
+              <div
+                className="absolute inset-0 flex items-center justify-center p-6"
+                style={{
+                  background: 'rgba(255,255,255,0.55)',
+                  backdropFilter: 'blur(14px)',
+                  WebkitBackdropFilter: 'blur(14px)',
+                  zIndex: 10,
+                }}
+              >
+                <div
+                  className="w-full max-w-sm rounded-2xl p-6 text-center"
+                  style={{
+                    background: 'rgba(255,255,255,0.95)',
+                    border: '1.5px solid rgba(247,177,189,0.5)',
+                    boxShadow: '0 16px 48px rgba(241,136,155,0.25)',
+                  }}
+                >
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)' }}>
+                    <Lock className="w-5 h-5" style={{ color: '#e86c84' }} />
+                  </div>
+                  <h3 className="text-base font-bold mb-1" style={{ color: '#b67651' }}>Beta — Coming Soon</h3>
+                  <p className="text-xs mb-4" style={{ color: '#c48a96' }}>
+                    In-app email communications are in beta. Enter the password to preview, or reply via Gmail meanwhile.
+                  </p>
+
+                  <input
+                    type="password"
+                    value={betaPw}
+                    onChange={e => { setBetaPw(e.target.value); setBetaPwError(false); }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        if (betaPw === EMAIL_BETA_PASSWORD) setEmailUnlocked(true);
+                        else setBetaPwError(true);
+                      }
+                    }}
+                    placeholder="Beta password"
+                    className="w-full rounded-xl px-3 py-2.5 text-sm mb-2 focus:outline-none bg-white/80 placeholder-gray-400"
+                    style={{
+                      border: betaPwError ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.7)',
+                    }}
+                  />
+                  {betaPwError && <p className="text-xs mb-2" style={{ color: '#f1889b' }}>Incorrect password.</p>}
+
+                  <button
+                    onClick={() => {
+                      if (betaPw === EMAIL_BETA_PASSWORD) setEmailUnlocked(true);
+                      else setBetaPwError(true);
+                    }}
+                    className="w-full text-white py-2.5 rounded-xl font-semibold text-sm transition-all mb-3"
+                    style={{ background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.3)' }}
+                  >
+                    Unlock Beta
+                  </button>
+
+                  <div className="flex items-center gap-2 my-3">
+                    <div className="flex-1 h-px" style={{ background: 'rgba(247,177,189,0.35)' }} />
+                    <span className="text-xs" style={{ color: '#d4b8bc' }}>or</span>
+                    <div className="flex-1 h-px" style={{ background: 'rgba(247,177,189,0.35)' }} />
+                  </div>
+
+                  <a
+                    href={buildGmailReplyUrl(request)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all"
+                    style={{
+                      background: 'rgba(255,255,255,0.9)',
+                      border: '1.5px solid rgba(220,200,205,0.7)',
+                      color: '#b67651',
+                    }}
+                  >
+                    <Mail className="w-4 h-4" /> Reply via Gmail <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
