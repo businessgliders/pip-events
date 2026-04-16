@@ -134,7 +134,8 @@ export default function Calendar() {
                 <div
                   key={idx}
                   onClick={() => !isDisabled && setSelectedDay(day)}
-                  className="min-h-[70px] sm:min-h-[110px] md:min-h-[130px] flex flex-col items-center pt-2 sm:pt-4 pb-2 sm:pb-3 transition-all"
+                  className="flex flex-col items-center pt-1 pb-1 sm:pt-4 sm:pb-3 transition-all"
+                  style={{minHeight: days.length > 35 ? '50px' : '65px'}}
                   style={{
                     borderRight: '1px solid rgba(247,177,189,0.3)',
                     borderBottom: '1px solid rgba(247,177,189,0.3)',
@@ -158,17 +159,17 @@ export default function Calendar() {
 
                   {/* Event type icons */}
                   {eventCount > 0 && (
-                    <div className="flex gap-1 mt-1.5 justify-center flex-wrap">
-                      {uniqueTypes.slice(0, 3).map(type => {
+                    <div className="flex gap-0.5 mt-1 justify-center flex-wrap">
+                      {uniqueTypes.slice(0, 2).map(type => {
                         const Icon = EVENT_TYPE_ICONS[type] || Sparkles;
                         return (
-                          <span key={type} className="inline-flex items-center justify-center w-5 h-5 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
-                            <Icon className="w-3 h-3" style={{color: '#e86c84'}} />
+                          <span key={type} className="inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                            <Icon className="w-2.5 h-2.5 sm:w-3 sm:h-3" style={{color: '#e86c84'}} />
                           </span>
                         );
                       })}
-                      {uniqueTypes.length > 3 && (
-                        <span className="text-xs font-semibold" style={{color: '#f1889b'}}>+{uniqueTypes.length - 3}</span>
+                      {uniqueTypes.length > 2 && (
+                        <span className="text-xs font-semibold" style={{color: '#f1889b', fontSize: '10px'}}>+{uniqueTypes.length - 2}</span>
                       )}
                     </div>
                   )}
