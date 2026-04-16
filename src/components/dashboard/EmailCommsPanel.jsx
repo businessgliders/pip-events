@@ -59,7 +59,8 @@ const interpolate = (text, request) => (text || '')
   .replace(/\{\{status\}\}/g, request.status || '');
 
 export default function EmailCommsPanel({ request, onUpdate }) {
-  const [subject, setSubject] = useState('');
+  const defaultSubject = `🎉 New Event Request: ${request.event_type || 'Event'} — ${request.full_name || ''}${request.event_date ? ` (${request.event_date})` : ''}`;
+  const [subject, setSubject] = useState(defaultSubject);
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -128,7 +129,7 @@ export default function EmailCommsPanel({ request, onUpdate }) {
       },
     });
 
-    setSubject('');
+    setSubject(defaultSubject);
     setBody('');
     setSelectedTemplate(null);
     setSending(false);
