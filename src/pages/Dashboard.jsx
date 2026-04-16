@@ -300,67 +300,71 @@ export default function Dashboard() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-5 rounded-2xl p-4" style={{
+        <div className="rounded-2xl p-4 mb-5" style={{
           background: 'rgba(255,255,255,0.55)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           border: '1px solid rgba(255,255,255,0.6)',
           boxShadow: '0 4px 16px rgba(241,136,155,0.08)',
         }}>
-          <div className="flex-1 min-w-[200px] relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{color: '#f1889b'}} />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name, email, or event type..."
-              className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl focus:outline-none bg-white/70 placeholder-gray-400"
-              style={{border: '1.5px solid rgba(220,200,205,0.6)'}}
-            />
+          <div className="flex flex-col sm:flex-row gap-3 mb-3 sm:mb-0">
+            <div className="flex-1 min-w-0 relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{color: '#f1889b'}} />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search by name, email, or event type..."
+                className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl focus:outline-none bg-white/70 placeholder-gray-400"
+                style={{border: '1.5px solid rgba(220,200,205,0.6)'}}
+              />
+            </div>
           </div>
-          <select
-            value={filterType}
-            onChange={e => setFilterType(e.target.value)}
-            className="rounded-xl px-3 py-2.5 text-sm bg-white/70 focus:outline-none"
-            style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
-          >
-            <option value="">All Event Types</option>
-            {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-          <select
-            value={filterStatus}
-            onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-            className="rounded-xl px-3 py-2.5 text-sm bg-white/70 focus:outline-none"
-            style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
-          >
-            <option value="">All Statuses</option>
-            {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <ColumnCustomizer
-            allColumns={ALL_COLUMNS}
-            visibleKeys={visibleCols}
-            onSave={setVisibleCols}
-          />
-          {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
-            {[
-              { mode: 'list', Icon: LayoutList, title: 'List' },
-              { mode: 'table', Icon: Table2, title: 'Table' },
-              { mode: 'calendar', Icon: Calendar, title: 'Calendar' },
-            ].map(({ mode, Icon, title }, i) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                title={title}
-                className="flex items-center justify-center w-9 h-9 transition-all"
-                style={{
-                  background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
-                  color: viewMode === mode ? 'white' : '#b67651',
-                  borderLeft: i > 0 ? '1px solid rgba(220,200,205,0.6)' : 'none',
-                }}
-              >
-                <Icon className="w-4 h-4" />
-              </button>
-            ))}
+          <div className="flex gap-3 flex-wrap sm:flex-nowrap items-center">
+            <select
+              value={filterType}
+              onChange={e => setFilterType(e.target.value)}
+              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 sm:flex-auto min-w-[140px]"
+              style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
+            >
+              <option value="">All Event Types</option>
+              {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <select
+              value={filterStatus}
+              onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
+              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 sm:flex-auto min-w-[120px]"
+              style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
+            >
+              <option value="">All Statuses</option>
+              {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <ColumnCustomizer
+              allColumns={ALL_COLUMNS}
+              visibleKeys={visibleCols}
+              onSave={setVisibleCols}
+            />
+            {/* View toggle */}
+            <div className="flex rounded-xl overflow-hidden ml-auto" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
+              {[
+                { mode: 'list', Icon: LayoutList, title: 'List' },
+                { mode: 'table', Icon: Table2, title: 'Table' },
+                { mode: 'calendar', Icon: Calendar, title: 'Calendar' },
+              ].map(({ mode, Icon, title }, i) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  title={title}
+                  className="flex items-center justify-center w-9 h-9 transition-all"
+                  style={{
+                    background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
+                    color: viewMode === mode ? 'white' : '#b67651',
+                    borderLeft: i > 0 ? '1px solid rgba(220,200,205,0.6)' : 'none',
+                  }}
+                >
+                  <Icon className="w-4 h-4" />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
