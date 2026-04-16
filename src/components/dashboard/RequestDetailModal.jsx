@@ -39,11 +39,13 @@ export default function RequestDetailModal({ request, onClose, onUpdate }) {
     await base44.functions.invoke('gmailReply', {
       to: request.email,
       subject: buildReplySubject(),
-      body: replyBody.replace(/\n/g, '<br/>'),
+      body: replyBody,
+      requestId: request.id,
     });
     setReplySending(false);
     setReplySent(true);
     setReplyBody('');
+    onUpdate();
     setTimeout(() => setReplySent(false), 3000);
   };
 
