@@ -203,7 +203,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #d4839a 0%, #e8a0b0 40%, #d4839a 100%)'}}>
+    <div className="min-h-screen" style={{background: 'linear-gradient(to bottom, #fce4ec 0%, #d4839a 100%)'}}>
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 py-10">
 
@@ -216,7 +216,7 @@ export default function Dashboard() {
             border: '1px solid rgba(255,255,255,0.6)',
             boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
           }}>
-            <h1 className="text-2xl font-bold" style={{color: '#b67651'}}>Admin Dashboard</h1>
+            <h1 className="text-2xl font-bold" style={{color: '#b67651'}}>Events Dashboard</h1>
             <p className="text-sm mt-0.5" style={{color: '#c48a96'}}>Manage event bookings and settings</p>
           </div>
           <div className="flex items-center gap-3 self-start">
@@ -279,11 +279,11 @@ export default function Dashboard() {
                 onClick={() => handleTileClick(s.key)}
                 className="rounded-2xl p-5 text-left transition-all"
                 style={{
-                  background: isActive ? 'linear-gradient(135deg, rgba(241,136,155,0.25), rgba(232,108,132,0.18))' : 'rgba(255,255,255,0.65)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: isActive ? '1.5px solid rgba(241,136,155,0.6)' : '1px solid rgba(255,255,255,0.7)',
-                  boxShadow: isActive ? '0 8px 32px rgba(241,136,155,0.25)' : '0 8px 32px rgba(180,80,100,0.12)',
+                  background: isActive ? 'linear-gradient(135deg, rgba(241,136,155,0.35), rgba(232,108,132,0.28))' : 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75))',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  border: isActive ? '1.5px solid rgba(241,136,155,0.8)' : '1.5px solid rgba(255,255,255,0.8)',
+                  boxShadow: isActive ? '0 12px 40px rgba(241,136,155,0.35)' : '0 12px 40px rgba(180,80,100,0.18)',
                   cursor: 'pointer',
                 }}
               >
