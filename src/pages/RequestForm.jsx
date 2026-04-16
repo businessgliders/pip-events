@@ -126,44 +126,43 @@ export default function RequestForm() {
       {/* Pink overlay — stronger to calm the blurred video */}
       <div className="fixed inset-0" style={{
         zIndex: 1,
-        background: 'rgba(248, 210, 220, 0.72)',
+        background: 'rgba(248, 210, 220, 0.85)',
       }} />
       {/* Content */}
       <div className="relative" style={{zIndex: 2}}>
       <Navbar />
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-10">
 
         {/* Page Header */}
-        <div className="text-center mb-10">
-          <div className="inline-block rounded-2xl px-8 py-5" style={{
+        <div className="text-center mb-4">
+          <div className="inline-block rounded-xl px-5 py-3" style={{
             background: 'rgba(255,255,255,0.7)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
             border: '1px solid rgba(255,255,255,0.6)',
             boxShadow: '0 4px 20px rgba(241,136,155,0.12)',
           }}>
-            <h1 className="text-4xl font-bold mb-1" style={{color: '#b67651'}}>Book Your Special Event</h1>
-            <p className="text-base" style={{color: '#c48a96'}}>We're thrilled you're considering us for your special occasion.</p>
+            <h1 className="text-xl font-bold" style={{color: '#b67651'}}>Book Your Special Event</h1>
+            <p className="text-xs" style={{color: '#c48a96'}}>We're thrilled you're considering us for your special occasion.</p>
           </div>
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center mb-10 rounded-2xl px-6 py-3 mx-auto" style={{
+        <div className="flex items-center mb-4 rounded-xl px-3 py-2 w-full" style={{
           background: 'rgba(255,255,255,0.35)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
           border: '1px solid rgba(255,255,255,0.45)',
-          width: 'fit-content',
         }}>
           {STEPS.map((s, i) => {
             const Icon = s.icon;
             const isActive = i === step;
             const isDone = i < step;
             return (
-              <div key={i} className="flex items-center">
-                <div className="flex items-center gap-2.5">
+              <div key={i} className="flex items-center flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 min-w-0">
                   <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0"
+                    className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0"
                     style={{
                       background: isDone || isActive ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
                       border: isDone || isActive ? 'none' : '2px solid rgba(247,177,189,0.6)',
@@ -171,16 +170,16 @@ export default function RequestForm() {
                     }}
                   >
                     {isDone
-                      ? <Check className="w-4 h-4 text-white" />
-                      : <Icon className="w-4 h-4" style={{color: isActive ? 'white' : '#c48a96'}} />
+                      ? <Check className="w-3.5 h-3.5 text-white" />
+                      : <Icon className="w-3.5 h-3.5" style={{color: isActive ? 'white' : '#c48a96'}} />
                     }
                   </div>
-                  <span className="text-xs font-semibold whitespace-nowrap" style={{color: isActive || isDone ? '#e86c84' : '#c4909a'}}>
+                  <span className="text-xs font-semibold truncate" style={{color: isActive || isDone ? '#e86c84' : '#c4909a'}}>
                     {s.label}
                   </span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className="w-10 md:w-16 h-0.5 mx-3 rounded-full transition-all duration-300"
+                  <div className="flex-1 h-0.5 mx-2 rounded-full transition-all duration-300"
                     style={{background: i < step ? 'linear-gradient(90deg, #f1889b, #e86c84)' : 'rgba(247,177,189,0.4)'}} />
                 )}
               </div>
