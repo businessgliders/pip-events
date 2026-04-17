@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal.jsx';
-import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar, Settings } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar, Settings, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
 import ListView from '../components/dashboard/ListView.jsx';
@@ -11,7 +11,6 @@ import TableView from '../components/dashboard/TableView.jsx';
 import CalendarView from '../components/dashboard/CalendarView.jsx';
 import SettingsPanel from '../components/dashboard/SettingsPanel.jsx';
 
-const PASSWORD = 'pip6161';
 const ROWS_PER_PAGE = 15;
 
 const ALL_COLUMNS = [
@@ -28,10 +27,18 @@ const ALL_COLUMNS = [
 const DEFAULT_COLS = ['status', 'full_name', 'email', 'phone', 'event_type', 'number_of_guests', 'event_date'];
 
 export default function Dashboard() {
-  const [authed, setAuthed] = useState(false);
-  const [pwInput, setPwInput] = useState('');
-  const [pwError, setPwError] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [dashTab, setDashTab] = useState('requests'); // 'requests' | 'settings'
+
+  useEffect(() => {
+    base44.auth.me().then(u => {
+      setUser(u);
+      setAuthLoading(false);
+    }).catch(() => {
+      setAuthLoading(false);
+    });
+  }, []);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -46,10 +53,18 @@ export default function Dashboard() {
   const { data: requests = [] } = useQuery({
     queryKey: ['eventRequests'],
     queryFn: () => base44.entities.EventRequest.list('-created_date', 500),
-    enabled: authed,
+    enabled: !!user,
   });
 
-  if (!authed) {
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
+        <div className="w-8 h-8 border-4 border-pink-200 border-t-pink-400 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center relative" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
         <div className="absolute top-[-80px] left-[-80px] w-72 h-72 rounded-full pointer-events-none" style={{background: 'radial-gradient(circle, rgba(247,177,189,0.35) 0%, transparent 70%)'}} />
@@ -72,33 +87,14 @@ export default function Dashboard() {
             boxShadow: '0 16px 56px rgba(241,136,155,0.18)',
           }}>
             <h2 className="text-2xl font-bold mb-1" style={{color: '#b67651'}}>Dashboard Access</h2>
-            <p className="text-sm mb-7" style={{color: '#c48a96'}}>Enter the admin password to continue</p>
-
-            <input
-              type="password"
-              value={pwInput}
-              onChange={e => { setPwInput(e.target.value); setPwError(false); }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  if (pwInput === PASSWORD) setAuthed(true);
-                  else setPwError(true);
-                }
-              }}
-              placeholder="Password"
-              className="w-full rounded-xl px-4 py-3 text-sm mb-3 focus:outline-none bg-white/70 placeholder-gray-400"
-              style={{
-                border: pwError ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.7)',
-                boxShadow: pwError ? '0 0 0 3px rgba(241,136,155,0.15)' : 'none',
-              }}
-            />
-            {pwError && <p className="text-xs mb-3" style={{color: '#f1889b'}}>Incorrect password. Please try again.</p>}
+            <p className="text-sm mb-7" style={{color: '#c48a96'}}>Sign in with Google to continue</p>
 
             <button
-              onClick={() => { if (pwInput === PASSWORD) setAuthed(true); else setPwError(true); }}
-              className="w-full text-white py-3 rounded-xl font-semibold text-sm transition-all"
+              onClick={() => base44.auth.redirectToLogin(window.location.href)}
+              className="w-full text-white py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2"
               style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 6px 20px rgba(241,136,155,0.35)'}}
             >
-              Enter Dashboard
+              Sign in with Google
             </button>
           </div>
         </div>
@@ -240,6 +236,14 @@ export default function Dashboard() {
                 >
                   <Settings className="w-4 h-4" />
                 </button>
+                <button
+                  onClick={() => base44.auth.logout(window.location.origin)}
+                  className="p-2 rounded-lg transition-all hover:bg-red-50"
+                  style={{border: '1px solid rgba(220,200,205,0.5)', color: '#c48a96'}}
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
             </div>
             <div className="hidden sm:flex items-center gap-2 sm:gap-3 self-start">
@@ -261,6 +265,24 @@ export default function Dashboard() {
               >
                 <Settings className="w-4 h-4" /> Settings
               </button>
+              {/* Profile + Logout */}
+              <div className="flex items-center gap-2 pl-1">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(220,200,205,0.5)'}}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                    style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}>
+                    {user?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
+                  </div>
+                  <span className="text-xs font-medium max-w-[120px] truncate" style={{color: '#7a4a3a'}}>{user?.full_name || user?.email}</span>
+                </div>
+                <button
+                  onClick={() => base44.auth.logout(window.location.origin)}
+                  title="Logout"
+                  className="flex items-center justify-center w-9 h-9 rounded-xl transition-all hover:bg-red-50"
+                  style={{border: '1px solid rgba(220,200,205,0.5)', color: '#c48a96'}}
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
