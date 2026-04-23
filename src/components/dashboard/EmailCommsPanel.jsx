@@ -83,7 +83,22 @@ export default function EmailCommsPanel({ request, onUpdate }) {
   const signature = settingsRows.find(s => s.key === 'signature')?.value || '';
 
   // Always use the latest email_log from the request prop (kept live via subscription in parent)
-  const emailLog = request.email_log || [];
+  const rawLog = request.email_log || [];
+
+  // If there's no "initial" confirmation entry logged (e.g. older/imported records),
+  // synthesize a placeholder so admins always see it was sent on submission.
+  const hasInitial = rawLog.some(e => e.direction === 'initial');
+  const emailLog = hasInitial ? rawLog : [
+    {
+      sent_at: request.submitted_date || request.created_date,
+      direction: 'initial',
+      template_name: 'Auto-Confirmation',
+      subject: `Thank You, ${request.full_name || ''}! Your Event Request Has Been Received 💕`,
+      body_html: `<p>Auto-confirmation email was sent to <strong>${request.email}</strong> on submission.</p><p style="color:#9a7070;font-size:13px;">(Full content not stored for this request.)</p>`,
+      _synthetic: true,
+    },
+    ...rawLog,
+  ];
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });

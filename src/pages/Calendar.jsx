@@ -75,10 +75,15 @@ export default function Calendar() {
         </div>
 
         {/* Month Navigation */}
+        {(() => { return null; })()}
         <div className="flex items-center justify-between mb-3 rounded-2xl px-3 py-2" style={glassCard}>
           <button
-            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            className="p-1.5 rounded-full transition-colors hover:bg-pink-100/50 flex-shrink-0"
+            onClick={() => {
+              const prev = subMonths(currentMonth, 1);
+              if (!isBefore(startOfMonth(prev), startOfMonth(new Date()))) setCurrentMonth(prev);
+            }}
+            disabled={!isBefore(startOfMonth(new Date()), startOfMonth(currentMonth))}
+            className="p-1.5 rounded-full transition-colors hover:bg-pink-100/50 flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           >
             <ChevronLeft className="w-5 h-5" style={{color: '#b67651'}} />
           </button>
