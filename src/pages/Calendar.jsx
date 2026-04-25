@@ -59,7 +59,7 @@ export default function Calendar() {
       <div className="fixed inset-0" style={{zIndex: 1, background: 'rgba(248, 210, 220, 0.85)'}} />
       <div className="relative" style={{zIndex: 2}}>
       <Navbar />
-      <div className="max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <div className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
 
         <div className="text-center mb-4">
           <div className="inline-block rounded-xl px-5 py-2.5" style={{
@@ -118,7 +118,7 @@ export default function Calendar() {
           {/* Day Headers */}
           <div className="grid grid-cols-7" style={{borderBottom: '1.5px solid rgba(247,177,189,0.45)', background: 'rgba(251,224,226,0.3)'}}>
             {DAYS_OF_WEEK.map(d => (
-              <div key={d} className="text-center text-xs font-semibold py-2 sm:py-4 uppercase tracking-widest" style={{color: '#c48a96', borderRight: '1px solid rgba(247,177,189,0.25)'}}>
+              <div key={d} className="text-center text-xs sm:text-sm font-semibold py-2 sm:py-5 uppercase tracking-widest" style={{color: '#c48a96', borderRight: '1px solid rgba(247,177,189,0.25)'}}>
                 {d}
               </div>
             ))}
@@ -139,8 +139,8 @@ export default function Calendar() {
                 <div
                   key={idx}
                   onClick={() => !isDisabled && setSelectedDay(day)}
-                  className="flex flex-col items-center pt-1.5 pb-1.5 sm:pt-6 sm:pb-5 transition-all"
-                  style={{minHeight: 'clamp(58px, 15vw, 72px)',
+                  className="flex flex-col items-center pt-1.5 pb-1.5 sm:pt-8 sm:pb-7 transition-all"
+                  style={{minHeight: 'clamp(58px, 15vw, 110px)',
                     borderRight: '1px solid rgba(247,177,189,0.3)',
                     borderBottom: '1px solid rgba(247,177,189,0.3)',
                     cursor: isDisabled ? 'default' : 'pointer',
@@ -151,7 +151,7 @@ export default function Calendar() {
                   onMouseLeave={e => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
                   <div
-                    className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xs sm:text-sm font-bold"
+                    className="w-6 h-6 sm:w-10 sm:h-10 flex items-center justify-center rounded-full text-xs sm:text-base font-bold"
                     style={
                       isToday
                         ? {backgroundColor: '#f1889b', color: 'white', boxShadow: '0 2px 8px rgba(241,136,155,0.4)'}
@@ -167,8 +167,8 @@ export default function Calendar() {
                       {uniqueTypes.slice(0, 2).map(type => {
                         const Icon = EVENT_TYPE_ICONS[type] || Sparkles;
                         return (
-                          <span key={type} className="inline-flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
-                            <Icon className="w-2.5 h-2.5 sm:w-3 sm:h-3" style={{color: '#e86c84'}} />
+                          <span key={type} className="inline-flex items-center justify-center w-4 h-4 sm:w-6 sm:h-6 rounded-full" style={{background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)'}}>
+                            <Icon className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" style={{color: '#e86c84'}} />
                           </span>
                         );
                       })}
