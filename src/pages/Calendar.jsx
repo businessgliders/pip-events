@@ -59,7 +59,7 @@ export default function Calendar() {
       <div className="fixed inset-0" style={{zIndex: 1, background: 'rgba(248, 210, 220, 0.85)'}} />
       <div className="relative" style={{zIndex: 2}}>
       <Navbar />
-      <div className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <div className="max-w-4xl lg:max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
 
         <div className="text-center mb-4">
           <div className="inline-block rounded-xl px-5 py-2.5" style={{
