@@ -17,20 +17,20 @@ export default function Navbar() {
       <div className="hidden sm:flex items-center justify-between relative h-12">
         {/* Left */}
         <div className="flex items-center gap-5">
-          <Link to="/Calendar">
-            <button className="px-5 py-1.5 rounded-full text-sm font-medium transition-all text-white" style={
-              location.pathname === '/Calendar'
-                ? {backgroundColor: '#f1889b', boxShadow: '0 2px 12px rgba(241,136,155,0.35)'}
+          <Link to="/Calendar" className="text-sm transition-colors" style={{
+            color: location.pathname === '/Calendar' ? '#f1889b' : '#b67651',
+            fontWeight: location.pathname === '/Calendar' ? 600 : 500,
+          }}>
+            Calendar
+          </Link>
+          <Link to="/RequestForm">
+            <button className="px-5 py-1.5 rounded-full text-sm font-medium transition-all" style={
+              location.pathname === '/RequestForm'
+                ? {backgroundColor: '#f1889b', color: 'white', boxShadow: '0 2px 12px rgba(241,136,155,0.35)'}
                 : {backgroundColor: 'rgba(247,177,189,0.6)', color: '#b67651'}
             }>
-              Calendar
+              Submit Request
             </button>
-          </Link>
-          <Link to="/RequestForm" className="text-sm transition-colors" style={{
-            color: location.pathname === '/RequestForm' ? '#f1889b' : '#b67651',
-            fontWeight: location.pathname === '/RequestForm' ? 600 : 500,
-          }}>
-            Submit Request
           </Link>
         </div>
 
