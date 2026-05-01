@@ -89,19 +89,6 @@ export default function Landing() {
               >
                 View Calendar <ArrowDown className="w-4 h-4" />
               </button>
-              <Link to="/RequestForm">
-                <button
-                  className="px-8 py-3.5 rounded-full font-semibold text-sm transition-all hover:scale-105"
-                  style={{
-                    background: 'rgba(255,255,255,0.15)',
-                    color: 'white',
-                    border: '1.5px solid rgba(255,255,255,0.6)',
-                    backdropFilter: 'blur(10px)',
-                  }}
-                >
-                  Submit a Request
-                </button>
-              </Link>
             </div>
           </div>
 
@@ -137,14 +124,6 @@ export default function Landing() {
 
           {/* Embedded Calendar */}
           <div ref={calendarRef} className="mt-14 sm:mt-20 scroll-mt-6">
-            <div className="text-center mb-5">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'white', textShadow: '0 2px 8px rgba(180,80,100,0.25)' }}>
-                Event Calendar
-              </h2>
-              <p className="text-sm" style={{ color: 'rgba(255,255,255,0.9)' }}>
-                Pick a date and request your event
-              </p>
-            </div>
             <div className="max-w-4xl mx-auto">
               <CalendarGrid />
             </div>

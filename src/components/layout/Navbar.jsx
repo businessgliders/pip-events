@@ -38,7 +38,7 @@ export default function Navbar() {
         </div>
 
         {/* Center Logo */}
-        <Link to="/Calendar" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+        <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
             alt="Pilates in Pink"
@@ -89,7 +89,7 @@ export default function Navbar() {
         </div>
 
         {/* Centre: logo absolutely centered */}
-        <Link to="/Calendar" className="absolute left-1/2 -translate-x-1/2">
+        <Link to="/" className="absolute left-1/2 -translate-x-1/2">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
             alt="Pilates in Pink"
