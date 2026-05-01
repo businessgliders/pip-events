@@ -12,7 +12,7 @@ const features = [
   },
   {
     icon: Users,
-    title: 'Up to 9 Guests',
+    title: 'Large Group Size',
     desc: 'Intimate sessions for you and your group',
   },
   {
@@ -89,6 +89,19 @@ export default function Landing() {
               >
                 View Calendar <ArrowDown className="w-4 h-4" />
               </button>
+              <Link to="/RequestForm">
+                <button
+                  className="px-8 py-3.5 rounded-full font-semibold text-sm transition-all hover:scale-105"
+                  style={{
+                    background: 'rgba(255,255,255,0.15)',
+                    color: 'white',
+                    border: '1.5px solid rgba(255,255,255,0.6)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  Submit a Request
+                </button>
+              </Link>
             </div>
           </div>
 
