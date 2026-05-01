@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import Landing from './pages/Landing';
 import Calendar from './pages/Calendar';
 import RequestForm from './pages/RequestForm';
 import Confirmation from './pages/Confirmation';
@@ -32,7 +33,7 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/Calendar" replace />} />
+      <Route path="/" element={<Landing />} />
       <Route path="/Calendar" element={<Calendar />} />
       <Route path="/RequestForm" element={<RequestForm />} />
       <Route path="/Confirmation" element={<Confirmation />} />
