@@ -1,6 +1,8 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, Sparkles, Users, Heart, ArrowRight } from 'lucide-react';
+import { CalendarDays, Sparkles, Users, Heart, ArrowDown } from 'lucide-react';
 import HlsVideo from '../components/HlsVideo';
+import CalendarGrid from '../components/calendar/CalendarGrid';
 
 const features = [
   {
@@ -26,6 +28,12 @@ const features = [
 ];
 
 export default function Landing() {
+  const calendarRef = useRef(null);
+
+  const scrollToCalendar = () => {
+    calendarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       <HlsVideo
@@ -70,18 +78,17 @@ export default function Landing() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/Calendar">
-                <button
-                  className="flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm transition-all hover:scale-105"
-                  style={{
-                    background: 'white',
-                    color: '#e86c84',
-                    boxShadow: '0 8px 24px rgba(180,80,100,0.25)',
-                  }}
-                >
-                  View Calendar <ArrowRight className="w-4 h-4" />
-                </button>
-              </Link>
+              <button
+                onClick={scrollToCalendar}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-sm transition-all hover:scale-105"
+                style={{
+                  background: 'white',
+                  color: '#e86c84',
+                  boxShadow: '0 8px 24px rgba(180,80,100,0.25)',
+                }}
+              >
+                View Calendar <ArrowDown className="w-4 h-4" />
+              </button>
               <Link to="/RequestForm">
                 <button
                   className="px-8 py-3.5 rounded-full font-semibold text-sm transition-all hover:scale-105"
@@ -126,6 +133,24 @@ export default function Landing() {
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* Embedded Calendar */}
+          <div ref={calendarRef} className="mt-14 sm:mt-20 scroll-mt-6">
+            <div className="text-center mb-5">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: 'white', textShadow: '0 2px 8px rgba(180,80,100,0.25)' }}>
+                Event Calendar
+              </h2>
+              <p className="text-sm" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                Pick a date and request your event
+              </p>
+            </div>
+            <div className="max-w-4xl mx-auto">
+              <CalendarGrid />
+            </div>
+            <p className="text-center text-xs mt-4" style={{ color: 'rgba(255,255,255,0.85)' }}>
+              Click any date to see availability and request your event
+            </p>
           </div>
 
           {/* Footer note */}

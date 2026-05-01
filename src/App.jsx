@@ -6,7 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Landing from './pages/Landing';
-import Calendar from './pages/Calendar';
+import Calendar from './pages/Calendar.jsx';
 import RequestForm from './pages/RequestForm';
 import Confirmation from './pages/Confirmation';
 import Dashboard from './pages/Dashboard';
