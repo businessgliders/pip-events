@@ -59,7 +59,18 @@ const interpolate = (text, request) => (text || '')
   .replace(/\{\{status\}\}/g, request.status || '');
 
 export default function EmailCommsPanel({ request, onUpdate }) {
-  const defaultSubject = `🎉 New Event Request: ${request.event_type || 'Event'} — ${request.full_name || ''}${request.event_date ? ` (${request.event_date})` : ''}`;
+  // Default reply subject: derive from the most recent client-facing email subject
+  // and ensure a single "Re: " prefix. This is what Gmail uses (alongside threadId)
+  // to keep messages threaded.
+  const computeDefaultSubject = () => {
+    const log = request.email_log || [];
+    // Find the most recent subject that was sent TO the client (initial or outbound).
+    const clientFacing = [...log].reverse().find(e => e.direction === 'initial' || e.direction === 'outbound' || e.direction === 'inbound');
+    const baseSubject = clientFacing?.subject
+      || `Thank You, ${request.full_name || ''}! Your Event Request Has Been Received 💕`;
+    return /^re:\s/i.test(baseSubject) ? baseSubject : `Re: ${baseSubject}`;
+  };
+  const defaultSubject = computeDefaultSubject();
   const [subject, setSubject] = useState(defaultSubject);
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
@@ -170,7 +181,7 @@ export default function EmailCommsPanel({ request, onUpdate }) {
       },
     });
 
-    setSubject(defaultSubject);
+    setSubject(computeDefaultSubject());
     setBody('');
     setSelectedTemplate(null);
     setAttachments([]);
