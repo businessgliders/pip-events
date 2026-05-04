@@ -107,7 +107,7 @@ export default function RequestForm() {
     const savedForm = {
       ...form,
       number_of_guests: parseInt(form.number_of_guests) || 0,
-      status: 'Pending',
+      status: 'New',
     };
     await base44.entities.EventRequest.create(savedForm);
     await base44.functions.invoke('sendEventEmails', { form: savedForm });

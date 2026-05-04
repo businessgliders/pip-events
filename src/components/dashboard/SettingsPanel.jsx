@@ -99,49 +99,7 @@ export default function SettingsPanel() {
   return (
     <div className="space-y-8">
 
-      {/* ── EMAIL SIGNATURE ── */}
-      <div className="rounded-2xl p-6" style={glassCard}>
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-base font-bold" style={{color: '#b67651'}}>Email Signature</span>
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{background: 'rgba(241,136,155,0.1)', color: '#e86c84'}}>Appended to all outgoing emails</span>
-        </div>
-
-        <div className="mb-3">
-          <p className="text-xs font-medium mb-2" style={{color: '#c48a96'}}>Preview</p>
-          <div
-            className="rounded-xl px-4 py-3 text-sm"
-            style={{background: 'rgba(251,224,226,0.2)', border: '1px solid rgba(247,177,189,0.3)'}}
-            dangerouslySetInnerHTML={{ __html: signatureHtml }}
-          />
-        </div>
-
-        <div className="rounded-xl overflow-hidden mb-3" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
-          <ReactQuill
-            value={signatureHtml}
-            onChange={setSignatureHtml}
-            modules={{ toolbar: [['bold', 'italic', 'underline'], ['link'], [{ color: [] }], ['clean']] }}
-          />
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setSignatureHtml(getDefaultSignature())}
-            className="text-xs px-3 py-2 rounded-xl"
-            style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#b67651', background: 'white'}}
-          >Reset to Default</button>
-          <button
-            onClick={handleSaveSignature}
-            disabled={savingSig}
-            className="flex items-center gap-2 text-white px-5 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
-            style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
-          >
-            <Save className="w-3.5 h-3.5" />
-            {savingSig ? 'Saving...' : 'Save Signature'}
-          </button>
-        </div>
-      </div>
-
-      {/* ── EMAIL TEMPLATES ── */}
+      {/* ── EMAIL TEMPLATES (moved above signature) ── */}
       <div className="rounded-2xl p-6" style={glassCard}>
         <div className="flex items-center gap-2 mb-5">
           <span className="text-base font-bold" style={{color: '#b67651'}}>Email Templates</span>
@@ -244,6 +202,48 @@ export default function SettingsPanel() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* ── EMAIL SIGNATURE ── */}
+      <div className="rounded-2xl p-6" style={glassCard}>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-base font-bold" style={{color: '#b67651'}}>Email Signature</span>
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{background: 'rgba(241,136,155,0.1)', color: '#e86c84'}}>Appended to all outgoing emails</span>
+        </div>
+
+        <div className="mb-3">
+          <p className="text-xs font-medium mb-2" style={{color: '#c48a96'}}>Preview</p>
+          <div
+            className="rounded-xl px-4 py-3 text-sm"
+            style={{background: 'rgba(251,224,226,0.2)', border: '1px solid rgba(247,177,189,0.3)'}}
+            dangerouslySetInnerHTML={{ __html: signatureHtml }}
+          />
+        </div>
+
+        <div className="rounded-xl overflow-hidden mb-3" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
+          <ReactQuill
+            value={signatureHtml}
+            onChange={setSignatureHtml}
+            modules={{ toolbar: [['bold', 'italic', 'underline'], ['link'], [{ color: [] }], ['clean']] }}
+          />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSignatureHtml(getDefaultSignature())}
+            className="text-xs px-3 py-2 rounded-xl"
+            style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#b67651', background: 'white'}}
+          >Reset to Default</button>
+          <button
+            onClick={handleSaveSignature}
+            disabled={savingSig}
+            className="flex items-center gap-2 text-white px-5 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
+            style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
+          >
+            <Save className="w-3.5 h-3.5" />
+            {savingSig ? 'Saving...' : 'Save Signature'}
+          </button>
+        </div>
       </div>
     </div>
   );

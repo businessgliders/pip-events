@@ -155,6 +155,12 @@ Deno.serve(async (req) => {
         updates.gmail_root_message_id = sentMessageIdHeader;
       }
 
+      // Auto-progress status: if currently "New", flip to "In Conversations"
+      // when the studio sends an outbound (non-auto-confirmation) email.
+      if (record.status === 'New' || !record.status) {
+        updates.status = 'In Conversations';
+      }
+
       await base44.asServiceRole.entities.EventRequest.update(requestId, updates);
     }
   }

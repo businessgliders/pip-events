@@ -4,18 +4,21 @@ import { X, Mail, Phone, Trash2, User, Calendar, Tag, Sparkles, StickyNote, Doll
 import { format } from 'date-fns';
 import EmailCommsPanel from './EmailCommsPanel';
 
-const STATUS_OPTIONS = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
+const STATUS_OPTIONS = ['New', 'In Conversations', 'Confirmed', 'Completed', 'Cancelled'];
 
 const STATUS_STYLES = {
-  Pending:   { bg: 'rgba(254,249,195,0.9)', text: '#854d0e', border: 'rgba(253,224,71,0.6)' },
-  Confirmed: { bg: 'rgba(219,234,254,0.9)', text: '#1e40af', border: 'rgba(147,197,253,0.6)' },
-  Completed: { bg: 'rgba(220,252,231,0.9)', text: '#166534', border: 'rgba(134,239,172,0.6)' },
-  Cancelled: { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
+  'New':              { bg: 'rgba(254,243,226,0.9)', text: '#9a3412', border: 'rgba(251,146,60,0.5)' },
+  'In Conversations': { bg: 'rgba(254,249,195,0.9)', text: '#854d0e', border: 'rgba(253,224,71,0.6)' },
+  'Confirmed':        { bg: 'rgba(219,234,254,0.9)', text: '#1e40af', border: 'rgba(147,197,253,0.6)' },
+  'Completed':        { bg: 'rgba(220,252,231,0.9)', text: '#166534', border: 'rgba(134,239,172,0.6)' },
+  'Cancelled':        { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
 };
 
 export default function RequestDetailModal({ request: initialRequest, onClose, onUpdate }) {
   const [request, setRequest] = useState(initialRequest);
-  const [status, setStatus] = useState(initialRequest.status || 'Pending');
+  // Map legacy "Pending" → "In Conversations"
+  const initStatus = initialRequest.status === 'Pending' ? 'In Conversations' : (initialRequest.status || 'New');
+  const [status, setStatus] = useState(initStatus);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -50,7 +53,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
     onUpdate();
   };
 
-  const sc = STATUS_STYLES[status] || STATUS_STYLES.Pending;
+  const sc = STATUS_STYLES[status] || STATUS_STYLES['New'];
   const submittedAt = request.submitted_date || request.created_date;
 
   return (

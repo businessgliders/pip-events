@@ -15,10 +15,12 @@ const EVENT_TYPE_ICONS = {
 };
 
 const STATUS_COLORS = {
-  Pending: '#f59e0b',
-  Confirmed: '#3b82f6',
-  Completed: '#22c55e',
-  Cancelled: '#9ca3af',
+  'New': '#fb923c',
+  'In Conversations': '#f59e0b',
+  'Pending': '#f59e0b',
+  'Confirmed': '#3b82f6',
+  'Completed': '#22c55e',
+  'Cancelled': '#9ca3af',
 };
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -108,7 +110,7 @@ export default function CalendarView({ requests, onSelect }) {
               <div className="space-y-0.5">
                 {dayEvents.slice(0, 3).map(r => {
                   const Icon = EVENT_TYPE_ICONS[r.event_type] || Sparkles;
-                  const color = STATUS_COLORS[r.status] || STATUS_COLORS.Pending;
+                  const color = STATUS_COLORS[r.status] || STATUS_COLORS['New'];
                   return (
                     <button
                       key={r.id}

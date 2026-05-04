@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal.jsx';
-import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar, Settings, LogOut } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar, Settings, LogOut, Sparkles, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
 import ListView from '../components/dashboard/ListView.jsx';
@@ -105,19 +105,24 @@ export default function Dashboard() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Derive effective status: future event_date → Pending (unless Confirmed/Cancelled), past/today → Completed
+  // Derive effective status: past/today event_date → Completed (unless Confirmed/Cancelled).
+  // For future events, preserve the saved status (New, In Conversations, Confirmed, Cancelled).
+  // Legacy "Pending" records are surfaced as "In Conversations".
   const enriched = requests.map(r => {
-    if (!r.event_date) return r;
+    let status = r.status || 'New';
+    if (status === 'Pending') status = 'In Conversations';
+    if (!r.event_date) return { ...r, status };
     const eventDay = new Date(r.event_date + 'T12:00:00');
     eventDay.setHours(0, 0, 0, 0);
-    if (r.status === 'Confirmed' || r.status === 'Cancelled') return r;
-    if (eventDay > today) return { ...r, status: 'Pending' };
+    if (status === 'Confirmed' || status === 'Cancelled') return { ...r, status };
+    if (eventDay > today) return { ...r, status };
     return { ...r, status: 'Completed' };
   });
 
   const stats = {
     total: enriched.length,
-    pending: enriched.filter(r => r.status === 'Pending').length,
+    new: enriched.filter(r => r.status === 'New').length,
+    inConversations: enriched.filter(r => r.status === 'In Conversations').length,
     confirmed: enriched.filter(r => r.status === 'Confirmed').length,
     completed: enriched.filter(r => r.status === 'Completed').length,
   };
@@ -127,7 +132,8 @@ export default function Dashboard() {
   const handleTileClick = (tileKey) => {
     setPage(1);
     if (tileKey === 'total') { setFilterStatus(''); }
-    else if (tileKey === 'pending') { setFilterStatus(filterStatus === 'Pending' ? '' : 'Pending'); }
+    else if (tileKey === 'new') { setFilterStatus(filterStatus === 'New' ? '' : 'New'); }
+    else if (tileKey === 'inConversations') { setFilterStatus(filterStatus === 'In Conversations' ? '' : 'In Conversations'); }
     else if (tileKey === 'confirmed') { setFilterStatus(filterStatus === 'Confirmed' ? '' : 'Confirmed'); }
     else if (tileKey === 'completed') { setFilterStatus(filterStatus === 'Completed' ? '' : 'Completed'); }
   };
@@ -265,14 +271,14 @@ export default function Dashboard() {
               >
                 <Settings className="w-4 h-4" /> Settings
               </button>
-              {/* Profile + Logout */}
+              {/* Profile (icon only) + Logout */}
               <div className="flex items-center gap-2 pl-1">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(220,200,205,0.5)'}}>
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                    style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}>
-                    {user?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
-                  </div>
-                  <span className="text-xs font-medium max-w-[120px] truncate" style={{color: '#7a4a3a'}}>{user?.full_name || user?.email}</span>
+                <div
+                  title={user?.full_name || user?.email}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                  style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 2px 8px rgba(241,136,155,0.3)'}}
+                >
+                  {user?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
                 </div>
                 <button
                   onClick={() => base44.auth.logout(window.location.origin)}
@@ -307,14 +313,16 @@ export default function Dashboard() {
         {dashTab === 'requests' && <>
 
         {/* Stats */}
-        <div className="hidden sm:grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        <div className="hidden sm:grid grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {[
-            { label: 'Pending', value: stats.pending, Icon: Clock, key: 'pending' },
+            { label: 'New', value: stats.new, Icon: Sparkles, key: 'new' },
+            { label: 'In Conversations', value: stats.inConversations, Icon: MessageCircle, key: 'inConversations' },
             { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2, key: 'confirmed' },
             { label: 'Completed', value: stats.completed, Icon: CalendarDays, key: 'completed' },
           ].map(s => {
             const isActive =
-              (s.key === 'pending' && filterStatus === 'Pending') ||
+              (s.key === 'new' && filterStatus === 'New') ||
+              (s.key === 'inConversations' && filterStatus === 'In Conversations') ||
               (s.key === 'confirmed' && filterStatus === 'Confirmed') ||
               (s.key === 'completed' && filterStatus === 'Completed');
             return (
@@ -381,7 +389,7 @@ export default function Dashboard() {
               style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
             >
               <option value="">All Statuses</option>
-              {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+              {['New', 'In Conversations', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
             </select>
             <ColumnCustomizer
               allColumns={ALL_COLUMNS}
@@ -431,7 +439,7 @@ export default function Dashboard() {
                 style={{border: '1px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
               >
                 <option value="">All Status</option>
-                {['Pending', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
+                {['New', 'In Conversations', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
   

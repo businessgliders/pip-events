@@ -2,10 +2,12 @@ import { format } from 'date-fns';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 
 const STATUS_COLORS = {
-  Pending: { bg: 'rgba(254,249,195,0.8)', text: '#854d0e', border: 'rgba(253,224,71,0.5)' },
-  Confirmed: { bg: 'rgba(219,234,254,0.8)', text: '#1e40af', border: 'rgba(147,197,253,0.5)' },
-  Completed: { bg: 'rgba(220,252,231,0.8)', text: '#166534', border: 'rgba(134,239,172,0.5)' },
-  Cancelled: { bg: 'rgba(243,244,246,0.8)', text: '#6b7280', border: 'rgba(209,213,219,0.5)' },
+  'New':              { bg: 'rgba(254,243,226,0.8)', text: '#9a3412', border: 'rgba(251,146,60,0.5)' },
+  'In Conversations': { bg: 'rgba(254,249,195,0.8)', text: '#854d0e', border: 'rgba(253,224,71,0.5)' },
+  'Pending':          { bg: 'rgba(254,249,195,0.8)', text: '#854d0e', border: 'rgba(253,224,71,0.5)' },
+  'Confirmed':        { bg: 'rgba(219,234,254,0.8)', text: '#1e40af', border: 'rgba(147,197,253,0.5)' },
+  'Completed':        { bg: 'rgba(220,252,231,0.8)', text: '#166534', border: 'rgba(134,239,172,0.5)' },
+  'Cancelled':        { bg: 'rgba(243,244,246,0.8)', text: '#6b7280', border: 'rgba(209,213,219,0.5)' },
 };
 
 const ALL_COLUMNS = [
@@ -76,7 +78,7 @@ export default function TableView({ rows, visibleCols, sortKey, sortDir, onSort,
             </thead>
             <tbody>
               {rows.map((r, i) => {
-                const sc = STATUS_COLORS[r.status] || STATUS_COLORS.Pending;
+                const sc = STATUS_COLORS[r.status] || STATUS_COLORS['New'];
                 return (
                   <tr
                     key={r.id}

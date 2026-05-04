@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Plus, Trash2, Save, Edit2, X, Check, Settings } from 'lucide-react';
+import { Plus, Trash2, Save, Edit2, X, Check, ArrowLeft } from 'lucide-react';
 
 const PASSWORD = 'pip6161';
 const LOGO_URL = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png';
@@ -17,11 +17,20 @@ const glassCard = {
   boxShadow: '0 8px 32px rgba(241,136,155,0.1)',
 };
 
+function getDefaultSignature() {
+  return `<div style="display:flex;align-items:center;gap:12px;">
+  <img src="${LOGO_URL}" width="40" height="40" style="border-radius:50%;object-fit:contain;" />
+  <div>
+    <p style="margin:0;font-weight:700;color:#b67651;font-size:14px;">Pilates in Pink™ Studio</p>
+    <p style="margin:2px 0 0;color:#c48a96;font-size:12px;">info@pilatesinpinkstudio.com</p>
+  </div>
+</div>`;
+}
+
 export default function SettingsPage() {
   const [authed, setAuthed] = useState(false);
   const [pwInput, setPwInput] = useState('');
   const [pwError, setPwError] = useState(false);
-  const queryClient = useQueryClient();
 
   const { data: templates = [], refetch: refetchTemplates } = useQuery({
     queryKey: ['emailTemplates'],
@@ -55,16 +64,6 @@ export default function SettingsPage() {
   const [editName, setEditName] = useState('');
   const [editSubject, setEditSubject] = useState('');
   const [editBody, setEditBody] = useState('');
-
-  function getDefaultSignature() {
-    return `<div style="display:flex;align-items:center;gap:12px;">
-  <img src="${LOGO_URL}" width="40" height="40" style="border-radius:50%;object-fit:contain;" />
-  <div>
-    <p style="margin:0;font-weight:700;color:#b67651;font-size:14px;">Pilates in Pink™ Studio</p>
-    <p style="margin:2px 0 0;color:#c48a96;font-size:12px;">info@pilatesinpinkstudio.com</p>
-  </div>
-</div>`;
-  }
 
   const handleSaveSignature = async () => {
     setSavingSig(true);
@@ -129,6 +128,13 @@ export default function SettingsPage() {
               className="w-full text-white py-3 rounded-xl font-semibold text-sm"
               style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
             >Enter Settings</button>
+            <button
+              onClick={() => { window.history.length > 1 ? window.history.back() : (window.location.href = '/Dashboard'); }}
+              className="w-full mt-3 text-xs font-medium py-2 rounded-xl transition-all flex items-center justify-center gap-1.5"
+              style={{color: '#b67651'}}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Back
+            </button>
           </div>
         </div>
       </div>
@@ -149,6 +155,13 @@ export default function SettingsPage() {
             </div>
             <div className="flex items-center gap-2 sm:gap-3 self-start">
               <button
+                onClick={() => { window.history.length > 1 ? window.history.back() : (window.location.href = '/Dashboard'); }}
+                className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
+                style={{background: 'rgba(255,255,255,0.7)', border: '1.5px solid rgba(247,177,189,0.5)', color: '#b67651'}}
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
+              <button
                 onClick={() => { window.location.href = '/RequestForm'; }}
                 className="flex items-center gap-2 text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all"
                 style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.35)'}}
@@ -159,49 +172,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* ── EMAIL SIGNATURE ── */}
-        <div className="rounded-2xl p-6" style={glassCard}>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-base font-bold" style={{color: '#b67651'}}>Email Signature</span>
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{background: 'rgba(241,136,155,0.1)', color: '#e86c84'}}>Appended to all outgoing emails</span>
-          </div>
-
-          <div className="mb-3">
-            <p className="text-xs font-medium mb-2" style={{color: '#c48a96'}}>Preview</p>
-            <div
-              className="rounded-xl px-4 py-3 text-sm"
-              style={{background: 'rgba(251,224,226,0.2)', border: '1px solid rgba(247,177,189,0.3)'}}
-              dangerouslySetInnerHTML={{ __html: signatureHtml }}
-            />
-          </div>
-
-          <div className="rounded-xl overflow-hidden mb-3" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
-            <ReactQuill
-              value={signatureHtml}
-              onChange={setSignatureHtml}
-              modules={{ toolbar: [['bold', 'italic', 'underline'], ['link'], [{ color: [] }], ['clean']] }}
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSignatureHtml(getDefaultSignature())}
-              className="text-xs px-3 py-2 rounded-xl"
-              style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#b67651', background: 'white'}}
-            >Reset to Default</button>
-            <button
-              onClick={handleSaveSignature}
-              disabled={savingSig}
-              className="flex items-center gap-2 text-white px-5 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
-              style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
-            >
-              <Save className="w-3.5 h-3.5" />
-              {savingSig ? 'Saving...' : 'Save Signature'}
-            </button>
-          </div>
-        </div>
-
-        {/* ── EMAIL TEMPLATES ── */}
+        {/* ── EMAIL TEMPLATES (moved above signature) ── */}
         <div className="rounded-2xl p-6" style={glassCard}>
           <div className="flex items-center gap-2 mb-5">
             <span className="text-base font-bold" style={{color: '#b67651'}}>Email Templates</span>
@@ -305,6 +276,48 @@ export default function SettingsPage() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* ── EMAIL SIGNATURE ── */}
+        <div className="rounded-2xl p-6" style={glassCard}>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-base font-bold" style={{color: '#b67651'}}>Email Signature</span>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{background: 'rgba(241,136,155,0.1)', color: '#e86c84'}}>Appended to all outgoing emails</span>
+          </div>
+
+          <div className="mb-3">
+            <p className="text-xs font-medium mb-2" style={{color: '#c48a96'}}>Preview</p>
+            <div
+              className="rounded-xl px-4 py-3 text-sm"
+              style={{background: 'rgba(251,224,226,0.2)', border: '1px solid rgba(247,177,189,0.3)'}}
+              dangerouslySetInnerHTML={{ __html: signatureHtml }}
+            />
+          </div>
+
+          <div className="rounded-xl overflow-hidden mb-3" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
+            <ReactQuill
+              value={signatureHtml}
+              onChange={setSignatureHtml}
+              modules={{ toolbar: [['bold', 'italic', 'underline'], ['link'], [{ color: [] }], ['clean']] }}
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSignatureHtml(getDefaultSignature())}
+              className="text-xs px-3 py-2 rounded-xl"
+              style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#b67651', background: 'white'}}
+            >Reset to Default</button>
+            <button
+              onClick={handleSaveSignature}
+              disabled={savingSig}
+              className="flex items-center gap-2 text-white px-5 py-2 rounded-xl text-sm font-semibold disabled:opacity-60"
+              style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
+            >
+              <Save className="w-3.5 h-3.5" />
+              {savingSig ? 'Saving...' : 'Save Signature'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
