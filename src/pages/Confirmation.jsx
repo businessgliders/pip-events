@@ -42,13 +42,6 @@ export default function Confirmation() {
               boxShadow: '0 16px 56px rgba(241,136,155,0.2)',
             }}
           >
-            {/* Logo */}
-            <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
-              alt="Pilates in Pink"
-              className="w-14 h-14 object-contain mx-auto mb-4 drop-shadow-sm"
-            />
-
             {/* Check icon */}
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
