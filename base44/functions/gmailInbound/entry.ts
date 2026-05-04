@@ -29,6 +29,7 @@ Deno.serve(async (req) => {
     const subject = getHeader('Subject');
     const date = getHeader('Date');
     const messageIdHeader = getHeader('Message-ID');
+    const threadId = message.threadId || null;
 
     // Skip emails sent by us (outbound) — only process inbound from clients
     const fromEmail = (from.match(/<(.+?)>/) || [null, from])[1]?.trim().toLowerCase();
@@ -84,7 +85,7 @@ Deno.serve(async (req) => {
     }
     if (!bodyHtml) bodyHtml = '<p>(No readable content)</p>';
 
-    await base44.asServiceRole.entities.EventRequest.update(record.id, {
+    const updates = {
       email_log: [...existingLog, {
         sent_at: date ? new Date(date).toISOString() : new Date().toISOString(),
         direction: 'inbound',
@@ -93,8 +94,17 @@ Deno.serve(async (req) => {
         body_html: bodyHtml,
         from,
         gmail_message_id: messageId,
+        rfc_message_id: messageIdHeader || null,
       }],
-    });
+    };
+    // Backfill thread id on record if missing
+    if (!record.gmail_thread_id && threadId) updates.gmail_thread_id = threadId;
+    if (!record.gmail_root_message_id && messageIdHeader) {
+      // Only set as root if record has no existing thread (very first contact via inbound)
+      // otherwise just leave it
+    }
+
+    await base44.asServiceRole.entities.EventRequest.update(record.id, updates);
 
     console.log(`Logged Gmail reply from ${fromEmail} to request ${record.id}`);
   }

@@ -33,6 +33,24 @@ async function sendGmail(accessToken, { to, subject, html, replyTo }) {
   return res.json();
 }
 
+async function fetchSentMeta(accessToken, gmailId) {
+  try {
+    const res = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${gmailId}?format=metadata&metadataHeaders=Message-ID`,
+      { headers: { 'Authorization': `Bearer ${accessToken}` } }
+    );
+    if (!res.ok) return {};
+    const msg = await res.json();
+    const headers = msg.payload?.headers || [];
+    return {
+      threadId: msg.threadId,
+      rfcMessageId: headers.find(h => h.name.toLowerCase() === 'message-id')?.value || null,
+    };
+  } catch {
+    return {};
+  }
+}
+
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
   const { form } = await req.json();
@@ -260,21 +278,33 @@ Deno.serve(async (req) => {
     }),
   ]);
 
+  // Capture threading metadata from the submitter email so future replies stay in the same thread
+  let threadMeta = {};
+  if (submitterResult?.id) {
+    threadMeta = await fetchSentMeta(accessToken, submitterResult.id);
+  }
+
   // Log the initial confirmation email on the EventRequest record
   const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date });
   if (records && records.length > 0) {
     const record = records[0];
     const existingLog = record.email_log || [];
-    await base44.asServiceRole.entities.EventRequest.update(record.id, {
+    const updates = {
       email_log: [...existingLog, {
         sent_at: new Date().toISOString(),
         direction: 'initial',
         template_name: 'Auto-Confirmation',
         subject: confirmationSubject,
         body_html: submitterHtml,
-      }]
-    });
+        gmail_message_id: submitterResult?.id || null,
+        rfc_message_id: threadMeta.rfcMessageId || null,
+      }],
+    };
+    if (threadMeta.threadId) updates.gmail_thread_id = threadMeta.threadId;
+    if (threadMeta.rfcMessageId) updates.gmail_root_message_id = threadMeta.rfcMessageId;
+
+    await base44.asServiceRole.entities.EventRequest.update(record.id, updates);
   }
 
-  return Response.json({ success: true, submitterResult, ownerResult });
+  return Response.json({ success: true, submitterResult, ownerResult, threadMeta });
 });

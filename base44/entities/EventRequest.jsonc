@@ -86,6 +86,14 @@
       "format": "date-time",
       "description": "Original submission date from the client's form or CSV"
     },
+    "gmail_thread_id": {
+      "type": "string",
+      "description": "Gmail thread ID for the email conversation with this client"
+    },
+    "gmail_root_message_id": {
+      "type": "string",
+      "description": "RFC Message-ID header of the very first email sent (used for threading replies)"
+    },
     "email_log": {
       "type": "array",
       "items": {
@@ -106,6 +114,13 @@
           "direction": {
             "type": "string",
             "description": "outbound or initial"
+          },
+          "gmail_message_id": {
+            "type": "string"
+          },
+          "rfc_message_id": {
+            "type": "string",
+            "description": "RFC Message-ID header value (for threading)"
           }
         }
       }
