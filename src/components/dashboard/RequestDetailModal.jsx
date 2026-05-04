@@ -28,6 +28,13 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
     });
     return unsubscribe;
   }, [initialRequest.id]);
+
+  // Lock background scroll while modal is open
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = original; };
+  }, []);
   const handleSave = async () => {
     setSaving(true);
     await base44.entities.EventRequest.update(request.id, { status });
