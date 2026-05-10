@@ -117,10 +117,16 @@ export default function RequestForm() {
     ? ['2 Hours', '3 Hours']
     : [];
 
+  // Format validators
+  const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
+  const isValidPhone = (p) => p.replace(/\D/g, '').length >= 10;
+  const emailError = form.email.trim() && !isValidEmail(form.email);
+  const phoneError = form.phone.trim() && !isValidPhone(form.phone);
+
   // Per-step validity
   const step1Valid = !!form.event_type && !!form.event_date && !!form.number_of_guests && !!form.time_slot && !!form.duration;
   const step2Valid = form.selected_classes.length > 0;
-  const step3Valid = !!form.full_name.trim() && !!form.phone.trim() && !!form.email.trim() && !!form.budget.trim();
+  const step3Valid = !!form.full_name.trim() && isValidPhone(form.phone) && isValidEmail(form.email) && !!form.budget.trim();
   const canContinue = step === 0 ? step1Valid : step === 1 ? step2Valid : true;
   const canSubmit = step1Valid && step2Valid && step3Valid;
 
@@ -427,11 +433,33 @@ export default function RequestForm() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="text-sm font-semibold text-gray-600 block mb-1.5">Phone Number *</label>
-                      <input required value={form.phone} onChange={e => set('phone', e.target.value)} className={inputClass} placeholder="(555) 000-0000" />
+                      <input
+                        required
+                        type="tel"
+                        value={form.phone}
+                        onChange={e => set('phone', e.target.value)}
+                        className={inputClass}
+                        placeholder="(555) 000-0000"
+                        style={phoneError ? {borderColor: '#e86c84'} : undefined}
+                      />
+                      {phoneError && (
+                        <p className="text-xs mt-1" style={{color: '#e86c84'}}>Please enter a valid phone number (at least 10 digits).</p>
+                      )}
                     </div>
                     <div>
                       <label className="text-sm font-semibold text-gray-600 block mb-1.5">Email Address *</label>
-                      <input required type="email" value={form.email} onChange={e => set('email', e.target.value)} className={inputClass} placeholder="you@email.com" />
+                      <input
+                        required
+                        type="email"
+                        value={form.email}
+                        onChange={e => set('email', e.target.value)}
+                        className={inputClass}
+                        placeholder="you@email.com"
+                        style={emailError ? {borderColor: '#e86c84'} : undefined}
+                      />
+                      {emailError && (
+                        <p className="text-xs mt-1" style={{color: '#e86c84'}}>Please enter a valid email address.</p>
+                      )}
                     </div>
                   </div>
                 </div>
