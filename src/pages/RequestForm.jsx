@@ -102,7 +102,15 @@ export default function RequestForm() {
     ? ['2 Hours', '3 Hours']
     : [];
 
+  // Per-step validity
+  const step1Valid = !!form.event_type && !!form.event_date && !!form.number_of_guests && !!form.time_slot && !!form.duration;
+  const step2Valid = form.selected_classes.length > 0;
+  const step3Valid = !!form.full_name.trim() && !!form.phone.trim() && !!form.email.trim() && !!form.budget.trim();
+  const canContinue = step === 0 ? step1Valid : step === 1 ? step2Valid : true;
+  const canSubmit = step1Valid && step2Valid && step3Valid;
+
   const handleSubmit = async () => {
+    if (!canSubmit) return;
     setSubmitting(true);
     const savedForm = {
       ...form,
@@ -306,7 +314,7 @@ export default function RequestForm() {
             <div className="space-y-8">
               {/* Class Selection */}
               <div>
-                <SectionHeader icon={PersonStanding} title="Class Selection" subtitle="Choose the classes you'd like for your event (select all that apply)" />
+                <SectionHeader icon={PersonStanding} title="Class Selection *" subtitle="Choose the classes you'd like, or pick 'Help me choose'" />
 
                 {/* Help me choose */}
                 {(() => {
@@ -402,8 +410,8 @@ export default function RequestForm() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="text-sm font-semibold text-gray-600 block mb-1.5">Phone Number</label>
-                      <input value={form.phone} onChange={e => set('phone', e.target.value)} className={inputClass} placeholder="(555) 000-0000" />
+                      <label className="text-sm font-semibold text-gray-600 block mb-1.5">Phone Number *</label>
+                      <input required value={form.phone} onChange={e => set('phone', e.target.value)} className={inputClass} placeholder="(555) 000-0000" />
                     </div>
                     <div>
                       <label className="text-sm font-semibold text-gray-600 block mb-1.5">Email Address *</label>
@@ -420,8 +428,8 @@ export default function RequestForm() {
                 <SectionHeader icon={Wine} title="Budget & Additional Information" subtitle="Help us plan the perfect event for you" />
                 <div className="space-y-5">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-1.5">Budget Range (Optional)</label>
-                    <input value={form.budget} onChange={e => set('budget', e.target.value)} className={inputClass} placeholder="e.g., $500 – $800" />
+                    <label className="text-sm font-semibold text-gray-600 block mb-1.5">Budget Range *</label>
+                    <input required value={form.budget} onChange={e => set('budget', e.target.value)} className={inputClass} placeholder="e.g., $500 – $800" />
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600 block mb-1.5">Additional Notes / Special Requests (Optional)</label>
@@ -466,8 +474,10 @@ export default function RequestForm() {
             {step < 2 ? (
               <button
                 type="button"
-                onClick={() => setStep(s => s + 1)}
-                className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all"
+                onClick={() => canContinue && setStep(s => s + 1)}
+                disabled={!canContinue}
+                title={!canContinue ? 'Please complete all required fields' : ''}
+                className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 6px 20px rgba(241,136,155,0.35)'}}
               >
                 Continue <ChevronRight className="w-4 h-4" />
@@ -476,8 +486,9 @@ export default function RequestForm() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={submitting}
-                className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-60"
+                disabled={submitting || !canSubmit}
+                title={!canSubmit ? 'Please complete all required fields' : ''}
+                className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{background: submitting ? '#f7b1bd' : 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 6px 20px rgba(241,136,155,0.35)'}}
               >
                 {submitting ? 'Submitting...' : 'Submit Request'} {!submitting && <Check className="w-4 h-4" />}
