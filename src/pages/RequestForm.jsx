@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import Navbar from '../components/layout/Navbar';
@@ -70,6 +70,21 @@ export default function RequestForm() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [advancing, setAdvancing] = useState(false);
+  const topRef = useRef(null);
+
+  const handleContinue = () => {
+    if (!canContinue || advancing) return;
+    setAdvancing(true);
+    setTimeout(() => {
+      setStep(s => s + 1);
+      setAdvancing(false);
+      // Scroll smoothly to top of form after the new step renders
+      requestAnimationFrame(() => {
+        topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }, 450);
+  };
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -140,6 +155,7 @@ export default function RequestForm() {
       <div className="relative" style={{zIndex: 2}}>
       <Navbar />
       <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-10">
+        <div ref={topRef} />
 
         {/* Page Header */}
         <div className="text-center mb-4">
@@ -474,13 +490,20 @@ export default function RequestForm() {
             {step < 2 ? (
               <button
                 type="button"
-                onClick={() => canContinue && setStep(s => s + 1)}
-                disabled={!canContinue}
+                onClick={handleContinue}
+                disabled={!canContinue || advancing}
                 title={!canContinue ? 'Please complete all required fields' : ''}
                 className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 6px 20px rgba(241,136,155,0.35)'}}
               >
-                Continue <ChevronRight className="w-4 h-4" />
+                {advancing ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>Continue <ChevronRight className="w-4 h-4" /></>
+                )}
               </button>
             ) : (
               <button
