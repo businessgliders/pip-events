@@ -183,7 +183,45 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen relative" style={{ background: 'linear-gradient(to bottom, #b67651, #f6eee7)' }}>
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, #b67651, #f6eee7)' }}>
+      {/* Tiled slanted "EVENTS" watermark */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 select-none"
+        style={{
+          zIndex: 1,
+          transform: 'rotate(-30deg)',
+          transformOrigin: 'center',
+          top: '-20%',
+          left: '-20%',
+          right: '-20%',
+          bottom: '-20%',
+          width: '140%',
+          height: '140%',
+          backgroundImage: `repeating-linear-gradient(0deg, transparent 0, transparent 120px)`,
+        }}
+      >
+        <div
+          className="w-full h-full"
+          style={{
+            fontFamily: 'Georgia, serif',
+            fontWeight: 900,
+            fontSize: '5rem',
+            letterSpacing: '0.3em',
+            color: 'rgba(255, 255, 255, 0.12)',
+            lineHeight: '160px',
+            whiteSpace: 'nowrap',
+            textAlign: 'center',
+          }}
+        >
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i}>
+              {'EVENTS \u00A0\u00A0\u00A0 '.repeat(8)}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="relative" style={{ zIndex: 2 }}>
 
         {/* Sticky redesigned header */}
