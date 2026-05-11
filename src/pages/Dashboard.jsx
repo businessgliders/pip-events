@@ -168,8 +168,8 @@ export default function Dashboard() {
       <div className="relative" style={{ zIndex: 2 }}>
 
         {/* Sticky redesigned header */}
-        <div className="sticky top-0 z-30 px-4 md:px-6 py-3" style={{ background: '#f4b7c4' }}>
-          <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4">
+        <div className="sticky top-0 z-30 px-4 md:px-8 pt-4 md:pt-8 pb-3" style={{ background: '#f4b7c4' }}>
+          <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-4">
             {/* Left — logo + counts */}
             <Link to="/" className="flex items-center gap-3 min-w-0 flex-shrink-0">
               <img
@@ -250,7 +250,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="max-w-[1600px] mx-auto px-3 md:px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pb-2">
           {view === 'archive' ? (
             <ArchivedTicketsList
               tickets={archivedTickets}
@@ -279,6 +279,18 @@ export default function Dashboard() {
               <AddonLegend />
             </DragDropContext>
           )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-2 mb-0 pb-2 flex items-center justify-center gap-2 flex-shrink-0">
+          <img
+            src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/5c8d9eb7a_1e65b0238_PiPEvents.png"
+            alt=""
+            className="w-4 h-4 rounded object-cover opacity-70"
+          />
+          <span className="text-xs" style={{ color: '#7a5555' }}>
+            © {new Date().getFullYear()} Pilates in Pink Studio
+          </span>
         </div>
       </div>
 
