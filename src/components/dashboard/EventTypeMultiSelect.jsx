@@ -49,8 +49,9 @@ export default function EventTypeMultiSelect({ options, selected, onChange }) {
 
       {open && (
         <div
-          className="absolute z-50 mt-1 left-0 right-0 rounded-xl py-1.5 max-h-72 overflow-y-auto"
+          className="absolute mt-1 left-0 right-0 rounded-xl py-1.5 max-h-72 overflow-y-auto"
           style={{
+            zIndex: 100,
             background: 'rgba(255,255,255,0.98)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
