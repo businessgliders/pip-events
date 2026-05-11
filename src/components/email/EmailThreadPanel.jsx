@@ -77,6 +77,7 @@ export default function EmailThreadPanel({ ticket, currentUser, highlightMessage
         clientName: ticket.full_name,
         inquiryType: ticket.event_type,
         ticketShortId: ticket.ticket_number || ticket.id.slice(-8),
+        ticket,
       }),
       sent_at: ticket.submitted_date || ticket.created_date,
       is_welcome: true,
