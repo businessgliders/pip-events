@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const SENDER_EMAIL = 'events@pilatesinpinkstudio.com';
-const OWNER_EMAIL = 'events@pilatesinpinkstudio.com';
+const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
 
 function encodeHeader(str) {
   return `=?UTF-8?B?${btoa(unescape(encodeURIComponent(str)))}?=`;
@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
 
           <p style="color:#a07878;font-size:14px;text-align:center;margin:0;">
             Questions? Reply to this email or reach us at 
-            <a href="mailto:info@pilatesinpinkstudio.com" style="color:#f1889b;text-decoration:none;">info@pilatesinpinkstudio.com</a>
+            <a href="mailto:events@pilatesinpinkstudio.com" style="color:#f1889b;text-decoration:none;">events@pilatesinpinkstudio.com</a>
           </p>
         </td></tr>
 
@@ -266,10 +266,10 @@ Deno.serve(async (req) => {
   // Look up the just-created EventRequest record first so we can use its ticket id in the subject
   const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date }, '-created_date', 1);
   const record = records?.[0];
-  const ticketShortId = record ? (record.ticket_number || record.id.slice(-8)) : 'NEW';
-  const ticketTag = `[Ticket #${ticketShortId}]`;
+  const requestShortId = record ? (record.ticket_number || record.id.slice(-8)) : 'NEW';
+  const requestTag = `[Request #${requestShortId}]`;
 
-  const confirmationSubject = `${ticketTag} Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
+  const confirmationSubject = `${requestTag} Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
 
   const [submitterResult, ownerResult] = await Promise.all([
     sendGmail(accessToken, {

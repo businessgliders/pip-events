@@ -34,7 +34,8 @@ function parseFromHeader(value) {
 
 function extractTicketNumber(subject) {
   if (!subject) return null;
-  const m = subject.match(/\[Ticket #([A-Za-z0-9]+)\]/);
+  // Match new [Request #...] and legacy [Ticket #...] tags
+  const m = subject.match(/\[(?:Request|Ticket) #([A-Za-z0-9]+)\]/);
   return m ? m[1] : null;
 }
 

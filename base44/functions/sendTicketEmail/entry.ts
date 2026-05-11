@@ -103,14 +103,16 @@ Deno.serve(async (req) => {
     const inReplyTo = msgIdChain.length > 0 ? msgIdChain[msgIdChain.length - 1] : null;
     const references = msgIdChain.length > 0 ? msgIdChain.join(' ') : null;
 
-    // Subject with ticket tag for threading fallback
-    const ticketTag = `[Ticket #${ticket.ticket_number || ticket.id.slice(-8)}]`;
+    // Subject with request tag for threading fallback (accept legacy "Ticket #" too)
+    const requestTag = `[Request #${ticket.ticket_number || ticket.id.slice(-8)}]`;
+    const legacyTicketTag = `[Ticket #${ticket.ticket_number || ticket.id.slice(-8)}]`;
     let subject;
     if (lastMsg?.subject) {
-      subject = lastMsg.subject.includes(ticketTag) ? lastMsg.subject : `${ticketTag} ${lastMsg.subject}`;
+      const hasTag = lastMsg.subject.includes(requestTag) || lastMsg.subject.includes(legacyTicketTag);
+      subject = hasTag ? lastMsg.subject : `${requestTag} ${lastMsg.subject}`;
       if (!/^re:\s/i.test(subject)) subject = `Re: ${subject}`;
     } else {
-      subject = `${ticketTag} Your Pilates in Pink Event Inquiry`;
+      subject = `${requestTag} Your Pilates in Pink Event Inquiry`;
     }
 
     // Append signature unless welcome email
