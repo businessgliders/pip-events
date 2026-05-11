@@ -82,7 +82,12 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
               <User className="w-5 h-5" style={{ color: '#e86c84' }} />
             </div>
             <div>
-              <h2 className="text-lg font-bold leading-tight" style={{ color: '#6b4e4e' }}>{request.full_name}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold leading-tight" style={{ color: '#6b4e4e' }}>{request.full_name}</h2>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(241,136,155,0.12)', color: '#e86c84', border: '1px solid rgba(241,136,155,0.3)' }}>
+                  {request.ticket_number ? `#${request.ticket_number}` : `#${request.id?.slice(-6)}`}
+                </span>
+              </div>
               <p className="text-xs mt-0.5" style={{ color: '#c48a96' }}>
                 {request.event_type} · {request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'}
               </p>
