@@ -3,16 +3,14 @@ import { DragDropContext } from '@hello-pangea/dnd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import Navbar from '../components/layout/Navbar';
 import KanbanColumn from '../components/board/KanbanColumn';
 import ArchivedTicketsList from '../components/board/ArchivedTicketsList';
 import StatusChangeDialog from '../components/board/StatusChangeDialog';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
 import CalendarView from '../components/dashboard/CalendarView';
 import AddonLegend from '../components/board/AddonLegend';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, LayoutGrid, Archive, CalendarDays } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, LayoutGrid, Archive, CalendarDays, Bell } from 'lucide-react';
 
 const STATUS_COLUMNS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
 
@@ -158,54 +156,89 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen relative" style={{ background: 'rgba(248, 210, 220, 0.85)' }}>
+    <div className="min-h-screen relative" style={{ background: '#f4b7c4' }}>
       <div className="relative" style={{ zIndex: 2 }}>
-        <Navbar />
 
-        {/* Sticky header */}
-        <div className="sticky top-12 z-30 backdrop-blur-xl bg-white/30 border-b border-white/40 px-3 md:px-6 py-3">
-          <div className="max-w-[1600px] mx-auto flex flex-wrap items-center gap-2 md:gap-3">
-            <div className="flex-1 min-w-[200px] relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-              <Input
-                placeholder="Search by name, email, type, ticket #"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-9 bg-white/70 border-white/40"
+        {/* Sticky redesigned header */}
+        <div className="sticky top-0 z-30 px-4 md:px-6 py-3" style={{ background: '#f4b7c4' }}>
+          <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4">
+            {/* Left — logo + counts */}
+            <Link to="/" className="flex items-center gap-3 min-w-0 flex-shrink-0">
+              <img
+                src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/5c8d9eb7a_1e65b0238_PiPEvents.png"
+                alt="PIP Events"
+                className="w-11 h-11 rounded-xl object-cover shadow-sm flex-shrink-0"
               />
-            </div>
+              <div className="hidden sm:block text-sm font-medium leading-tight truncate" style={{ color: '#5a3535' }}>
+                <span className="font-semibold">{activeTickets.length}</span> active ticket{activeTickets.length === 1 ? '' : 's'}
+                <span className="mx-1.5 opacity-50">•</span>
+                <span className="font-semibold">{(ticketsByColumn['New'] || []).length}</span> in New
+              </div>
+            </Link>
 
-            <div className="inline-flex rounded-xl overflow-hidden border border-white/40 bg-white/30">
+            {/* Right — actions */}
+            <div className="ml-auto flex items-center gap-2 md:gap-3">
               <button
-                onClick={() => setView('board')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1 ${
-                  view === 'board' ? 'bg-white text-pink-600' : 'text-white'
-                }`}
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm"
+                title="Notifications"
               >
-                <LayoutGrid className="w-3.5 h-3.5" /> Board
+                <Bell className="w-4 h-4" style={{ color: '#5a3535' }} />
               </button>
+
+              <div className="relative flex-1 min-w-0 sm:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#a07878' }} />
+                <input
+                  placeholder="Search tickets..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 rounded-full text-sm bg-white/80 focus:bg-white border-0 focus:outline-none focus:ring-2 focus:ring-white/60 placeholder:text-gray-400"
+                  style={{ color: '#5a3535' }}
+                />
+              </div>
+
+              <div className="hidden md:inline-flex rounded-full overflow-hidden bg-white/70 shadow-sm">
+                <button
+                  onClick={() => setView('board')}
+                  className="px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  style={{
+                    background: view === 'board' ? '#3a1f1f' : 'transparent',
+                    color: view === 'board' ? 'white' : '#5a3535',
+                  }}
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" /> Board
+                </button>
+                <button
+                  onClick={() => setView('calendar')}
+                  className="px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  style={{
+                    background: view === 'calendar' ? '#3a1f1f' : 'transparent',
+                    color: view === 'calendar' ? 'white' : '#5a3535',
+                  }}
+                >
+                  <CalendarDays className="w-3.5 h-3.5" /> Calendar
+                </button>
+              </div>
+
               <button
-                onClick={() => setView('calendar')}
-                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1 ${
-                  view === 'calendar' ? 'bg-white text-pink-600' : 'text-white'
-                }`}
+                onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm relative"
+                title={view === 'archive' ? 'Back to Board' : `Archive (${archivedTickets.length})`}
               >
-                <CalendarDays className="w-3.5 h-3.5" /> Calendar
+                {view === 'archive' ? (
+                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
+                ) : (
+                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
+                )}
+                {view !== 'archive' && archivedTickets.length > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+                    style={{ background: '#e86c84' }}
+                  >
+                    {archivedTickets.length}
+                  </span>
+                )}
               </button>
             </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
-              className="bg-white/70 border-white/40"
-            >
-              {view === 'archive' ? (
-                <><LayoutGrid className="w-4 h-4 mr-1" /> Board</>
-              ) : (
-                <><Archive className="w-4 h-4 mr-1" /> Archive ({archivedTickets.length})</>
-              )}
-            </Button>
           </div>
         </div>
 
