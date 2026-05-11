@@ -98,10 +98,10 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
         </span>
       )}
 
-      {/* Unread email badge — top-left chip styled like add-ons */}
+      {/* Unread email badge — top-right chip styled like add-ons */}
       {hasUnread && (
         <span
-          className="absolute top-2 left-2 inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[10px] font-bold text-white shadow-md z-10 animate-pulse-soft"
+          className="absolute top-2 right-2 inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[10px] font-bold text-white shadow-md z-10 animate-pulse-soft"
           style={{ background: '#e86c84', border: '1px solid rgba(255,255,255,0.6)' }}
           title={`${unreadCount} unread message${unreadCount === 1 ? '' : 's'}`}
         >
@@ -111,7 +111,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       )}
 
       {/* Mobile compact */}
-      <div className={`md:hidden ${hasUnread ? 'pt-4' : ''}`}>
+      <div className="md:hidden">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-base flex-shrink-0">{emoji}</span>
@@ -147,7 +147,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       </div>
 
       {/* Desktop */}
-      <div className={`hidden md:block ${hasUnread ? 'pt-4' : ''}`}>
+      <div className="hidden md:block">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start gap-2 min-w-0 flex-1">
             <span className="text-xl flex-shrink-0">{emoji}</span>
