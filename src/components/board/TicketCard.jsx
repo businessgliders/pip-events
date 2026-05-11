@@ -1,4 +1,4 @@
-import { MoreVertical, Users, Calendar, Sparkles } from 'lucide-react';
+import { MoreVertical, Users, Calendar, Sparkles, GlassWater, PartyPopper, Camera, Music, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -20,6 +20,14 @@ const EVENT_TYPE_EMOJI = {
 };
 
 const STATUS_OPTIONS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
+
+const ADDON_ICONS = {
+  'Sparkling Water & Snacks': { Icon: GlassWater, color: '#3b82f6' },
+  'Studio Décor Package':     { Icon: PartyPopper, color: '#e86c84' },
+  'Photography Add-On':       { Icon: Camera, color: '#7c3aed' },
+  'Custom Playlist':          { Icon: Music, color: '#10b981' },
+  'Extra Mats & Towels':      { Icon: Layers, color: '#f59e0b' },
+};
 
 // Days-until-event → priority border color
 function urgencyBorderClass(eventDateStr) {
@@ -62,14 +70,14 @@ function initialsColor(email = '') {
 function formatEventDate(eventDate) {
   if (!eventDate) return '—';
   const d = new Date(eventDate + 'T12:00:00');
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export default function TicketCard({ ticket, onStatusChange, onClick, isDragging, isHighlighted, viewMode }) {
   const emoji = EVENT_TYPE_EMOJI[ticket.event_type] || '✨';
   const borderColor = urgencyBorderClass(ticket.event_date);
   const ticketTag = ticket.ticket_number ? `#${ticket.ticket_number}` : `#${ticket.id?.slice(-6)}`;
-  const initials = (ticket.full_name || ticket.email || '?').trim()[0]?.toUpperCase() || '?';
+  const addOns = Array.isArray(ticket.add_ons) ? ticket.add_ons : [];
 
   return (
     <div
@@ -166,14 +174,24 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
           ) : null}
         </div>
 
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-2 flex items-center justify-between gap-2">
           <span className="text-[11px] text-gray-500">{formatRelativeTime(ticket.submitted_date || ticket.created_date)}</span>
-          <div
-            title={ticket.email}
-            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
-            style={{ background: initialsColor(ticket.email || '') }}
-          >
-            {initials}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {addOns.map(name => {
+              const cfg = ADDON_ICONS[name];
+              if (!cfg) return null;
+              const { Icon, color } = cfg;
+              return (
+                <span
+                  key={name}
+                  title={name}
+                  className="w-5 h-5 rounded-full flex items-center justify-center"
+                  style={{ background: `${color}1f`, border: `1px solid ${color}55` }}
+                >
+                  <Icon className="w-2.5 h-2.5" style={{ color }} />
+                </span>
+              );
+            })}
           </div>
         </div>
       </div>
