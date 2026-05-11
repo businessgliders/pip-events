@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Navbar from '../components/layout/Navbar';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal.jsx';
-import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar, Settings, LogOut, Sparkles, MessageCircle } from 'lucide-react';
+import { Search, Plus, ClipboardList, Clock, CheckCircle2, CalendarDays, LayoutList, Table2, Calendar, Settings, LogOut, Sparkles, MessageCircle, LayoutGrid } from 'lucide-react';
 import { format } from 'date-fns';
 import ColumnCustomizer from '../components/dashboard/ColumnCustomizer';
 import ListView from '../components/dashboard/ListView.jsx';
@@ -313,14 +313,16 @@ export default function Dashboard() {
         {dashTab === 'requests' && <>
 
         {/* Stats */}
-        <div className="hidden sm:grid grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        <div className="hidden sm:grid grid-cols-5 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {[
+            { label: 'All', value: stats.total, Icon: LayoutGrid, key: 'total' },
             { label: 'New', value: stats.new, Icon: Sparkles, key: 'new' },
             { label: 'In Conversations', value: stats.inConversations, Icon: MessageCircle, key: 'inConversations' },
             { label: 'Confirmed', value: stats.confirmed, Icon: CheckCircle2, key: 'confirmed' },
             { label: 'Completed', value: stats.completed, Icon: CalendarDays, key: 'completed' },
           ].map(s => {
             const isActive =
+              (s.key === 'total' && filterStatus === '') ||
               (s.key === 'new' && filterStatus === 'New') ||
               (s.key === 'inConversations' && filterStatus === 'In Conversations') ||
               (s.key === 'confirmed' && filterStatus === 'Confirmed') ||
