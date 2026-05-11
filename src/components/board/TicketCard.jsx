@@ -1,4 +1,4 @@
-import { MoreVertical, Users, Calendar, Sparkles, GlassWater, PartyPopper, Camera, Music, Layers } from 'lucide-react';
+import { MoreVertical, Users, Calendar, Sparkles, GlassWater, PartyPopper, Camera, Music, Layers, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -98,19 +98,20 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
         </span>
       )}
 
-      {/* Unread email badge */}
+      {/* Unread email badge — top-left chip styled like add-ons */}
       {hasUnread && (
         <span
-          className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center text-white shadow-md z-10 animate-pulse-soft"
-          style={{ background: '#e86c84', border: '2px solid white' }}
+          className="absolute top-2 left-2 inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[10px] font-bold text-white shadow-md z-10 animate-pulse-soft"
+          style={{ background: '#e86c84', border: '1px solid rgba(255,255,255,0.6)' }}
           title={`${unreadCount} unread message${unreadCount === 1 ? '' : 's'}`}
         >
+          <Mail className="w-2.5 h-2.5" />
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       )}
 
       {/* Mobile compact */}
-      <div className="md:hidden">
+      <div className={`md:hidden ${hasUnread ? 'pt-4' : ''}`}>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-base flex-shrink-0">{emoji}</span>
@@ -146,7 +147,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       </div>
 
       {/* Desktop */}
-      <div className="hidden md:block">
+      <div className={`hidden md:block ${hasUnread ? 'pt-4' : ''}`}>
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start gap-2 min-w-0 flex-1">
             <span className="text-xl flex-shrink-0">{emoji}</span>
