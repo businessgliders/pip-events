@@ -88,6 +88,10 @@
       "format": "date-time",
       "description": "Original submission date from the client's form or CSV"
     },
+    "ticket_number": {
+      "type": "number",
+      "description": "Sequential ticket number used in email subject for threading"
+    },
     "gmail_thread_id": {
       "type": "string",
       "description": "Gmail thread ID for the email conversation with this client"
@@ -95,6 +99,29 @@
     "gmail_root_message_id": {
       "type": "string",
       "description": "RFC Message-ID header of the very first email sent (used for threading replies)"
+    },
+    "ai_suggestions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "body_html": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Cached AI reply suggestions"
+    },
+    "ai_suggestions_generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ai_suggestions_message_count": {
+      "type": "number",
+      "description": "Count of EmailMessage rows when suggestions were generated (used for cache invalidation)"
     },
     "email_log": {
       "type": "array",

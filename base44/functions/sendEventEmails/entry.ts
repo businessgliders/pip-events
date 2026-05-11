@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
+const SENDER_EMAIL = 'events@pilatesinpinkstudio.com';
+const OWNER_EMAIL = 'events@pilatesinpinkstudio.com';
 
 function encodeHeader(str) {
   return `=?UTF-8?B?${btoa(unescape(encodeURIComponent(str)))}?=`;
@@ -8,7 +9,7 @@ function encodeHeader(str) {
 
 function buildRaw({ to, subject, html, replyTo }) {
   const lines = [
-    `From: ${encodeHeader('Events Pilates in Pink™')} <info@pilatesinpinkstudio.com>`,
+    `From: ${encodeHeader('Pilates in Pink ™')} <${SENDER_EMAIL}>`,
     `To: ${to}`,
     `Subject: ${encodeHeader(subject)}`,
     `Content-Type: text/html; charset=utf-8`,
@@ -262,7 +263,13 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
-  const confirmationSubject = `Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
+  // Look up the just-created EventRequest record first so we can use its ticket id in the subject
+  const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date }, '-created_date', 1);
+  const record = records?.[0];
+  const ticketShortId = record ? (record.ticket_number || record.id.slice(-8)) : 'NEW';
+  const ticketTag = `[Ticket #${ticketShortId}]`;
+
+  const confirmationSubject = `${ticketTag} Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
 
   const [submitterResult, ownerResult] = await Promise.all([
     sendGmail(accessToken, {
@@ -284,10 +291,8 @@ Deno.serve(async (req) => {
     threadMeta = await fetchSentMeta(accessToken, submitterResult.id);
   }
 
-  // Log the initial confirmation email on the EventRequest record
-  const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date });
-  if (records && records.length > 0) {
-    const record = records[0];
+  // Log the initial confirmation email on the EventRequest record + create EmailMessage row
+  if (record) {
     const existingLog = record.email_log || [];
     const updates = {
       email_log: [...existingLog, {
@@ -304,6 +309,29 @@ Deno.serve(async (req) => {
     if (threadMeta.rfcMessageId) updates.gmail_root_message_id = threadMeta.rfcMessageId;
 
     await base44.asServiceRole.entities.EventRequest.update(record.id, updates);
+
+    // Create EmailMessage row for the welcome bubble in the new thread UI
+    if (submitterResult?.id) {
+      await base44.asServiceRole.entities.EmailMessage.create({
+        ticket_id: record.id,
+        gmail_thread_id: threadMeta.threadId || null,
+        gmail_message_id: submitterResult.id,
+        rfc_message_id: threadMeta.rfcMessageId || null,
+        direction: 'outbound',
+        from_email: SENDER_EMAIL,
+        from_name: 'Pilates in Pink ™',
+        to_email: form.email,
+        subject: confirmationSubject,
+        body_html: submitterHtml,
+        body_text: '',
+        sent_by: 'system',
+        sent_at: new Date().toISOString(),
+        is_welcome: true,
+        send_status: 'sent',
+        read_by: [],
+        read_at: [],
+      });
+    }
   }
 
   return Response.json({ success: true, submitterResult, ownerResult, threadMeta });

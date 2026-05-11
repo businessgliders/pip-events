@@ -5,20 +5,36 @@
     "name": {
       "type": "string"
     },
+    "category": {
+      "type": "string",
+      "enum": [
+        "General",
+        "Other"
+      ],
+      "default": "General"
+    },
     "subject": {
       "type": "string"
     },
     "body": {
-      "type": "string"
+      "type": "string",
+      "description": "Legacy field \u2014 use body_html for new templates"
+    },
+    "body_html": {
+      "type": "string",
+      "description": "HTML body. Supports {{client_name}}, {{client_first_name}}, {{staff_name}}, {{ticket_id}}, etc."
     },
     "is_default": {
       "type": "boolean",
       "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
     }
   },
   "required": [
     "name",
-    "subject",
-    "body"
+    "subject"
   ]
 }

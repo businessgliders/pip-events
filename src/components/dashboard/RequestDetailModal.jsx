@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { X, Mail, Phone, Trash2, User, Calendar, Tag, Sparkles, StickyNote, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
-import EmailCommsPanel from './EmailCommsPanel';
+import EmailThreadPanel from '@/components/email/EmailThreadPanel';
 
 const STATUS_OPTIONS = ['New', 'In Conversations', 'Confirmed', 'Completed', 'Cancelled'];
 
@@ -21,6 +21,11 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
   const [status, setStatus] = useState(initStatus);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setCurrentUser).catch(() => setCurrentUser(null));
+  }, []);
 
   // Subscribe to live updates for this specific record
   useEffect(() => {
@@ -216,7 +221,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
 
           {/* RIGHT — Email comms */}
           <div className="flex-1 flex flex-col min-h-0 min-w-0">
-            <EmailCommsPanel request={request} onUpdate={onUpdate} />
+            <EmailThreadPanel ticket={request} currentUser={currentUser} />
           </div>
         </div>
       </div>
