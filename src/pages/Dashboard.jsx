@@ -77,12 +77,12 @@ export default function Dashboard() {
         return bTime - aTime;
       });
     });
-    // "In Conversations" sorted by event date, most recent at the top
+    // "In Conversations" sorted by event date, soonest at the top
     if (map['In Conversations']) {
       map['In Conversations'].sort((a, b) => {
-        const aTime = a.event_date ? new Date(a.event_date + 'T12:00:00').getTime() : 0;
-        const bTime = b.event_date ? new Date(b.event_date + 'T12:00:00').getTime() : 0;
-        return bTime - aTime;
+        const aTime = a.event_date ? new Date(a.event_date + 'T12:00:00').getTime() : Infinity;
+        const bTime = b.event_date ? new Date(b.event_date + 'T12:00:00').getTime() : Infinity;
+        return aTime - bTime;
       });
     }
     return map;
