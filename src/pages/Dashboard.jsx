@@ -289,7 +289,7 @@ export default function Dashboard() {
             className="w-4 h-4 rounded object-cover opacity-70"
           />
           <span className="text-xs" style={{ color: '#7a5555' }}>
-            © {new Date().getFullYear()} Pilates in Pink Studio
+            © {new Date().getFullYear()} Pilates in Pink™ Studio
           </span>
         </div>
       </div>
