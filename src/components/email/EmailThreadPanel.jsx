@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import EmailMessageItem from './EmailMessageItem';
 import EmailComposer from './EmailComposer';
 import { buildWelcomeHtml } from './welcomeEmailHtml';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 const STAFF_DOMAIN = 'pilatesinpinkstudio.com';
 
@@ -13,6 +14,7 @@ export default function EmailThreadPanel({ ticket, currentUser, highlightMessage
   const queryClient = useQueryClient();
   const scrollRef = useRef(null);
   const initialScrolled = useRef(false);
+  const { markAsRead } = useUnreadMessages(currentUser?.email);
 
   const { data: rawMessages = [] } = useQuery({
     queryKey: ['email-messages', ticket.id],
@@ -138,9 +140,19 @@ export default function EmailThreadPanel({ ticket, currentUser, highlightMessage
         className="flex-1 overflow-y-auto px-3 py-4 space-y-3 min-h-0"
         style={{ background: 'linear-gradient(180deg, rgba(254,243,199,0.2), rgba(252,231,235,0.3))', maxHeight: 480 }}
       >
-        {thread.map(m => (
-          <EmailMessageItem key={m.id} message={m} isHighlighted={m.id === highlightMessageId} />
-        ))}
+        {thread.map(m => {
+          const readBy = Array.isArray(m.read_by) ? m.read_by : [];
+          const isUnread = m.direction === 'inbound' && !m.__synthetic && currentUser?.email && !readBy.includes(currentUser.email);
+          return (
+            <EmailMessageItem
+              key={m.id}
+              message={m}
+              isHighlighted={m.id === highlightMessageId}
+              isUnread={isUnread}
+              onMarkRead={markAsRead}
+            />
+          );
+        })}
       </div>
 
       {/* Composer */}

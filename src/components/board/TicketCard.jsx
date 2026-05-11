@@ -73,11 +73,12 @@ function formatEventDate(eventDate) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export default function TicketCard({ ticket, onStatusChange, onClick, isDragging, isHighlighted, viewMode }) {
+export default function TicketCard({ ticket, onStatusChange, onClick, isDragging, isHighlighted, viewMode, unreadCount = 0 }) {
   const emoji = EVENT_TYPE_EMOJI[ticket.event_type] || '✨';
   const borderColor = urgencyBorderClass(ticket.event_date);
   const ticketTag = ticket.ticket_number ? `#${ticket.ticket_number}` : `#${ticket.id?.slice(-6)}`;
   const addOns = Array.isArray(ticket.add_ons) ? ticket.add_ons : [];
+  const hasUnread = unreadCount > 0;
 
   return (
     <div
@@ -94,6 +95,17 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       {viewMode === 'category' && (
         <span className="pointer-events-none absolute top-1 right-2 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-900/10">
           {ticket.status}
+        </span>
+      )}
+
+      {/* Unread email badge */}
+      {hasUnread && (
+        <span
+          className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center text-white shadow-md z-10 animate-pulse-soft"
+          style={{ background: '#e86c84', border: '2px solid white' }}
+          title={`${unreadCount} unread message${unreadCount === 1 ? '' : 's'}`}
+        >
+          {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       )}
 
@@ -203,6 +215,11 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
           75% { transform: translateX(5px); }
         }
         .animate-shake { animation: shake 0.5s ease-in-out 3; }
+        @keyframes pulse-soft {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232,108,132,0.6); }
+          50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(232,108,132,0); }
+        }
+        .animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
       `}</style>
     </div>
   );

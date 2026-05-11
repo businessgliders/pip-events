@@ -10,8 +10,10 @@ import RequestDetailModal from '../components/dashboard/RequestDetailModal';
 import CalendarView from '../components/dashboard/CalendarView';
 import AddonLegend from '../components/board/AddonLegend';
 import WhatsNewSplash from '../components/dashboard/WhatsNewSplash';
+import NotificationCenter from '../components/dashboard/NotificationCenter';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
-import { Search, LayoutGrid, Archive, CalendarDays, Bell } from 'lucide-react';
+import { Search, LayoutGrid, Archive, CalendarDays } from 'lucide-react';
 
 const STATUS_COLUMNS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
 
@@ -21,8 +23,17 @@ export default function Dashboard() {
   const [search, setSearch] = useState('');
   const [view, setView] = useState('board'); // 'board' | 'calendar' | 'archive'
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [highlightMessageId, setHighlightMessageId] = useState(null);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [highlightedTicketId, setHighlightedTicketId] = useState(null);
+
+  const { unreadMessages, unreadCountByTicket, totalUnread, markAsRead } = useUnreadMessages(user?.email);
+
+  const handleNotificationSelect = (ticket, messageId) => {
+    setSelectedRequest(ticket);
+    setHighlightMessageId(messageId);
+    markAsRead(messageId);
+  };
 
   // Auth gate — restrict to studio domain
   useEffect(() => {
@@ -187,12 +198,13 @@ export default function Dashboard() {
 
             {/* Right — actions */}
             <div className="ml-auto flex items-center gap-2 md:gap-3">
-              <button
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm"
-                title="Notifications"
-              >
-                <Bell className="w-4 h-4" style={{ color: '#5a3535' }} />
-              </button>
+              <NotificationCenter
+                unreadMessages={unreadMessages}
+                totalUnread={totalUnread}
+                tickets={tickets}
+                onSelect={handleNotificationSelect}
+                onMarkRead={markAsRead}
+              />
 
               <div className="relative flex-1 min-w-0 sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#a07878' }} />
@@ -269,11 +281,12 @@ export default function Dashboard() {
                     status={col}
                     tickets={ticketsByColumn[col] || []}
                     onStatusChange={handleStatusChangeFromMenu}
-                    onTicketClick={setSelectedRequest}
+                    onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
                     isLoading={isLoading}
                     highlightedTicketId={highlightedTicketId}
                     viewMode="status"
                     onArchiveAll={col === 'Completed' ? handleArchiveAll : undefined}
+                    unreadCountByTicket={unreadCountByTicket}
                   />
                 ))}
               </div>
@@ -298,10 +311,12 @@ export default function Dashboard() {
       {selectedRequest && (
         <RequestDetailModal
           request={selectedRequest}
-          onClose={() => setSelectedRequest(null)}
+          highlightMessageId={highlightMessageId}
+          onClose={() => { setSelectedRequest(null); setHighlightMessageId(null); }}
           onUpdate={() => {
             queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
             setSelectedRequest(null);
+            setHighlightMessageId(null);
           }}
         />
       )}

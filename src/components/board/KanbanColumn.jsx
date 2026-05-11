@@ -43,6 +43,7 @@ export default function KanbanColumn({
   onArchiveAll,
   onTidyUp,
   viewMode,
+  unreadCountByTicket = {},
 }) {
   const isDimmed = status === 'Completed';
   const colorCls = columnColors[status] || 'from-white/20 to-white/10 border-white/30';
@@ -113,6 +114,7 @@ export default function KanbanColumn({
                           isDragging={snap.isDragging}
                           isHighlighted={highlightedTicketId === ticket.id}
                           viewMode={viewMode}
+                          unreadCount={unreadCountByTicket[ticket.id] || 0}
                         />
                       </div>
                     );

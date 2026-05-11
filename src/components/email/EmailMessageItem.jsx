@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Sparkles, AlertTriangle } from 'lucide-react';
+import { Sparkles, AlertTriangle, Check } from 'lucide-react';
 import { format } from 'date-fns';
 
 // Strip HTML tags + Gmail quoted-reply chains so previews are clean
@@ -21,11 +21,12 @@ function cleanPreview(html, text) {
   return plain.replace(/\s+/g, ' ').trim();
 }
 
-export default function EmailMessageItem({ message, isHighlighted }) {
+export default function EmailMessageItem({ message, isHighlighted, isUnread, onMarkRead }) {
   const [open, setOpen] = useState(false);
   const isInbound = message.direction === 'inbound';
   const isFailed = message.send_status === 'failed';
   const isWelcome = message.is_welcome;
+  const showUnread = isUnread && isInbound && !message.__synthetic;
 
   const STUDIO_EMAIL = 'events@pilatesinpinkstudio.com';
   const senderName = isInbound
@@ -58,18 +59,23 @@ export default function EmailMessageItem({ message, isHighlighted }) {
     );
   }
 
+  const handleOpen = () => {
+    setOpen(true);
+    if (showUnread && onMarkRead) onMarkRead(message.id);
+  };
+
   return (
-    <div className={`flex ${isInbound ? 'justify-start' : 'justify-end'}`} data-msg-id={message.id}>
+    <div className={`flex ${isInbound ? 'justify-start' : 'justify-end'} relative`} data-msg-id={message.id}>
       <div
-        onClick={() => setOpen(true)}
-        className={`max-w-[80%] cursor-pointer rounded-2xl px-4 py-3 transition-all ${
+        onClick={handleOpen}
+        className={`max-w-[80%] cursor-pointer rounded-2xl px-4 py-3 transition-all relative ${
           isInbound ? 'rounded-bl-sm' : 'rounded-br-sm'
-        } ${isHighlighted ? 'ring-4 ring-yellow-300 ring-offset-2' : ''}`}
+        } ${isHighlighted ? 'ring-4 ring-yellow-400 ring-offset-2 animate-bubble-pulse' : ''} ${showUnread ? 'shadow-md' : ''}`}
         style={
           isFailed
             ? { background: '#fee2e2', border: '1px solid #fca5a5' }
             : isInbound
-            ? { background: 'white', border: '1px solid #e5e7eb' }
+            ? { background: showUnread ? '#fffbeb' : 'white', border: showUnread ? '1px solid #fcd34d' : '1px solid #e5e7eb' }
             : { background: '#fce7eb', border: '1px solid #f7b1bd' }
         }
       >
@@ -78,18 +84,46 @@ export default function EmailMessageItem({ message, isHighlighted }) {
             <AlertTriangle className="w-3 h-3" /> FAILED TO SEND
           </div>
         )}
-        <p className="text-xs font-semibold mb-1" style={{ color: isInbound ? '#7a6b8f' : '#e86c84' }}>
-          {senderName}
-        </p>
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <p className="text-xs font-semibold" style={{ color: isInbound ? '#7a6b8f' : '#e86c84' }}>
+            {senderName}
+          </p>
+          {showUnread && (
+            <span className="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full text-white flex-shrink-0" style={{ background: '#f59e0b' }}>
+              NEW
+            </span>
+          )}
+        </div>
         <p className="text-sm line-clamp-2 leading-relaxed" style={{ color: '#4a3838' }}>
           {preview || '(no content)'}
         </p>
         {preview.length > 140 && (
           <p className="text-[10px] mt-1 italic" style={{ color: '#9a7070' }}>Tap to view full message</p>
         )}
-        <p className="text-[10px] mt-1" style={{ color: '#9a7070' }}>{time}</p>
+        <div className="flex items-center justify-between mt-1 gap-2">
+          <p className="text-[10px]" style={{ color: '#9a7070' }}>{time}</p>
+          {showUnread && onMarkRead && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onMarkRead(message.id); }}
+              title="Mark as read"
+              className="inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full hover:bg-white transition-colors"
+              style={{ color: '#92400e', background: 'rgba(252,211,77,0.3)', border: '1px solid #fcd34d' }}
+            >
+              <Check className="w-2.5 h-2.5" /> Mark read
+            </button>
+          )}
+        </div>
       </div>
       <FullModal open={open} setOpen={setOpen} message={message} />
+      <style>{`
+        @keyframes bubble-pulse {
+          0%, 100% { transform: scale(1); }
+          25% { transform: scale(1.03); }
+          50% { transform: scale(1); }
+          75% { transform: scale(1.03); }
+        }
+        .animate-bubble-pulse { animation: bubble-pulse 1.2s ease-in-out 2; }
+      `}</style>
     </div>
   );
 }
