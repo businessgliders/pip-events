@@ -222,7 +222,10 @@ Deno.serve(async (req) => {
     const updates = {};
     if (!ticket.gmail_thread_id && actualThreadId) updates.gmail_thread_id = actualThreadId;
     if (!ticket.gmail_root_message_id && rfcMessageId) updates.gmail_root_message_id = rfcMessageId;
-    if (!is_welcome && (ticket.status === 'New' || !ticket.status)) updates.status = 'In Conversations';
+    // Auto-progress New → In Conversations only for genuine staff replies
+    // (excludes welcome/auto-confirmation emails and any non-staff sender)
+    const isStaffReply = !is_welcome && user.email && user.email.toLowerCase().endsWith(`@${STAFF_DOMAIN}`);
+    if (isStaffReply && (ticket.status === 'New' || !ticket.status)) updates.status = 'In Conversations';
     if (Object.keys(updates).length > 0) {
       await base44.asServiceRole.entities.EventRequest.update(ticket_id, updates);
     }
