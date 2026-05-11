@@ -1,4 +1,5 @@
 import { GlassWater, PartyPopper, Camera, Music, Layers } from 'lucide-react';
+// (compact legend)
 
 const ADDONS = [
   { name: 'Sparkling Water & Snacks', Icon: GlassWater, color: '#3b82f6' },
@@ -10,7 +11,7 @@ const ADDONS = [
 
 export default function AddonLegend() {
   return (
-    <div className="mt-10 mb-2 mx-auto w-fit max-w-full backdrop-blur-md bg-white/40 border border-white/40 rounded-xl px-4 py-2.5 flex flex-wrap items-center gap-x-5 gap-y-2">
+    <div className="mt-2 mb-1 mx-auto w-fit max-w-full backdrop-blur-md bg-white/40 border border-white/40 rounded-xl px-3 py-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
       <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#7a4a3a' }}>
         Add-ons
       </span>

@@ -52,11 +52,11 @@ export default function KanbanColumn({
   return (
     <div
       data-swimlane
-      className={`backdrop-blur-xl bg-gradient-to-b ${colorCls} border rounded-2xl overflow-hidden shadow-xl flex flex-col max-h-[70vh] lg:max-h-none lg:h-[calc(100vh-220px)] ${
+      className={`backdrop-blur-xl bg-gradient-to-b ${colorCls} border rounded-2xl overflow-hidden shadow-xl flex flex-col max-h-[70vh] lg:max-h-none lg:h-[calc(100vh-150px)] ${
         isDimmed ? 'opacity-70 hover:opacity-100 transition-opacity' : ''
       }`}
     >
-      <div className={`backdrop-blur-md ${headerCls} border-b px-3 md:px-4 py-3 md:py-4 flex-shrink-0`}>
+      <div className={`backdrop-blur-md ${headerCls} border-b px-3 md:px-4 py-2 md:py-2.5 flex-shrink-0`}>
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-white font-semibold text-sm md:text-base truncate drop-shadow">{status}</h3>
           <span className="inline-flex items-center justify-center min-w-[28px] h-6 px-2 rounded-full bg-white/40 text-white text-xs font-bold backdrop-blur">
