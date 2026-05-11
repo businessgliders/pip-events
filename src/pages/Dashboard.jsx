@@ -120,7 +120,7 @@ export default function Dashboard() {
   });
 
   const stats = {
-    total: enriched.length,
+    total: enriched.filter(r => r.status !== 'Completed').length,
     new: enriched.filter(r => r.status === 'New').length,
     inConversations: enriched.filter(r => r.status === 'In Conversations').length,
     confirmed: enriched.filter(r => r.status === 'Confirmed').length,
@@ -145,7 +145,9 @@ export default function Dashboard() {
       r.email?.toLowerCase().includes(search.toLowerCase()) ||
       r.event_type?.toLowerCase().includes(search.toLowerCase());
     const matchType = !filterType || r.event_type === filterType;
-    const matchStatus = !filterStatus || r.status === filterStatus;
+    const matchStatus = filterStatus
+      ? r.status === filterStatus
+      : r.status !== 'Completed';
     return matchSearch && matchType && matchStatus;
   });
 
