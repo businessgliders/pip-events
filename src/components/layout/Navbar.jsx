@@ -40,9 +40,9 @@ export default function Navbar() {
         {/* Center Logo */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
-            alt="Pilates in Pink"
-            className="w-14 h-14 object-contain drop-shadow-sm"
+            src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/5c8d9eb7a_1e65b0238_PiPEvents.png"
+            alt="PIP Events"
+            className="w-14 h-14 object-contain rounded-xl drop-shadow-sm"
           />
         </Link>
 
@@ -91,9 +91,9 @@ export default function Navbar() {
         {/* Centre: logo absolutely centered */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2">
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
-            alt="Pilates in Pink"
-            className="w-10 h-10 object-contain drop-shadow-sm"
+            src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/5c8d9eb7a_1e65b0238_PiPEvents.png"
+            alt="PIP Events"
+            className="w-10 h-10 object-contain rounded-lg drop-shadow-sm"
           />
         </Link>
 
