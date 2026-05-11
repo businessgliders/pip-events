@@ -160,7 +160,7 @@ export default function Dashboard() {
       <div className="relative" style={{ zIndex: 2 }}>
 
         {/* Sticky redesigned header */}
-        <div className="sticky top-0 z-30 px-6 md:px-10 py-5 md:py-6" style={{ background: '#f4b7c4' }}>
+        <div className="sticky top-0 z-30 px-6 md:px-10 py-3" style={{ background: '#f4b7c4' }}>
           <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4">
             {/* Left — logo + counts */}
             <Link to="/" className="flex items-center gap-3 min-w-0 flex-shrink-0">
@@ -242,7 +242,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="max-w-[1600px] mx-auto px-6 md:px-10 py-4">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-10 pt-2 pb-6">
           {view === 'archive' ? (
             <ArchivedTicketsList
               tickets={archivedTickets}
