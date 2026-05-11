@@ -4,7 +4,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import Navbar from '../components/layout/Navbar';
-import HlsVideo from '../components/HlsVideo';
 import KanbanColumn from '../components/board/KanbanColumn';
 import ArchivedTicketsList from '../components/board/ArchivedTicketsList';
 import StatusChangeDialog from '../components/board/StatusChangeDialog';
@@ -82,6 +81,14 @@ export default function Dashboard() {
       const key = viewMode === 'status' ? t.status : t.event_type;
       if (map[key]) map[key].push(t);
     });
+    // Sort each column by most recent submission first
+    Object.keys(map).forEach(k => {
+      map[k].sort((a, b) => {
+        const aTime = new Date(a.submitted_date || a.created_date || 0).getTime();
+        const bTime = new Date(b.submitted_date || b.created_date || 0).getTime();
+        return bTime - aTime;
+      });
+    });
     return map;
   }, [activeTickets, columns, viewMode]);
 
@@ -158,13 +165,7 @@ export default function Dashboard() {
 
   if (!isAllowed) {
     return (
-      <div className="min-h-screen relative flex items-center justify-center">
-        <HlsVideo
-          src="https://video.squarespace-cdn.com/content/v1/6876866bd3fbe434b6566570/5e57b3a9-5624-4a07-b555-c3847af04b51/playlist.m3u8"
-          className="fixed inset-0 w-full h-full object-cover"
-          style={{ zIndex: 0 }}
-        />
-        <div className="fixed inset-0" style={{ zIndex: 1, background: 'rgba(248, 210, 220, 0.9)' }} />
+      <div className="min-h-screen relative flex items-center justify-center" style={{ background: 'rgba(248, 210, 220, 0.9)' }}>
         <div className="relative z-10 bg-white/90 backdrop-blur-xl rounded-2xl p-8 max-w-md text-center shadow-xl">
           <h2 className="text-xl font-bold mb-2" style={{ color: '#b67651' }}>Access Restricted</h2>
           <p className="text-sm" style={{ color: '#7a5555' }}>
@@ -176,14 +177,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen relative">
-      <HlsVideo
-        src="https://video.squarespace-cdn.com/content/v1/6876866bd3fbe434b6566570/5e57b3a9-5624-4a07-b555-c3847af04b51/playlist.m3u8"
-        className="fixed inset-0 w-full h-full object-cover"
-        style={{ zIndex: 0 }}
-      />
-      <div className="fixed inset-0" style={{ zIndex: 1, background: 'rgba(248, 210, 220, 0.85)' }} />
-
+    <div className="min-h-screen relative" style={{ background: 'rgba(248, 210, 220, 0.85)' }}>
       <div className="relative" style={{ zIndex: 2 }}>
         <Navbar />
 
