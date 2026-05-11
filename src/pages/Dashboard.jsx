@@ -10,6 +10,7 @@ import ListView from '../components/dashboard/ListView.jsx';
 import TableView from '../components/dashboard/TableView.jsx';
 import CalendarView from '../components/dashboard/CalendarView.jsx';
 import SettingsPanel from '../components/dashboard/SettingsPanel.jsx';
+import EventTypeMultiSelect from '../components/dashboard/EventTypeMultiSelect.jsx';
 
 const ROWS_PER_PAGE = 15;
 
@@ -40,7 +41,7 @@ export default function Dashboard() {
     });
   }, []);
   const [search, setSearch] = useState('');
-  const [filterType, setFilterType] = useState('');
+  const [filterTypes, setFilterTypes] = useState([]);
   const [filterStatus, setFilterStatus] = useState('');
   const [selected, setSelected] = useState(null);
   const [sortKey, setSortKey] = useState('submitted_date');
@@ -144,7 +145,7 @@ export default function Dashboard() {
       r.full_name?.toLowerCase().includes(search.toLowerCase()) ||
       r.email?.toLowerCase().includes(search.toLowerCase()) ||
       r.event_type?.toLowerCase().includes(search.toLowerCase());
-    const matchType = !filterType || r.event_type === filterType;
+    const matchType = filterTypes.length === 0 || filterTypes.includes(r.event_type);
     const matchStatus = filterStatus
       ? r.status === filterStatus
       : r.status !== 'Completed';
@@ -314,8 +315,66 @@ export default function Dashboard() {
         {/* Requests tab content */}
         {dashTab === 'requests' && <>
 
-        {/* Stats */}
-        <div className="hidden sm:grid grid-cols-5 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        {/* 1) View Switcher */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex rounded-xl overflow-hidden" style={{border: '1.5px solid rgba(220,200,205,0.6)', background: 'rgba(255,255,255,0.7)', boxShadow: '0 2px 12px rgba(241,136,155,0.1)'}}>
+            {[
+              { mode: 'list', Icon: LayoutList, title: 'List' },
+              { mode: 'table', Icon: Table2, title: 'Table' },
+              { mode: 'calendar', Icon: Calendar, title: 'Calendar' },
+            ].map(({ mode, Icon, title }, i) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                title={title}
+                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all"
+                style={{
+                  background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'transparent',
+                  color: viewMode === mode ? 'white' : '#b67651',
+                  borderLeft: i > 0 ? '1px solid rgba(220,200,205,0.6)' : 'none',
+                }}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{title}</span>
+              </button>
+            ))}
+          </div>
+          {viewMode === 'table' && (
+            <ColumnCustomizer
+              allColumns={ALL_COLUMNS}
+              visibleKeys={visibleCols}
+              onSave={setVisibleCols}
+            />
+          )}
+        </div>
+
+        {/* 2) Search + Event Type Multi-Select */}
+        <div className="rounded-2xl p-3 sm:p-4 mb-5 flex flex-col sm:flex-row gap-3" style={{
+          background: 'rgba(255,255,255,0.55)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.6)',
+          boxShadow: '0 4px 16px rgba(241,136,155,0.08)',
+        }}>
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{color: '#f1889b'}} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search by name, email, or event type..."
+              className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl focus:outline-none bg-white/70 placeholder-gray-400"
+              style={{border: '1.5px solid rgba(220,200,205,0.6)'}}
+            />
+          </div>
+          <EventTypeMultiSelect
+            options={eventTypes}
+            selected={filterTypes}
+            onChange={(arr) => { setFilterTypes(arr); setPage(1); }}
+          />
+        </div>
+
+        {/* 3) Status Tiles */}
+        <div className="grid grid-cols-5 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {[
             { label: 'All', value: stats.total, Icon: LayoutGrid, key: 'total' },
             { label: 'New', value: stats.new, Icon: Sparkles, key: 'new' },
@@ -349,105 +408,11 @@ export default function Dashboard() {
                     <s.Icon className="w-3 sm:w-4 h-3 sm:h-4" style={{color: isActive ? 'white' : '#e86c84'}} />
                   </span>
                 </div>
-                <p className="text-xl sm:text-3xl font-bold" style={{color: isActive ? '#e86c84' : '#b67651'}}>{s.value}</p>
+                <p className="text-lg sm:text-3xl font-bold" style={{color: isActive ? '#e86c84' : '#b67651'}}>{s.value}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wide sm:hidden mt-0.5" style={{color: isActive ? '#e86c84' : '#c48a96'}}>{s.label === 'In Conversations' ? 'In Conv.' : s.label}</p>
               </button>
             );
           })}
-        </div>
-
-        {/* Filters - Mobile optimized */}
-        <div className="rounded-2xl p-4 mb-5" style={{
-          background: 'rgba(255,255,255,0.55)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255,255,255,0.6)',
-          boxShadow: '0 4px 16px rgba(241,136,155,0.08)',
-        }}>
-          {/* Search bar - full width */}
-          <div className="relative mb-4">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{color: '#f1889b'}} />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search..."
-              className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl focus:outline-none bg-white/70 placeholder-gray-400"
-              style={{border: '1.5px solid rgba(220,200,205,0.6)'}}
-            />
-          </div>
-
-          {/* Desktop filters */}
-          <div className="hidden sm:flex gap-3 items-center">
-            <select
-              value={filterType}
-              onChange={e => setFilterType(e.target.value)}
-              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 min-w-[140px]"
-              style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
-            >
-              <option value="">All Event Types</option>
-              {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <select
-              value={filterStatus}
-              onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-              className="rounded-xl px-2.5 py-2.5 text-sm bg-white/70 focus:outline-none flex-1 min-w-[120px]"
-              style={{border: '1.5px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
-            >
-              <option value="">All Statuses</option>
-              {['New', 'In Conversations', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <ColumnCustomizer
-              allColumns={ALL_COLUMNS}
-              visibleKeys={visibleCols}
-              onSave={setVisibleCols}
-            />
-            {/* Desktop view toggle */}
-            <div className="hidden sm:flex rounded-xl overflow-hidden ml-auto" style={{border: '1.5px solid rgba(220,200,205,0.6)'}}>
-              {[
-                { mode: 'list', Icon: LayoutList, title: 'List' },
-                { mode: 'table', Icon: Table2, title: 'Table' },
-                { mode: 'calendar', Icon: Calendar, title: 'Calendar' },
-              ].map(({ mode, Icon, title }, i) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  title={title}
-                  className="flex items-center justify-center w-9 h-9 transition-all"
-                  style={{
-                    background: viewMode === mode ? 'linear-gradient(135deg, #f1889b, #e86c84)' : 'rgba(255,255,255,0.7)',
-                    color: viewMode === mode ? 'white' : '#b67651',
-                    borderLeft: i > 0 ? '1px solid rgba(220,200,205,0.6)' : 'none',
-                  }}
-                >
-                  <Icon className="w-4 h-4" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile filters - compact */}
-          <div className="sm:hidden space-y-3">
-            <div className="flex gap-2">
-              <select
-                value={filterType}
-                onChange={e => setFilterType(e.target.value)}
-                className="flex-1 rounded-lg px-2 py-2 text-xs bg-white/70 focus:outline-none"
-                style={{border: '1px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
-              >
-                <option value="">All Types</option>
-                {eventTypes.map(t => <option key={t} value={t}>{t.substring(0, 12)}</option>)}
-              </select>
-              <select
-                value={filterStatus}
-                onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-                className="flex-1 rounded-lg px-2 py-2 text-xs bg-white/70 focus:outline-none"
-                style={{border: '1px solid rgba(220,200,205,0.6)', color: '#7a4a3a'}}
-              >
-                <option value="">All Status</option>
-                {['New', 'In Conversations', 'Confirmed', 'Completed', 'Cancelled'].map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-  
-          </div>
         </div>
 
         {/* Views */}
