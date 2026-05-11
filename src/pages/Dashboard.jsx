@@ -173,9 +173,9 @@ export default function Dashboard() {
             {/* Left — logo + counts */}
             <Link to="/" className="flex items-center gap-3 min-w-0 flex-shrink-0">
               <img
-                src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/2e08be1fc_image.png"
+                src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/719e48f6d_1e65b0238_PiPEvents.png"
                 alt="PIP Events"
-                className="w-11 h-11 object-contain flex-shrink-0"
+                className="w-11 h-11 rounded-xl object-cover shadow-sm flex-shrink-0"
               />
               <div className="hidden sm:block text-sm font-medium leading-tight truncate" style={{ color: '#5a3535' }}>
                 <span className="font-semibold">{activeTickets.length}</span> active ticket{activeTickets.length === 1 ? '' : 's'}
