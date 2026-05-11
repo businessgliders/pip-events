@@ -9,6 +9,7 @@ import ArchivedTicketsList from '../components/board/ArchivedTicketsList';
 import StatusChangeDialog from '../components/board/StatusChangeDialog';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
 import CalendarView from '../components/dashboard/CalendarView';
+import AddonLegend from '../components/board/AddonLegend';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, LayoutGrid, Archive, CalendarDays } from 'lucide-react';
@@ -234,6 +235,7 @@ export default function Dashboard() {
                   />
                 ))}
               </div>
+              <AddonLegend />
             </DragDropContext>
           )}
         </div>
