@@ -9,6 +9,7 @@ import StatusChangeDialog from '../components/board/StatusChangeDialog';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
 import CalendarView from '../components/dashboard/CalendarView';
 import AddonLegend from '../components/board/AddonLegend';
+import WhatsNewSplash from '../components/dashboard/WhatsNewSplash';
 import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays, Bell } from 'lucide-react';
 
@@ -310,6 +311,8 @@ export default function Dashboard() {
         onConfirm={confirmStatusChange}
         onCancel={() => setPendingStatusChange(null)}
       />
+
+      {isAllowed && <WhatsNewSplash />}
     </div>
   );
 }
