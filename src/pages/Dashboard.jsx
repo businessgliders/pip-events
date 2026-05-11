@@ -209,10 +209,10 @@ export default function Dashboard() {
             transformOrigin: 'center',
             fontFamily: 'Georgia, serif',
             fontWeight: 900,
-            fontSize: '10rem',
-            letterSpacing: '0.3em',
+            fontSize: '7rem',
+            letterSpacing: '0.25em',
             color: 'rgba(255, 255, 255, 0.16)',
-            lineHeight: '280px',
+            lineHeight: '210px',
             whiteSpace: 'nowrap',
             textAlign: 'center',
           }}
