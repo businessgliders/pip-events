@@ -8,26 +8,18 @@ import KanbanColumn from '../components/board/KanbanColumn';
 import ArchivedTicketsList from '../components/board/ArchivedTicketsList';
 import StatusChangeDialog from '../components/board/StatusChangeDialog';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
+import CalendarView from '../components/dashboard/CalendarView';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, LayoutGrid, Archive, Tag } from 'lucide-react';
+import { Search, LayoutGrid, Archive, CalendarDays } from 'lucide-react';
 
 const STATUS_COLUMNS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
-const CATEGORY_COLUMNS = [
-  'Birthday',
-  'Bridal Shower',
-  'Bachelorette Party',
-  'Corporate Wellness Event',
-  'Private Class',
-  'Other',
-];
 
 export default function Dashboard() {
   const { user, isAuthenticated, navigateToLogin } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const [view, setView] = useState('board'); // 'board' | 'archive'
-  const [viewMode, setViewMode] = useState('status'); // 'status' | 'category'
+  const [view, setView] = useState('board'); // 'board' | 'calendar' | 'archive'
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [highlightedTicketId, setHighlightedTicketId] = useState(null);
@@ -72,14 +64,11 @@ export default function Dashboard() {
     [tickets]
   );
 
-  const columns = viewMode === 'status' ? STATUS_COLUMNS : CATEGORY_COLUMNS;
-
   const ticketsByColumn = useMemo(() => {
     const map = {};
-    columns.forEach(c => (map[c] = []));
+    STATUS_COLUMNS.forEach(c => (map[c] = []));
     activeTickets.forEach(t => {
-      const key = viewMode === 'status' ? t.status : t.event_type;
-      if (map[key]) map[key].push(t);
+      if (map[t.status]) map[t.status].push(t);
     });
     // Sort each column by most recent submission first
     Object.keys(map).forEach(k => {
@@ -90,7 +79,7 @@ export default function Dashboard() {
       });
     });
     return map;
-  }, [activeTickets, columns, viewMode]);
+  }, [activeTickets]);
 
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
@@ -99,15 +88,6 @@ export default function Dashboard() {
 
     const ticket = activeTickets.find(t => t.id === draggableId);
     if (!ticket) return;
-
-    if (viewMode === 'category') {
-      // Direct update — change event_type
-      const newType = destination.droppableId;
-      if (ticket.event_type === newType) return;
-      await base44.entities.EventRequest.update(ticket.id, { event_type: newType });
-      queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
-      return;
-    }
 
     // status view — open dialog to capture note
     const newStatus = destination.droppableId;
@@ -194,37 +174,35 @@ export default function Dashboard() {
               />
             </div>
 
-            {view === 'board' && (
-              <div className="inline-flex rounded-xl overflow-hidden border border-white/40 bg-white/30">
-                <button
-                  onClick={() => setViewMode('status')}
-                  className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1 ${
-                    viewMode === 'status' ? 'bg-white text-pink-600' : 'text-white'
-                  }`}
-                >
-                  <LayoutGrid className="w-3.5 h-3.5" /> Status
-                </button>
-                <button
-                  onClick={() => setViewMode('category')}
-                  className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1 ${
-                    viewMode === 'category' ? 'bg-white text-pink-600' : 'text-white'
-                  }`}
-                >
-                  <Tag className="w-3.5 h-3.5" /> Category
-                </button>
-              </div>
-            )}
+            <div className="inline-flex rounded-xl overflow-hidden border border-white/40 bg-white/30">
+              <button
+                onClick={() => setView('board')}
+                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1 ${
+                  view === 'board' ? 'bg-white text-pink-600' : 'text-white'
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" /> Board
+              </button>
+              <button
+                onClick={() => setView('calendar')}
+                className={`px-3 py-1.5 text-xs font-medium flex items-center gap-1 ${
+                  view === 'calendar' ? 'bg-white text-pink-600' : 'text-white'
+                }`}
+              >
+                <CalendarDays className="w-3.5 h-3.5" /> Calendar
+              </button>
+            </div>
 
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setView(view === 'board' ? 'archive' : 'board')}
+              onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
               className="bg-white/70 border-white/40"
             >
-              {view === 'board' ? (
-                <><Archive className="w-4 h-4 mr-1" /> Archive ({archivedTickets.length})</>
-              ) : (
+              {view === 'archive' ? (
                 <><LayoutGrid className="w-4 h-4 mr-1" /> Board</>
+              ) : (
+                <><Archive className="w-4 h-4 mr-1" /> Archive ({archivedTickets.length})</>
               )}
             </Button>
           </div>
@@ -237,16 +215,12 @@ export default function Dashboard() {
               onView={setSelectedRequest}
               onRestore={handleRestore}
             />
+          ) : view === 'calendar' ? (
+            <CalendarView requests={activeTickets} onSelect={setSelectedRequest} />
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
-              <div
-                className={`grid gap-3 md:gap-4 ${
-                  viewMode === 'status'
-                    ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-                    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6'
-                }`}
-              >
-                {columns.map(col => (
+              <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                {STATUS_COLUMNS.map(col => (
                   <KanbanColumn
                     key={col}
                     status={col}
@@ -255,8 +229,8 @@ export default function Dashboard() {
                     onTicketClick={setSelectedRequest}
                     isLoading={isLoading}
                     highlightedTicketId={highlightedTicketId}
-                    viewMode={viewMode}
-                    onArchiveAll={col === 'Completed' && viewMode === 'status' ? handleArchiveAll : undefined}
+                    viewMode="status"
+                    onArchiveAll={col === 'Completed' ? handleArchiveAll : undefined}
                   />
                 ))}
               </div>
