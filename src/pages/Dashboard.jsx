@@ -250,7 +250,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 pb-2">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-4 md:pt-6 pb-2">
           {view === 'archive' ? (
             <ArchivedTicketsList
               tickets={archivedTickets}
