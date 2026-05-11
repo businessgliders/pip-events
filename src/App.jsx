@@ -38,7 +38,6 @@ const AuthenticatedApp = () => {
       <Route path="/RequestForm" element={<RequestForm />} />
       <Route path="/Confirmation" element={<Confirmation />} />
       <Route path="/RequestDashboard" element={<Dashboard />} />
-      <Route path="/Dashboard" element={<Navigate to="/RequestDashboard" replace />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
