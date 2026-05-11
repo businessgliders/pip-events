@@ -48,12 +48,12 @@ export default function Navbar() {
 
         {/* Right — Dashboard icon */}
         <Link
-          to="/Dashboard"
+          to="/RequestDashboard"
           className="p-2.5 rounded-full transition-all"
-          title="Dashboard"
+          title="Request Board"
           style={{
-            color: location.pathname === '/Dashboard' ? '#f1889b' : '#b67651',
-            background: location.pathname === '/Dashboard' ? 'rgba(241,136,155,0.12)' : 'transparent',
+            color: location.pathname === '/RequestDashboard' ? '#f1889b' : '#b67651',
+            background: location.pathname === '/RequestDashboard' ? 'rgba(241,136,155,0.12)' : 'transparent',
           }}
         >
           <LayoutDashboard className="w-5 h-5" />
@@ -99,12 +99,12 @@ export default function Navbar() {
 
         {/* Right: dashboard */}
         <Link
-          to="/Dashboard"
+          to="/RequestDashboard"
           className="p-2.5 rounded-full transition-all"
-          title="Dashboard"
+          title="Request Board"
           style={{
-            color: location.pathname === '/Dashboard' ? '#f1889b' : '#b67651',
-            background: location.pathname === '/Dashboard' ? 'rgba(241,136,155,0.12)' : 'transparent',
+            color: location.pathname === '/RequestDashboard' ? '#f1889b' : '#b67651',
+            background: location.pathname === '/RequestDashboard' ? 'rgba(241,136,155,0.12)' : 'transparent',
           }}
         >
           <LayoutDashboard className="w-5 h-5" />

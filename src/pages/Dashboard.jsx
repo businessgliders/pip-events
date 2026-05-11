@@ -40,6 +40,13 @@ export default function Dashboard() {
     if (!isAuthenticated) navigateToLogin();
   }, [isAuthenticated, navigateToLogin]);
 
+  // Document title
+  useEffect(() => {
+    const prev = document.title;
+    document.title = 'Request Board | PiP Events';
+    return () => { document.title = prev; };
+  }, []);
+
   const { data: allTickets = [], isLoading } = useQuery({
     queryKey: ['eventRequests'],
     queryFn: () => base44.entities.EventRequest.list('-created_date', 500),
