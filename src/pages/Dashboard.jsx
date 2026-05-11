@@ -184,31 +184,32 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, #b67651, #f6eee7)' }}>
-      {/* Tiled slanted "EVENTS" watermark */}
+      {/* Tiled slanted "EVENTS" watermark — masked to edges only */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 select-none"
+        className="pointer-events-none absolute inset-0 select-none overflow-hidden"
         style={{
           zIndex: 1,
-          transform: 'rotate(-30deg)',
-          transformOrigin: 'center',
-          top: '-20%',
-          left: '-20%',
-          right: '-20%',
-          bottom: '-20%',
-          width: '140%',
-          height: '140%',
-          backgroundImage: `repeating-linear-gradient(0deg, transparent 0, transparent 120px)`,
+          WebkitMaskImage:
+            'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 28%, rgba(0,0,0,0) 72%, rgba(0,0,0,1) 85%, rgba(0,0,0,1) 100%)',
+          maskImage:
+            'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 28%, rgba(0,0,0,0) 72%, rgba(0,0,0,1) 85%, rgba(0,0,0,1) 100%)',
         }}
       >
         <div
-          className="w-full h-full"
           style={{
+            position: 'absolute',
+            top: '-20%',
+            left: '-20%',
+            width: '140%',
+            height: '140%',
+            transform: 'rotate(-30deg)',
+            transformOrigin: 'center',
             fontFamily: 'Georgia, serif',
             fontWeight: 900,
             fontSize: '5rem',
             letterSpacing: '0.3em',
-            color: 'rgba(255, 255, 255, 0.12)',
+            color: 'rgba(255, 255, 255, 0.14)',
             lineHeight: '160px',
             whiteSpace: 'nowrap',
             textAlign: 'center',
