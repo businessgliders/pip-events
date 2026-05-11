@@ -169,7 +169,7 @@ export default function Dashboard() {
 
         {/* Sticky redesigned header */}
         <div className="sticky top-0 z-30 px-4 md:px-8 pt-4 md:pt-8 pb-3" style={{ background: '#f4b7c4' }}>
-          <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-4">
+          <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-4 px-2">
             {/* Left — logo + counts */}
             <Link to="/" className="flex items-center gap-3 min-w-0 flex-shrink-0">
               <img
