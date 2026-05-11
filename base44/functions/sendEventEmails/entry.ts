@@ -263,10 +263,21 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
-  // Look up the just-created EventRequest record first so we can use its ticket id in the subject
+  // Look up the just-created EventRequest record first so we can use its request # in the subject
   const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date }, '-created_date', 1);
   const record = records?.[0];
-  const requestShortId = record ? (record.ticket_number || record.id.slice(-8)) : 'NEW';
+
+  // Assign a sequential ticket_number if this record doesn't have one yet
+  let requestNumber = record?.ticket_number;
+  if (record && !requestNumber) {
+    const highest = await base44.asServiceRole.entities.EventRequest.filter({}, '-ticket_number', 1);
+    const maxNum = highest?.[0]?.ticket_number || 0;
+    requestNumber = maxNum + 1;
+    await base44.asServiceRole.entities.EventRequest.update(record.id, { ticket_number: requestNumber });
+    record.ticket_number = requestNumber;
+  }
+
+  const requestShortId = requestNumber || (record ? record.id.slice(-8) : 'NEW');
   const requestTag = `[Request #${requestShortId}]`;
 
   const confirmationSubject = `${requestTag} Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
