@@ -40,9 +40,9 @@ export default function Navbar() {
         {/* Center Logo */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
           <img
-            src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/5c8d9eb7a_1e65b0238_PiPEvents.png"
+            src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/2e08be1fc_image.png"
             alt="PIP Events"
-            className="w-14 h-14 object-contain rounded-xl drop-shadow-sm"
+            className="w-14 h-14 object-contain drop-shadow-sm"
           />
         </Link>
 
@@ -91,9 +91,9 @@ export default function Navbar() {
         {/* Centre: logo absolutely centered */}
         <Link to="/" className="absolute left-1/2 -translate-x-1/2">
           <img
-            src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/5c8d9eb7a_1e65b0238_PiPEvents.png"
+            src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/2e08be1fc_image.png"
             alt="PIP Events"
-            className="w-10 h-10 object-contain rounded-lg drop-shadow-sm"
+            className="w-10 h-10 object-contain drop-shadow-sm"
           />
         </Link>
 
