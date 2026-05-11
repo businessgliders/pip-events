@@ -209,17 +209,17 @@ export default function Dashboard() {
             transformOrigin: 'center',
             fontFamily: 'Georgia, serif',
             fontWeight: 900,
-            fontSize: '5rem',
+            fontSize: '10rem',
             letterSpacing: '0.3em',
-            color: 'rgba(255, 255, 255, 0.14)',
-            lineHeight: '160px',
+            color: 'rgba(255, 255, 255, 0.16)',
+            lineHeight: '280px',
             whiteSpace: 'nowrap',
             textAlign: 'center',
           }}
         >
-          {Array.from({ length: 20 }).map((_, i) => (
+          {Array.from({ length: 8 }).map((_, i) => (
             <div key={i}>
-              {'EVENTS \u00A0\u00A0\u00A0 '.repeat(8)}
+              {'EVENTS \u00A0\u00A0 '.repeat(3)}
             </div>
           ))}
         </div>
