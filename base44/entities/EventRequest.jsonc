@@ -153,6 +153,33 @@
           }
         }
       }
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the request has been archived off the Kanban board"
+    },
+    "status_history": {
+      "type": "array",
+      "description": "Audit log of status changes",
+      "items": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
     }
   },
   "required": [
