@@ -27,9 +27,10 @@ export default function EmailMessageItem({ message, isHighlighted }) {
   const isFailed = message.send_status === 'failed';
   const isWelcome = message.is_welcome;
 
+  const STUDIO_EMAIL = 'events@pilatesinpinkstudio.com';
   const senderName = isInbound
     ? (message.from_name || message.from_email || 'Client')
-    : (isWelcome ? 'Auto-Confirmation' : (message.sent_by || 'Staff'));
+    : (isWelcome ? `Auto-Confirmation · ${STUDIO_EMAIL}` : `${message.sent_by || 'Staff'} · ${STUDIO_EMAIL}`);
 
   const preview = cleanPreview(message.body_html, message.body_text);
   const time = message.sent_at ? format(new Date(message.sent_at), 'MMM d, h:mm a') : '';
