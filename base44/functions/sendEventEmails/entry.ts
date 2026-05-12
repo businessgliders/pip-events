@@ -7,22 +7,25 @@ function encodeHeader(str) {
   return `=?UTF-8?B?${btoa(unescape(encodeURIComponent(str)))}?=`;
 }
 
-function buildRaw({ to, subject, html, replyTo }) {
+function buildRaw({ to, bcc, subject, html, replyTo }) {
   const lines = [
     `From: ${encodeHeader('Pilates in Pink ™')} <${SENDER_EMAIL}>`,
     `To: ${to}`,
+  ];
+  if (bcc) lines.push(`Bcc: ${bcc}`);
+  lines.push(
     `Subject: ${encodeHeader(subject)}`,
     `Content-Type: text/html; charset=utf-8`,
     `MIME-Version: 1.0`,
-  ];
+  );
   if (replyTo) lines.push(`Reply-To: ${replyTo}`);
   lines.push('', html);
   return btoa(unescape(encodeURIComponent(lines.join('\r\n'))))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-async function sendGmail(accessToken, { to, subject, html, replyTo }) {
-  const raw = buildRaw({ to, subject, html, replyTo });
+async function sendGmail(accessToken, { to, bcc, subject, html, replyTo }) {
+  const raw = buildRaw({ to, bcc, subject, html, replyTo });
   const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
     method: 'POST',
     headers: {
@@ -271,7 +274,10 @@ Deno.serve(async (req) => {
   const requestShortId = requestNumber || (record ? record.id.slice(-8) : 'NEW');
   const requestTag = `[Request #${requestShortId}]`;
 
-  const confirmationSubject = `${requestTag} Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
+  // Unified subject — used for BOTH the requestor email (To) and owner copy (Bcc).
+  // Identical Message-ID + subject = Gmail groups owner's view of all client replies into one thread.
+  const unifiedSubject = `${requestTag} ${form.event_type} Event Request — ${form.full_name}`;
+  const confirmationSubject = unifiedSubject;
 
   // Build dashboard deep-link button for owner email
   const origin = app_url || req.headers.get('origin') || req.headers.get('referer')?.replace(/\/[^/]*$/, '') || '';
@@ -292,16 +298,21 @@ Deno.serve(async (req) => {
 
   const ownerHtmlFinal = ownerHtml.replace('__DASHBOARD_BUTTON__', dashboardButton);
 
+  // Send the requestor email with the owner BCC'd, using the unified subject.
+  // → All future client replies will thread together on the owner's side automatically.
+  // Then send a separate internal-only notification (with dashboard deep-link button)
+  // using a different subject so it lands in its own thread and doesn't pollute the client conversation.
   const [submitterResult, ownerResult] = await Promise.all([
     sendGmail(accessToken, {
       to: form.email,
+      bcc: OWNER_EMAIL,
       subject: confirmationSubject,
       html: submitterHtml,
       replyTo: OWNER_EMAIL,
     }),
     sendGmail(accessToken, {
       to: OWNER_EMAIL,
-      subject: `🎉 New Event Request: ${form.event_type} — ${form.full_name} (${form.event_date})`,
+      subject: `🔔 Internal — ${requestTag} ${form.event_type} request from ${form.full_name}`,
       html: ownerHtmlFinal,
     }),
   ]);
