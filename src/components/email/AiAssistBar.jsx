@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Sparkles, Lightbulb, RefreshCw, Loader2 } from 'lucide-react';
+import { Sparkles, Lightbulb, RefreshCw, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function AiAssistBar({ ticketId, onApply, showDescribe, showSuggest }) {
@@ -62,6 +62,34 @@ function SuggestPanel({ ticketId, onApply }) {
   const [suggestions, setSuggestions] = useState([]);
   const [meta, setMeta] = useState({ cached: false, generated_at: null });
   const [loading, setLoading] = useState(false);
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollState = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    updateScrollState();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [suggestions]);
+
+  const scrollBy = (dir) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * 280, behavior: 'smooth' });
+  };
 
   const load = async (forceRefresh = false) => {
     setLoading(true);
@@ -109,22 +137,50 @@ function SuggestPanel({ ticketId, onApply }) {
       ) : suggestions.length === 0 ? (
         <p className="text-xs py-2" style={{ color: '#9a7070' }}>No suggestions yet.</p>
       ) : (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {suggestions.map((s, i) => (
+        <div className="relative">
+          {canScrollLeft && (
             <button
-              key={i}
-              onClick={() => onApply(s.body_html)}
-              className="flex-shrink-0 w-64 text-left rounded-lg p-2.5 hover:shadow-md transition-all"
-              style={{ background: 'white', border: '1px solid #e9d5ff' }}
+              type="button"
+              onClick={() => scrollBy(-1)}
+              aria-label="Scroll left"
+              className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 items-center justify-center rounded-full shadow-md transition-all hover:scale-110"
+              style={{ background: 'white', border: '1px solid #e9d5ff', color: '#7c3aed' }}
             >
-              <p className="text-xs font-bold mb-1" style={{ color: '#7c3aed' }}>{s.label}</p>
-              <div
-                className="text-xs leading-snug line-clamp-3"
-                style={{ color: '#4a3838' }}
-                dangerouslySetInnerHTML={{ __html: s.body_html }}
-              />
+              <ChevronLeft className="w-4 h-4" />
             </button>
-          ))}
+          )}
+          {canScrollRight && (
+            <button
+              type="button"
+              onClick={() => scrollBy(1)}
+              aria-label="Scroll right"
+              className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 items-center justify-center rounded-full shadow-md transition-all hover:scale-110"
+              style={{ background: 'white', border: '1px solid #e9d5ff', color: '#7c3aed' }}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+          <div
+            ref={scrollRef}
+            className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth"
+            style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x', scrollbarWidth: 'thin' }}
+          >
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => onApply(s.body_html)}
+                className="flex-shrink-0 w-64 text-left rounded-lg p-2.5 hover:shadow-md transition-all snap-start"
+                style={{ background: 'white', border: '1px solid #e9d5ff' }}
+              >
+                <p className="text-xs font-bold mb-1" style={{ color: '#7c3aed' }}>{s.label}</p>
+                <div
+                  className="text-xs leading-snug line-clamp-3"
+                  style={{ color: '#4a3838' }}
+                  dangerouslySetInnerHTML={{ __html: s.body_html }}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
