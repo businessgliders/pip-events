@@ -312,7 +312,7 @@ Deno.serve(async (req) => {
     }),
     sendGmail(accessToken, {
       to: OWNER_EMAIL,
-      subject: `🔔 Internal — ${requestTag} ${form.event_type} request from ${form.full_name}`,
+      subject: confirmationSubject,
       html: ownerHtmlFinal,
     }),
   ]);
