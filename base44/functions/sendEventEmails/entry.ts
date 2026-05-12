@@ -279,10 +279,10 @@ Deno.serve(async (req) => {
   const unifiedSubject = `${requestTag} ${form.event_type} Event Request — ${form.full_name}`;
   const confirmationSubject = unifiedSubject;
 
-  // Build dashboard deep-link button for owner email
-  const origin = app_url || req.headers.get('origin') || req.headers.get('referer')?.replace(/\/[^/]*$/, '') || '';
-  const dashboardUrl = record && origin
-    ? `${origin.replace(/\/$/, '')}/RequestDashboard?ticket=${record.id}&focus=compose`
+  // Build dashboard deep-link button for owner email — always use production URL
+  const PRODUCTION_URL = 'https://events.pilatesinpinkstudio.com';
+  const dashboardUrl = record
+    ? `${PRODUCTION_URL}/RequestDashboard?ticket=${record.id}&focus=compose`
     : null;
   const dashboardButton = dashboardUrl
     ? `<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px;">
@@ -308,7 +308,7 @@ Deno.serve(async (req) => {
       bcc: OWNER_EMAIL,
       subject: confirmationSubject,
       html: submitterHtml,
-      replyTo: OWNER_EMAIL,
+      replyTo: SENDER_EMAIL,
     }),
     sendGmail(accessToken, {
       to: OWNER_EMAIL,
