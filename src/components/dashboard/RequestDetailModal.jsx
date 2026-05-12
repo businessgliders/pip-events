@@ -14,7 +14,7 @@ const STATUS_STYLES = {
   'Cancelled':        { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
 };
 
-export default function RequestDetailModal({ request: initialRequest, onClose, onUpdate, highlightMessageId }) {
+export default function RequestDetailModal({ request: initialRequest, onClose, onUpdate, highlightMessageId, focusComposer }) {
   const [request, setRequest] = useState(initialRequest);
   // Map legacy "Pending" → "In Conversations"
   const initStatus = initialRequest.status === 'Pending' ? 'In Conversations' : (initialRequest.status || 'New');
@@ -226,7 +226,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
 
           {/* RIGHT — Email comms */}
           <div className="flex-1 flex flex-col min-h-0 min-w-0">
-            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} />
+            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} />
           </div>
         </div>
       </div>

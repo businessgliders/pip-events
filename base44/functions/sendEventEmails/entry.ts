@@ -54,7 +54,7 @@ async function fetchSentMeta(accessToken, gmailId) {
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
-  const { form } = await req.json();
+  const { form, app_url } = await req.json();
 
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
@@ -239,16 +239,7 @@ Deno.serve(async (req) => {
             </td></tr>
           </table>` : ''}
 
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td align="center" style="padding:8px;">
-                <a href="mailto:${form.email}?subject=Re: Your ${form.event_type} Request at Pilates in Pink Studio"
-                  style="display:inline-block;background:linear-gradient(135deg,#f1889b,#e86c84);color:white;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;">
-                  ✉️ Reply to ${form.full_name}
-                </a>
-              </td>
-            </tr>
-          </table>
+          ${'__DASHBOARD_BUTTON__'}
 
         </td></tr>
 
@@ -282,6 +273,25 @@ Deno.serve(async (req) => {
 
   const confirmationSubject = `${requestTag} Thank You, ${form.full_name}! Your Event Request Has Been Received 💕`;
 
+  // Build dashboard deep-link button for owner email
+  const origin = app_url || req.headers.get('origin') || req.headers.get('referer')?.replace(/\/[^/]*$/, '') || '';
+  const dashboardUrl = record && origin
+    ? `${origin.replace(/\/$/, '')}/RequestDashboard?ticket=${record.id}&focus=compose`
+    : null;
+  const dashboardButton = dashboardUrl
+    ? `<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px;">
+        <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#f1889b,#e86c84);color:white;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;">
+          ✉️ Reply to ${form.full_name} in Dashboard
+        </a>
+      </td></tr></table>`
+    : `<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px;">
+        <a href="mailto:${form.email}?subject=Re: Your ${form.event_type} Request at Pilates in Pink Studio" style="display:inline-block;background:linear-gradient(135deg,#f1889b,#e86c84);color:white;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;">
+          ✉️ Reply to ${form.full_name}
+        </a>
+      </td></tr></table>`;
+
+  const ownerHtmlFinal = ownerHtml.replace('__DASHBOARD_BUTTON__', dashboardButton);
+
   const [submitterResult, ownerResult] = await Promise.all([
     sendGmail(accessToken, {
       to: form.email,
@@ -292,7 +302,7 @@ Deno.serve(async (req) => {
     sendGmail(accessToken, {
       to: OWNER_EMAIL,
       subject: `🎉 New Event Request: ${form.event_type} — ${form.full_name} (${form.event_date})`,
-      html: ownerHtml,
+      html: ownerHtmlFinal,
     }),
   ]);
 

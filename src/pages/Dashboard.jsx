@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [view, setView] = useState('board'); // 'board' | 'calendar' | 'archive'
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [highlightMessageId, setHighlightMessageId] = useState(null);
+  const [focusComposer, setFocusComposer] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [highlightedTicketId, setHighlightedTicketId] = useState(null);
 
@@ -53,6 +54,24 @@ export default function Dashboard() {
     refetchInterval: 5000,
     enabled: isAuthenticated,
   });
+
+  // Deep-link: ?ticket=<id>&focus=compose → open detail modal + focus composer
+  useEffect(() => {
+    if (!allTickets.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const ticketId = params.get('ticket');
+    if (!ticketId) return;
+    const ticket = allTickets.find(t => t.id === ticketId);
+    if (ticket && !selectedRequest) {
+      setSelectedRequest(ticket);
+      setFocusComposer(params.get('focus') === 'compose');
+      // Clean the URL so reopening the modal manually doesn't auto-focus again
+      const url = new URL(window.location.href);
+      url.searchParams.delete('ticket');
+      url.searchParams.delete('focus');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [allTickets, selectedRequest]);
 
   const isAllowed = user?.email?.endsWith('@pilatesinpinkstudio.com');
 
@@ -360,11 +379,13 @@ export default function Dashboard() {
         <RequestDetailModal
           request={selectedRequest}
           highlightMessageId={highlightMessageId}
-          onClose={() => { setSelectedRequest(null); setHighlightMessageId(null); }}
+          focusComposer={focusComposer}
+          onClose={() => { setSelectedRequest(null); setHighlightMessageId(null); setFocusComposer(false); }}
           onUpdate={() => {
             queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
             setSelectedRequest(null);
             setHighlightMessageId(null);
+            setFocusComposer(false);
           }}
         />
       )}

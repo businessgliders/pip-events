@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Sparkles, Lightbulb, Bold, Italic, List, Link as LinkIcon, Send, Trash2, Wand2, X, Loader2 } from 'lucide-react';
 import TemplatePicker from './TemplatePicker';
@@ -8,13 +8,23 @@ function isEditorEmpty(html) {
   return !(html || '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '').trim();
 }
 
-export default function EmailComposer({ ticket, currentUser, onSent, onCancel }) {
+export default function EmailComposer({ ticket, currentUser, onSent, onCancel, autoFocus }) {
   const editorRef = useRef(null);
   const [sending, setSending] = useState(false);
   const [polishing, setPolishing] = useState(false);
   const [showDescribe, setShowDescribe] = useState(false);
   const [showSuggest, setShowSuggest] = useState(false);
   const [empty, setEmpty] = useState(true);
+
+  // Auto-focus editor when deep-linked from owner email button
+  useEffect(() => {
+    if (autoFocus && editorRef.current) {
+      setTimeout(() => {
+        editorRef.current?.focus();
+        editorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+    }
+  }, [autoFocus]);
 
   const setEditorHtml = (html) => {
     if (editorRef.current) {

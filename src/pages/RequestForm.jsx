@@ -139,7 +139,7 @@ export default function RequestForm() {
       status: 'New',
     };
     await base44.entities.EventRequest.create(savedForm);
-    await base44.functions.invoke('sendEventEmails', { form: savedForm });
+    await base44.functions.invoke('sendEventEmails', { form: savedForm, app_url: window.location.origin });
     setSubmitting(false);
     navigate('/Confirmation', { state: { name: form.full_name, email: form.email, eventType: form.event_type } });
   };
