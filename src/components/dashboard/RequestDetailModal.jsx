@@ -106,10 +106,15 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
         {/* ── Two-column body ── */}
         <div className="flex-1 flex min-h-0 overflow-hidden">
 
-          {/* LEFT — Details */}
+          {/* LEFT — Email comms */}
+          <div className="flex-1 flex flex-col min-h-0 min-w-0" style={{ borderRight: '1px solid rgba(247,177,189,0.25)' }}>
+            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} />
+          </div>
+
+          {/* RIGHT — Details */}
           <div
             className="flex flex-col overflow-y-auto"
-            style={{ width: '42%', borderRight: '1px solid rgba(247,177,189,0.25)', flexShrink: 0 }}
+            style={{ width: '42%', flexShrink: 0 }}
           >
             {/* Status update */}
             <div className="px-5 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(247,177,189,0.2)' }}>
@@ -224,10 +229,6 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
             </div>
           </div>
 
-          {/* RIGHT — Email comms */}
-          <div className="flex-1 flex flex-col min-h-0 min-w-0">
-            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} />
-          </div>
         </div>
       </div>
     </div>
