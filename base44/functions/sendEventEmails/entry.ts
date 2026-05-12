@@ -10,15 +10,16 @@ function encodeHeader(str) {
 function buildRaw({ to, bcc, subject, html, replyTo }) {
   const lines = [
     `From: ${encodeHeader('Pilates in Pink ™')} <${SENDER_EMAIL}>`,
-    `To: ${to}`,
   ];
+  if (replyTo) lines.push(`Reply-To: ${encodeHeader('Pilates in Pink ™')} <${replyTo}>`);
+  lines.push(`To: ${to}`);
   if (bcc) lines.push(`Bcc: ${bcc}`);
   lines.push(
     `Subject: ${encodeHeader(subject)}`,
-    `Content-Type: text/html; charset=utf-8`,
     `MIME-Version: 1.0`,
+    `Content-Type: text/html; charset=utf-8`,
+    `Content-Transfer-Encoding: 8bit`,
   );
-  if (replyTo) lines.push(`Reply-To: ${replyTo}`);
   lines.push('', html);
   return btoa(unescape(encodeURIComponent(lines.join('\r\n'))))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -57,7 +58,7 @@ async function fetchSentMeta(accessToken, gmailId) {
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
-  const { form, app_url } = await req.json();
+  const { form, record_id, app_url } = await req.json();
 
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
@@ -257,9 +258,16 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
-  // Look up the just-created EventRequest record first so we can use its request # in the subject
-  const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date }, '-created_date', 1);
-  const record = records?.[0];
+  // Look up the just-created EventRequest record so we can use its request # in the subject + dashboard deep-link.
+  // Prefer the explicit record_id passed by the frontend; fall back to email+date lookup for safety.
+  let record = null;
+  if (record_id) {
+    try { record = await base44.asServiceRole.entities.EventRequest.get(record_id); } catch { /* fall through */ }
+  }
+  if (!record) {
+    const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date }, '-created_date', 1);
+    record = records?.[0];
+  }
 
   // Assign a sequential ticket_number if this record doesn't have one yet
   let requestNumber = record?.ticket_number;
@@ -276,7 +284,7 @@ Deno.serve(async (req) => {
 
   // Unified subject — used for BOTH the requestor email (To) and owner copy (Bcc).
   // Identical Message-ID + subject = Gmail groups owner's view of all client replies into one thread.
-  const unifiedSubject = `${requestTag} ${form.event_type} Event Request — ${form.full_name}`;
+  const unifiedSubject = `${requestTag} Thank You, ${form.full_name.split(' ')[0]}! Your Event Request Has Been Received 💕`;
   const confirmationSubject = unifiedSubject;
 
   // Build dashboard deep-link button for owner email — always use production URL
