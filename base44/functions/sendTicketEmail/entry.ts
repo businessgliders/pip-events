@@ -124,7 +124,7 @@ Deno.serve(async (req) => {
       subject = hasTag ? baseSubject : `${requestTag} ${baseSubject}`;
       if (!/^re:\s/i.test(subject)) subject = `Re: ${subject}`;
     } else {
-      subject = `${requestTag} Your Pilates in Pink Event Inquiry`;
+      subject = `🎉 ${requestTag} Your Pilates in Pink Event Inquiry`;
     }
 
     // Append signature unless welcome email

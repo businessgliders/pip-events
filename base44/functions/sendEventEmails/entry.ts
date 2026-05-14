@@ -288,7 +288,7 @@ Deno.serve(async (req) => {
 
   // Unified subject — used for BOTH the requestor email (To) and owner copy (Bcc).
   // Identical Message-ID + subject = Gmail groups owner's view of all client replies into one thread.
-  const unifiedSubject = `${requestTag} ${form.event_type} Event Request — ${form.full_name}`;
+  const unifiedSubject = `🎉 ${requestTag} ${form.event_type} Event Request - ${form.full_name}`;
   const confirmationSubject = unifiedSubject;
 
   // Build dashboard deep-link button for owner email — always use production URL
