@@ -32,8 +32,11 @@ export default function CalendarGrid() {
   const [selectedDay, setSelectedDay] = useState(null);
 
   const { data: requests = [] } = useQuery({
-    queryKey: ['eventRequests'],
-    queryFn: () => base44.entities.EventRequest.list('-event_date', 500),
+    queryKey: ['publicCalendar'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getPublicCalendar', {});
+      return res?.data?.events || [];
+    },
   });
 
   const monthStart = startOfMonth(currentMonth);
