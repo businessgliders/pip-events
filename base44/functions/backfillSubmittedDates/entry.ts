@@ -191,6 +191,12 @@ Deno.serve(async (req) => {
   try {
   const base44 = createClientFromRequest(req);
 
+  const user = await base44.auth.me();
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (user.role !== 'admin') {
+    return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+  }
+
   // Fetch all records
   const { offset = 0 } = await req.json().catch(() => ({}));
   const records = await base44.asServiceRole.entities.EventRequest.list('-created_date', 50, offset);
