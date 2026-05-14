@@ -294,7 +294,7 @@ Deno.serve(async (req) => {
   // Build dashboard deep-link button for owner email — always use production URL
   const PRODUCTION_URL = 'https://events.pilatesinpinkstudio.com';
   const dashboardUrl = record
-    ? `${PRODUCTION_URL}/RequestDashboard?ticket=${record.id}&focus=compose`
+    ? `${PRODUCTION_URL}/RequestBoard?ticket=${record.id}&focus=compose`
     : null;
   const dashboardButton = dashboardUrl
     ? `<table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:8px;">

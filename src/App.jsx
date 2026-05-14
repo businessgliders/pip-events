@@ -37,7 +37,8 @@ const AuthenticatedApp = () => {
       <Route path="/Calendar" element={<Calendar />} />
       <Route path="/RequestForm" element={<RequestForm />} />
       <Route path="/Confirmation" element={<Confirmation />} />
-      <Route path="/RequestDashboard" element={<Dashboard />} />
+      <Route path="/RequestBoard" element={<Dashboard />} />
+      <Route path="/RequestDashboard" element={<Navigate to="/RequestBoard" replace />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
