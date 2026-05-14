@@ -73,9 +73,12 @@
       "enum": [
         "New",
         "In Conversations",
+        "Waiting for Payment",
         "Pending",
         "Confirmed",
+        "Hosted",
         "Completed",
+        "No Response",
         "Cancelled"
       ],
       "default": "New"

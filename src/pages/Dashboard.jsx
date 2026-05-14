@@ -16,7 +16,7 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
 
-const STATUS_COLUMNS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
+const STATUS_COLUMNS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'Hosted', 'No Response'];
 
 export default function Dashboard() {
   const { user, isAuthenticated, navigateToLogin } = useAuth();
@@ -174,10 +174,10 @@ export default function Dashboard() {
   };
 
   const handleArchiveAll = async () => {
-    const completed = ticketsByColumn['Completed'] || [];
-    if (!completed.length) return;
-    if (!confirm(`Archive ${completed.length} completed ticket${completed.length === 1 ? '' : 's'}?`)) return;
-    await Promise.all(completed.map(t => base44.entities.EventRequest.update(t.id, { archived: true })));
+    const noResponse = ticketsByColumn['No Response'] || [];
+    if (!noResponse.length) return;
+    if (!confirm(`Archive ${noResponse.length} ticket${noResponse.length === 1 ? '' : 's'}?`)) return;
+    await Promise.all(noResponse.map(t => base44.entities.EventRequest.update(t.id, { archived: true })));
     queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
   };
 
@@ -248,7 +248,7 @@ export default function Dashboard() {
 
         {/* Sticky redesigned header */}
         <div className="sticky top-0 z-30 px-4 md:px-8 pt-4 md:pt-8 pb-3">
-          <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-4 px-2">
+          <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4 px-2">
             {/* Left — logo + counts */}
             <Link to="/" className="flex items-center gap-3 min-w-0 flex-shrink-0">
               <img
@@ -343,7 +343,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-4 md:pt-6 pb-2">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-4 md:pt-6 pb-2">
           {view === 'archive' ? (
             <ArchivedTicketsList
               tickets={archivedTickets}
@@ -354,7 +354,7 @@ export default function Dashboard() {
             <CalendarView requests={activeTickets} onSelect={setSelectedRequest} />
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-2 md:gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                 {STATUS_COLUMNS.map(col => (
                   <KanbanColumn
                     key={col}
@@ -365,7 +365,7 @@ export default function Dashboard() {
                     isLoading={isLoading}
                     highlightedTicketId={highlightedTicketId}
                     viewMode="status"
-                    onArchiveAll={col === 'Completed' ? handleArchiveAll : undefined}
+                    onArchiveAll={col === 'No Response' ? handleArchiveAll : undefined}
                     unreadCountByTicket={unreadCountByTicket}
                   />
                 ))}

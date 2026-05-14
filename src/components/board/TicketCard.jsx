@@ -19,7 +19,7 @@ const EVENT_TYPE_EMOJI = {
   'Other': '✨',
 };
 
-const STATUS_OPTIONS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
+const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'Hosted', 'No Response'];
 
 const ADDON_ICONS = {
   'Sparkling Water & Snacks': { Icon: GlassWater, color: '#3b82f6' },
