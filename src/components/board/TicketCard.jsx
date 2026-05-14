@@ -1,4 +1,4 @@
-import { MoreVertical, Users, Calendar, Sparkles, GlassWater, PartyPopper, Camera, Music, Layers, Mail } from 'lucide-react';
+import { MoreVertical, Users, Calendar, Mail, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -21,26 +21,22 @@ const EVENT_TYPE_EMOJI = {
 
 const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'Hosted', 'No Response'];
 
-const ADDON_ICONS = {
-  'Sparkling Water & Snacks': { Icon: GlassWater, color: '#3b82f6' },
-  'Studio Décor Package':     { Icon: PartyPopper, color: '#e86c84' },
-  'Photography Add-On':       { Icon: Camera, color: '#7c3aed' },
-  'Custom Playlist':          { Icon: Music, color: '#10b981' },
-  'Extra Mats & Towels':      { Icon: Layers, color: '#f59e0b' },
-};
-
-// Days-until-event → priority border color
-function urgencyBorderClass(eventDateStr) {
-  if (!eventDateStr) return 'border-gray-300';
+// Days-until-event → label + color
+function daysUntilInfo(eventDateStr) {
+  if (!eventDateStr) return null;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const eventDay = new Date(eventDateStr + 'T12:00:00');
   eventDay.setHours(0, 0, 0, 0);
   const diffDays = Math.round((eventDay - today) / (1000 * 60 * 60 * 24));
-  if (diffDays < 0) return 'border-red-500';
-  if (diffDays < 14) return 'border-orange-500';
-  if (diffDays <= 30) return 'border-yellow-500';
-  return 'border-green-500';
+  let label, color;
+  if (diffDays < 0) { label = `${Math.abs(diffDays)}d past`; color = '#ef4444'; }
+  else if (diffDays === 0) { label = 'Today'; color = '#ef4444'; }
+  else if (diffDays === 1) { label = 'Tomorrow'; color = '#f97316'; }
+  else if (diffDays < 14) { label = `${diffDays}d left`; color = '#f97316'; }
+  else if (diffDays <= 30) { label = `${diffDays}d left`; color = '#eab308'; }
+  else { label = `${diffDays}d left`; color = '#10b981'; }
+  return { label, color, diffDays };
 }
 
 function formatRelativeTime(dateString) {
@@ -75,15 +71,14 @@ function formatEventDate(eventDate) {
 
 export default function TicketCard({ ticket, onStatusChange, onClick, isDragging, isHighlighted, viewMode, unreadCount = 0 }) {
   const emoji = EVENT_TYPE_EMOJI[ticket.event_type] || '✨';
-  const borderColor = urgencyBorderClass(ticket.event_date);
   const ticketTag = ticket.ticket_number ? `#${ticket.ticket_number}` : `#${ticket.id?.slice(-6)}`;
-  const addOns = Array.isArray(ticket.add_ons) ? ticket.add_ons : [];
+  const daysInfo = daysUntilInfo(ticket.event_date);
   const hasUnread = unreadCount > 0;
 
   return (
     <div
       onClick={() => onClick && onClick(ticket)}
-      className={`relative overflow-hidden backdrop-blur-md bg-white/40 border-2 ${borderColor} rounded-xl p-2 md:p-4 group ${
+      className={`relative overflow-hidden backdrop-blur-md bg-white/40 border border-white/40 rounded-xl p-2 md:p-4 group ${
         isDragging
           ? 'shadow-2xl bg-white/90 cursor-grabbing ring-4 ring-white/60'
           : isHighlighted
@@ -189,23 +184,16 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
 
         <div className="mt-2 flex items-center justify-between gap-2">
           <span className="text-[11px] text-gray-500">{formatRelativeTime(ticket.submitted_date || ticket.created_date)}</span>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            {addOns.map(name => {
-              const cfg = ADDON_ICONS[name];
-              if (!cfg) return null;
-              const { Icon, color } = cfg;
-              return (
-                <span
-                  key={name}
-                  title={name}
-                  className="w-5 h-5 rounded-full flex items-center justify-center"
-                  style={{ background: `${color}1f`, border: `1px solid ${color}55` }}
-                >
-                  <Icon className="w-2.5 h-2.5" style={{ color }} />
-                </span>
-              );
-            })}
-          </div>
+          {daysInfo && (
+            <span
+              className="inline-flex items-center gap-1 h-5 px-2 rounded-full text-[10px] font-semibold flex-shrink-0"
+              style={{ background: `${daysInfo.color}1f`, color: daysInfo.color, border: `1px solid ${daysInfo.color}55` }}
+              title={`Event ${daysInfo.diffDays < 0 ? 'was' : 'is'} ${formatEventDate(ticket.event_date)}`}
+            >
+              <Clock className="w-2.5 h-2.5" />
+              {daysInfo.label}
+            </span>
+          )}
         </div>
       </div>
 
