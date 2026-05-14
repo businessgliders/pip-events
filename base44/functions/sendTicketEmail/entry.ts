@@ -91,25 +91,37 @@ Deno.serve(async (req) => {
       500
     );
 
-    const lastMsg = prior.length > 0 ? prior[prior.length - 1] : null;
-    const threadId = ticket.gmail_thread_id || lastMsg?.gmail_thread_id || null;
+    // Anchor threading on the welcome email if one exists — guarantees assignment
+    // emails land in the SAME Gmail conversation as the welcome + client replies.
+    const welcomeEmail = prior.find(m => m.is_welcome && m.rfc_message_id) || null;
 
-    // Build References chain
+    const lastMsg = prior.length > 0 ? prior[prior.length - 1] : null;
+    const threadId =
+      welcomeEmail?.gmail_thread_id ||
+      ticket.gmail_thread_id ||
+      lastMsg?.gmail_thread_id ||
+      null;
+
+    // Build References chain — welcome's Message-ID first (root), then any later replies
     const msgIdChain = [];
-    if (ticket.gmail_root_message_id) msgIdChain.push(ticket.gmail_root_message_id);
+    if (welcomeEmail?.rfc_message_id) msgIdChain.push(welcomeEmail.rfc_message_id);
+    if (ticket.gmail_root_message_id && !msgIdChain.includes(ticket.gmail_root_message_id)) {
+      msgIdChain.push(ticket.gmail_root_message_id);
+    }
     for (const m of prior) {
       if (m.rfc_message_id && !msgIdChain.includes(m.rfc_message_id)) msgIdChain.push(m.rfc_message_id);
     }
     const inReplyTo = msgIdChain.length > 0 ? msgIdChain[msgIdChain.length - 1] : null;
     const references = msgIdChain.length > 0 ? msgIdChain.join(' ') : null;
 
-    // Subject with request tag for threading fallback (accept legacy "Ticket #" too)
+    // Subject — prefer the welcome's exact subject (Gmail's strongest threading signal)
     const requestTag = `[Request #${ticket.ticket_number || ticket.id.slice(-8)}]`;
     const legacyTicketTag = `[Ticket #${ticket.ticket_number || ticket.id.slice(-8)}]`;
+    const baseSubject = welcomeEmail?.subject || lastMsg?.subject;
     let subject;
-    if (lastMsg?.subject) {
-      const hasTag = lastMsg.subject.includes(requestTag) || lastMsg.subject.includes(legacyTicketTag);
-      subject = hasTag ? lastMsg.subject : `${requestTag} ${lastMsg.subject}`;
+    if (baseSubject) {
+      const hasTag = baseSubject.includes(requestTag) || baseSubject.includes(legacyTicketTag);
+      subject = hasTag ? baseSubject : `${requestTag} ${baseSubject}`;
       if (!/^re:\s/i.test(subject)) subject = `Re: ${subject}`;
     } else {
       subject = `${requestTag} Your Pilates in Pink Event Inquiry`;
