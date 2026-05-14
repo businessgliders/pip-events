@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import HlsVideo from '../components/HlsVideo';
 import CalendarGrid from '../components/calendar/CalendarGrid';
+import GlassNav from '../components/layout/GlassNav';
 
 export default function Calendar() {
   return (
@@ -30,6 +31,7 @@ export default function Calendar() {
       </Link>
 
       <div className="relative" style={{zIndex: 2}}>
+        <GlassNav />
         <div className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
 
           <div className="text-center mb-4">

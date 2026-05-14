@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import HlsVideo from '../components/HlsVideo';
+import GlassNav from '../components/layout/GlassNav';
 import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronRight, ChevronLeft, Check, Lock } from 'lucide-react';
 
 const EVENT_TYPE_ICONS = {
@@ -175,6 +176,7 @@ export default function RequestForm() {
 
       {/* Content */}
       <div className="relative" style={{zIndex: 2}}>
+      <GlassNav />
       <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-10">
         <div ref={topRef} />
 
