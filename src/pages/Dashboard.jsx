@@ -14,7 +14,6 @@ import NotificationCenter from '../components/dashboard/NotificationCenter';
 import UserMenu from '../components/dashboard/UserMenu';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
-import QuickRequestModal from '../components/dashboard/QuickRequestModal';
 import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
 
 const STATUS_COLUMNS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
@@ -29,8 +28,6 @@ export default function Dashboard() {
   const [focusComposer, setFocusComposer] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [highlightedTicketId, setHighlightedTicketId] = useState(null);
-  const [quickAddOpen, setQuickAddOpen] = useState(false);
-
   const { unreadMessages, unreadCountByTicket, totalUnread, markAsRead } = useUnreadMessages(user?.email);
 
   const handleNotificationSelect = (ticket, messageId) => {
@@ -276,14 +273,16 @@ export default function Dashboard() {
                 onMarkRead={markAsRead}
               />
 
-              <button
-                onClick={() => setQuickAddOpen(true)}
+              <a
+                href="/RequestForm"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm text-white hover:opacity-90"
                 style={{ background: '#f1889b' }}
-                title="New request"
+                title="New request (opens in new tab)"
               >
                 <Plus className="w-4 h-4" />
-              </button>
+              </a>
 
               <button
                 onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
@@ -412,13 +411,6 @@ export default function Dashboard() {
 
       {isAllowed && <WhatsNewSplash />}
 
-      <QuickRequestModal
-        open={quickAddOpen}
-        onClose={() => {
-          setQuickAddOpen(false);
-          queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
-        }}
-      />
     </div>
   );
 }
