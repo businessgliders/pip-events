@@ -7,7 +7,7 @@ function encodeHeader(str) {
   return `=?UTF-8?B?${btoa(unescape(encodeURIComponent(str)))}?=`;
 }
 
-function buildRaw({ to, bcc, subject, html, replyTo }) {
+function buildRaw({ to, bcc, subject, html, replyTo, inReplyTo, references }) {
   const lines = [
     `From: ${encodeHeader('Pilates in Pink ™')} <${SENDER_EMAIL}>`,
   ];
@@ -20,20 +20,24 @@ function buildRaw({ to, bcc, subject, html, replyTo }) {
     `Content-Type: text/html; charset=utf-8`,
     `Content-Transfer-Encoding: 8bit`,
   );
+  if (inReplyTo) lines.push(`In-Reply-To: ${inReplyTo}`);
+  if (references) lines.push(`References: ${references}`);
   lines.push('', html);
   return btoa(unescape(encodeURIComponent(lines.join('\r\n'))))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-async function sendGmail(accessToken, { to, bcc, subject, html, replyTo }) {
-  const raw = buildRaw({ to, bcc, subject, html, replyTo });
+async function sendGmail(accessToken, { to, bcc, subject, html, replyTo, inReplyTo, references, threadId }) {
+  const raw = buildRaw({ to, bcc, subject, html, replyTo, inReplyTo, references });
+  const payload = { raw };
+  if (threadId) payload.threadId = threadId;
   const res = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ raw }),
+    body: JSON.stringify(payload),
   });
   return res.json();
 }
@@ -306,30 +310,34 @@ Deno.serve(async (req) => {
 
   const ownerHtmlFinal = ownerHtml.replace('__DASHBOARD_BUTTON__', dashboardButton);
 
-  // Send the requestor email with the owner BCC'd, using the unified subject.
-  // → All future client replies will thread together on the owner's side automatically.
-  // Then send a separate internal-only notification (with dashboard deep-link button)
-  // using a different subject so it lands in its own thread and doesn't pollute the client conversation.
-  const [submitterResult, ownerResult] = await Promise.all([
-    sendGmail(accessToken, {
-      to: form.email,
-      bcc: OWNER_EMAIL,
-      subject: confirmationSubject,
-      html: submitterHtml,
-      replyTo: SENDER_EMAIL,
-    }),
-    sendGmail(accessToken, {
-      to: OWNER_EMAIL,
-      subject: confirmationSubject,
-      html: ownerHtmlFinal,
-    }),
-  ]);
+  // 1) Send the welcome email to the requestor (BCC owner) FIRST so we can capture
+  //    its Gmail threadId + RFC Message-ID.
+  const submitterResult = await sendGmail(accessToken, {
+    to: form.email,
+    bcc: OWNER_EMAIL,
+    subject: confirmationSubject,
+    html: submitterHtml,
+    replyTo: SENDER_EMAIL,
+  });
 
   // Capture threading metadata from the submitter email so future replies stay in the same thread
   let threadMeta = {};
   if (submitterResult?.id) {
     threadMeta = await fetchSentMeta(accessToken, submitterResult.id);
   }
+
+  // 2) Send the internal owner notification THREADED onto the welcome — Gmail will
+  //    merge it into the same conversation on the owner's side, so future client
+  //    replies (which thread off the welcome) appear alongside the owner notification
+  //    in one unified thread.
+  const ownerResult = await sendGmail(accessToken, {
+    to: OWNER_EMAIL,
+    subject: confirmationSubject,
+    html: ownerHtmlFinal,
+    inReplyTo: threadMeta.rfcMessageId || undefined,
+    references: threadMeta.rfcMessageId || undefined,
+    threadId: threadMeta.threadId || undefined,
+  });
 
   // Log the initial confirmation email on the EventRequest record + create EmailMessage row
   if (record) {
