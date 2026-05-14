@@ -69,6 +69,41 @@ function formatEventDate(eventDate) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function getCalendarParts(eventDate) {
+  if (!eventDate) return null;
+  const d = new Date(eventDate + 'T12:00:00');
+  return {
+    month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+    day: d.getDate(),
+  };
+}
+
+function CalendarDateBlock({ eventDate, size = 'md' }) {
+  const parts = getCalendarParts(eventDate);
+  if (!parts) return null;
+  const isSm = size === 'sm';
+  return (
+    <div
+      className={`flex flex-col items-center justify-center rounded-md overflow-hidden bg-white shadow-sm border border-pink-200 flex-shrink-0 ${
+        isSm ? 'w-9' : 'w-11'
+      }`}
+    >
+      <div
+        className={`w-full text-center font-bold text-white leading-none ${isSm ? 'text-[8px] py-0.5' : 'text-[9px] py-0.5'}`}
+        style={{ background: '#e86c84' }}
+      >
+        {parts.month}
+      </div>
+      <div
+        className={`w-full text-center font-bold leading-none ${isSm ? 'text-sm py-1' : 'text-base py-1'}`}
+        style={{ color: '#5a3535' }}
+      >
+        {parts.day}
+      </div>
+    </div>
+  );
+}
+
 export default function TicketCard({ ticket, onStatusChange, onClick, isDragging, isHighlighted, viewMode, unreadCount = 0 }) {
   const emoji = EVENT_TYPE_EMOJI[ticket.event_type] || '✨';
   const ticketTag = ticket.ticket_number ? `#${ticket.ticket_number}` : `#${ticket.id?.slice(-6)}`;
@@ -93,10 +128,10 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
         </span>
       )}
 
-      {/* Unread email badge — top-right chip styled like add-ons */}
+      {/* Unread email badge — moved to top-left to avoid the calendar date block */}
       {hasUnread && (
         <span
-          className="absolute top-2 right-2 inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[10px] font-bold text-white shadow-md z-10 animate-pulse-soft"
+          className="absolute top-2 left-2 inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[10px] font-bold text-white shadow-md z-10 animate-pulse-soft"
           style={{ background: '#e86c84', border: '1px solid rgba(255,255,255,0.6)' }}
           title={`${unreadCount} unread message${unreadCount === 1 ? '' : 's'}`}
         >
@@ -107,7 +142,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
 
       {/* Mobile compact */}
       <div className="md:hidden">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-base flex-shrink-0">{emoji}</span>
             <p className="text-xs font-semibold truncate" style={{ color: '#5a3535' }}>
@@ -115,6 +150,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
               {ticket.full_name}
             </p>
           </div>
+          <CalendarDateBlock eventDate={ticket.event_date} size="sm" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -137,7 +173,6 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
           <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/40 border-pink-200 text-pink-700 truncate max-w-[60%]">
             {ticket.event_type}
           </Badge>
-          <span className="text-[10px] text-gray-500 flex-shrink-0">{formatEventDate(ticket.event_date)}</span>
         </div>
       </div>
 
@@ -156,27 +191,29 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
               </Badge>
             </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                onClick={(e) => e.stopPropagation()}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-pink-100 flex-shrink-0"
-              >
-                <MoreVertical className="w-4 h-4 text-gray-500" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-              <DropdownMenuLabel>Move to</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {STATUS_OPTIONS.filter(s => s !== ticket.status).map(s => (
-                <DropdownMenuItem key={s} onClick={() => onStatusChange?.(ticket.id, s)}>{s}</DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-start gap-1 flex-shrink-0">
+            <CalendarDateBlock eventDate={ticket.event_date} />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-pink-100 flex-shrink-0"
+                >
+                  <MoreVertical className="w-4 h-4 text-gray-500" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                <DropdownMenuLabel>Move to</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {STATUS_OPTIONS.filter(s => s !== ticket.status).map(s => (
+                  <DropdownMenuItem key={s} onClick={() => onStatusChange?.(ticket.id, s)}>{s}</DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="mt-3 flex items-center gap-3 text-xs text-gray-600">
-          <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {formatEventDate(ticket.event_date)}</span>
           {ticket.number_of_guests ? (
             <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {ticket.number_of_guests}</span>
           ) : null}
