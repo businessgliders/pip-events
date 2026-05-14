@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/lib/AuthContext';
 import Navbar from '../components/layout/Navbar';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Plus, Trash2, Save, Edit2, X, Check, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, Save, Edit2, X, Check, ArrowLeft, Lock } from 'lucide-react';
 
-const PASSWORD = 'pip6161';
 const LOGO_URL = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png';
 
 const glassCard = {
@@ -28,20 +28,19 @@ function getDefaultSignature() {
 }
 
 export default function SettingsPage() {
-  const [authed, setAuthed] = useState(false);
-  const [pwInput, setPwInput] = useState('');
-  const [pwError, setPwError] = useState(false);
+  const { user, isAuthenticated, isLoadingAuth, navigateToLogin } = useAuth();
+  const isAdmin = isAuthenticated && user?.role === 'admin';
 
   const { data: templates = [], refetch: refetchTemplates } = useQuery({
     queryKey: ['emailTemplates'],
     queryFn: () => base44.entities.EmailTemplate.list('-created_date', 50),
-    enabled: authed,
+    enabled: isAdmin,
   });
 
   const { data: settingsRows = [], refetch: refetchSettings } = useQuery({
     queryKey: ['appSettings'],
     queryFn: () => base44.entities.AppSettings.list(),
-    enabled: authed,
+    enabled: isAdmin,
   });
 
   // Signature
@@ -50,7 +49,7 @@ export default function SettingsPage() {
   const [sigLoaded, setSigLoaded] = useState(false);
   const [savingSig, setSavingSig] = useState(false);
 
-  if (authed && !sigLoaded && settingsRows.length >= 0) {
+  if (isAdmin && !sigLoaded && settingsRows.length >= 0) {
     setSignatureHtml(sigRecord?.value || getDefaultSignature());
     setSigLoaded(true);
   }
@@ -104,7 +103,15 @@ export default function SettingsPage() {
     refetchTemplates();
   };
 
-  if (!authed) {
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
+        <div className="w-8 h-8 border-4 border-pink-200 border-t-pink-400 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(135deg, #fce4ec 0%, #fdf5f7 60%, #fce4ec 100%)'}}>
         <div className="w-full max-w-sm mx-4">
@@ -112,22 +119,22 @@ export default function SettingsPage() {
             <img src={LOGO_URL} alt="Pilates in Pink" className="w-16 h-16 object-contain drop-shadow-sm" />
           </div>
           <div className="rounded-3xl p-10 text-center" style={glassCard}>
+            <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-4" style={{background: 'rgba(241,136,155,0.15)'}}>
+              <Lock className="w-5 h-5" style={{color: '#e86c84'}} />
+            </div>
             <h2 className="text-2xl font-bold mb-1" style={{color: '#b67651'}}>Settings</h2>
-            <p className="text-sm mb-7" style={{color: '#c48a96'}}>Enter the admin password to continue</p>
-            <input
-              type="password" value={pwInput}
-              onChange={e => { setPwInput(e.target.value); setPwError(false); }}
-              onKeyDown={e => { if (e.key === 'Enter') { if (pwInput === PASSWORD) setAuthed(true); else setPwError(true); } }}
-              placeholder="Password"
-              className="w-full rounded-xl px-4 py-3 text-sm mb-3 focus:outline-none bg-white/70 placeholder-gray-400"
-              style={{ border: pwError ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.7)' }}
-            />
-            {pwError && <p className="text-xs mb-3" style={{color: '#f1889b'}}>Incorrect password.</p>}
-            <button
-              onClick={() => { if (pwInput === PASSWORD) setAuthed(true); else setPwError(true); }}
-              className="w-full text-white py-3 rounded-xl font-semibold text-sm"
-              style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
-            >Enter Settings</button>
+            <p className="text-sm mb-7" style={{color: '#c48a96'}}>
+              {isAuthenticated
+                ? 'Admin access required. Please contact a studio administrator.'
+                : 'Sign in with your admin account to continue.'}
+            </p>
+            {!isAuthenticated && (
+              <button
+                onClick={navigateToLogin}
+                className="w-full text-white py-3 rounded-xl font-semibold text-sm"
+                style={{background: 'linear-gradient(135deg, #f1889b, #e86c84)'}}
+              >Sign In</button>
+            )}
             <button
               onClick={() => { window.history.length > 1 ? window.history.back() : (window.location.href = '/Dashboard'); }}
               className="w-full mt-3 text-xs font-medium py-2 rounded-xl transition-all flex items-center justify-center gap-1.5"
