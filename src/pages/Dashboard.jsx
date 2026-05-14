@@ -11,6 +11,7 @@ import CalendarView from '../components/dashboard/CalendarView';
 import AddonLegend from '../components/board/AddonLegend';
 import WhatsNewSplash from '../components/dashboard/WhatsNewSplash';
 import NotificationCenter from '../components/dashboard/NotificationCenter';
+import UserMenu from '../components/dashboard/UserMenu';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays } from 'lucide-react';
@@ -326,6 +327,8 @@ export default function Dashboard() {
                   </span>
                 )}
               </button>
+
+              <UserMenu />
             </div>
           </div>
         </div>
