@@ -74,11 +74,11 @@
         "New",
         "In Conversations",
         "Waiting for Payment",
-        "Pending",
         "Confirmed",
-        "Hosted",
-        "Completed",
         "No Response",
+        "Hosted",
+        "Pending",
+        "Completed",
         "Cancelled"
       ],
       "default": "New"
