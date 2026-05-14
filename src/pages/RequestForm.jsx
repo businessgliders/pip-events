@@ -1,9 +1,8 @@
 import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import Navbar from '../components/layout/Navbar';
 import HlsVideo from '../components/HlsVideo';
-import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronRight, ChevronLeft, Check, Lock } from 'lucide-react';
 
 const EVENT_TYPE_ICONS = {
   'Birthday': Cake,
@@ -157,9 +156,25 @@ export default function RequestForm() {
         zIndex: 1,
         background: 'rgba(248, 210, 220, 0.85)',
       }} />
+
+      {/* Glass padlock — staff dashboard link (same as Landing) */}
+      <Link
+        to="/RequestBoard"
+        title="Staff Dashboard"
+        className="fixed top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+        style={{
+          zIndex: 10,
+          background: 'rgba(255,255,255,0.18)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.35)',
+        }}
+      >
+        <Lock className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.85)' }} />
+      </Link>
+
       {/* Content */}
       <div className="relative" style={{zIndex: 2}}>
-      <Navbar />
       <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-10">
         <div ref={topRef} />
 
