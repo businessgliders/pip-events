@@ -23,8 +23,12 @@ export default function QuickRequestModal({ open, onClose }) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl h-[95vh] sm:h-[90vh] rounded-2xl overflow-hidden shadow-2xl bg-white"
+        className="relative w-full max-w-5xl h-[95vh] sm:h-[90vh] rounded-2xl overflow-hidden bg-white"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          border: '1px solid rgba(247,177,189,0.55)',
+          boxShadow: '0 30px 80px -10px rgba(58,31,31,0.55), 0 10px 30px rgba(241,136,155,0.35), 0 0 0 8px rgba(255,255,255,0.08)',
+        }}
       >
         <button
           onClick={onClose}
