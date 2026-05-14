@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, Sparkles, Users, Heart, ArrowDown } from 'lucide-react';
+import { CalendarDays, Sparkles, Users, Heart, ArrowDown, Lock } from 'lucide-react';
 import HlsVideo from '../components/HlsVideo';
 import CalendarGrid from '../components/calendar/CalendarGrid';
 
@@ -49,6 +49,21 @@ export default function Landing() {
             'linear-gradient(135deg, rgba(248,210,220,0.92), rgba(241,136,155,0.85))',
         }}
       />
+
+      <Link
+        to="/RequestBoard"
+        title="Staff Dashboard"
+        className="fixed top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+        style={{
+          zIndex: 10,
+          background: 'rgba(255,255,255,0.18)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.35)',
+        }}
+      >
+        <Lock className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.85)' }} />
+      </Link>
 
       <div className="relative" style={{ zIndex: 2 }}>
         <div className="max-w-5xl mx-auto px-6 pt-16 pb-12 sm:pt-24 sm:pb-20">
