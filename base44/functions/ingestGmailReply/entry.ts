@@ -171,12 +171,18 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Lock to admin — invoked by pollGmailReplies (admin) or Gmail connector
-    // automation (which forwards admin context).
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    if (user.role !== 'admin') {
-      return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+    // Auth: accept EITHER an authenticated admin user OR a matching shared secret.
+    const url = new URL(req.url);
+    const providedSecret = url.searchParams.get('secret') || req.headers.get('x-webhook-secret');
+    const expectedSecret = Deno.env.get('WEBHOOK_SHARED_SECRET');
+    const secretMatches = !!expectedSecret && providedSecret === expectedSecret;
+
+    if (!secretMatches) {
+      const user = await base44.auth.me().catch(() => null);
+      if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      if (user.role !== 'admin') {
+        return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+      }
     }
 
     const body = await req.json().catch(() => ({}));

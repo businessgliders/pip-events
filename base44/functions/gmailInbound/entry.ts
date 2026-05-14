@@ -3,12 +3,19 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
 
-  // Lock to admin — this endpoint is invoked by an authenticated Gmail connector
-  // automation (which forwards admin context) or by staff manually.
-  const user = await base44.auth.me();
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  if (user.role !== 'admin') {
-    return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+  // Auth: accept EITHER an authenticated admin user OR a matching shared secret
+  // (used by the Gmail connector webhook automation, configured with ?secret=... in the URL).
+  const url = new URL(req.url);
+  const providedSecret = url.searchParams.get('secret') || req.headers.get('x-webhook-secret');
+  const expectedSecret = Deno.env.get('WEBHOOK_SHARED_SECRET');
+  const secretMatches = !!expectedSecret && providedSecret === expectedSecret;
+
+  if (!secretMatches) {
+    const user = await base44.auth.me().catch(() => null);
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+    }
   }
 
   const body = await req.json();
