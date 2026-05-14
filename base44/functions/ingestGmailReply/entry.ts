@@ -34,8 +34,11 @@ function parseFromHeader(value) {
 
 function extractTicketNumber(subject) {
   if (!subject) return null;
-  // Match new [Request #...] and legacy [Ticket #...] tags
-  const m = subject.match(/\[(?:Request|Ticket) #([A-Za-z0-9]+)\]/);
+  // Only match our [Request #N] tag. We intentionally do NOT match the legacy
+  // [Ticket #N] format because that string is also used by an unrelated external
+  // support system that shares the same Gmail mailbox — matching it caused replies
+  // from that system to be misattached to our event-request tickets.
+  const m = subject.match(/\[Request #([A-Za-z0-9]+)\]/);
   return m ? m[1] : null;
 }
 
@@ -123,11 +126,11 @@ async function processOne(base44, accessToken, messageId, stats) {
     if (byThread[0]?.ticket_id) parentId = byThread[0].ticket_id;
   }
 
-  // 4. Final fallback: match by from email
-  if (!parentId && from.email) {
-    const byEmail = await base44.asServiceRole.entities.EventRequest.filter({ email: from.email }, '-created_date', 1);
-    if (byEmail[0]) parentId = byEmail[0].id;
-  }
+  // NOTE: We intentionally do NOT fall back to "match by from email". That fallback
+  // is unsafe — any returning client's stray email (or an unrelated email from a
+  // shared mailbox) would get attached to their most recent ticket, causing
+  // misattribution. If we can't match via [Request #N] tag, In-Reply-To, or
+  // thread_id, we drop the message rather than guess.
 
   if (!parentId) {
     stats.dropped++;
