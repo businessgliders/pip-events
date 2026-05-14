@@ -14,7 +14,8 @@ import NotificationCenter from '../components/dashboard/NotificationCenter';
 import UserMenu from '../components/dashboard/UserMenu';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
-import { Search, LayoutGrid, Archive, CalendarDays } from 'lucide-react';
+import QuickRequestModal from '../components/dashboard/QuickRequestModal';
+import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
 
 const STATUS_COLUMNS = ['New', 'In Conversations', 'Confirmed', 'Completed'];
 
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const [focusComposer, setFocusComposer] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [highlightedTicketId, setHighlightedTicketId] = useState(null);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   const { unreadMessages, unreadCountByTicket, totalUnread, markAsRead } = useUnreadMessages(user?.email);
 
@@ -274,6 +276,35 @@ export default function Dashboard() {
                 onMarkRead={markAsRead}
               />
 
+              <button
+                onClick={() => setQuickAddOpen(true)}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm text-white hover:opacity-90"
+                style={{ background: '#f1889b' }}
+                title="New request"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm relative"
+                title={view === 'archive' ? 'Back to Board' : `Archive (${archivedTickets.length})`}
+              >
+                {view === 'archive' ? (
+                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
+                ) : (
+                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
+                )}
+                {view !== 'archive' && archivedTickets.length > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+                    style={{ background: '#e86c84' }}
+                  >
+                    {archivedTickets.length}
+                  </span>
+                )}
+              </button>
+
               <div className="relative flex-1 min-w-0 sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#a07878' }} />
                 <input
@@ -307,26 +338,6 @@ export default function Dashboard() {
                   <CalendarDays className="w-3.5 h-3.5" /> Calendar
                 </button>
               </div>
-
-              <button
-                onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm relative"
-                title={view === 'archive' ? 'Back to Board' : `Archive (${archivedTickets.length})`}
-              >
-                {view === 'archive' ? (
-                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
-                ) : (
-                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
-                )}
-                {view !== 'archive' && archivedTickets.length > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
-                    style={{ background: '#e86c84' }}
-                  >
-                    {archivedTickets.length}
-                  </span>
-                )}
-              </button>
 
               <UserMenu />
             </div>
@@ -400,6 +411,14 @@ export default function Dashboard() {
       />
 
       {isAllowed && <WhatsNewSplash />}
+
+      <QuickRequestModal
+        open={quickAddOpen}
+        onClose={() => {
+          setQuickAddOpen(false);
+          queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
+        }}
+      />
     </div>
   );
 }
