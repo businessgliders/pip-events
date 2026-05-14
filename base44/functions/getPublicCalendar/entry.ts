@@ -9,7 +9,7 @@
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const ALLOWED_STATUSES = ['Confirmed', 'Pending', 'In Conversations', 'New'];
+const ALLOWED_STATUSES = ['Confirmed', 'Pending', 'In Conversations', 'New', 'Completed'];
 
 Deno.serve(async (req) => {
   try {
