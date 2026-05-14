@@ -174,9 +174,16 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
+    const body = await req.json().catch(() => ({}));
+
     // Auth: accept EITHER an authenticated admin user OR a matching shared secret.
+    // The secret may come from query string, x-webhook-secret header, or the
+    // request body (service-role function invocations from pollGmailReplies use the body).
     const url = new URL(req.url);
-    const providedSecret = url.searchParams.get('secret') || req.headers.get('x-webhook-secret');
+    const providedSecret =
+      url.searchParams.get('secret') ||
+      req.headers.get('x-webhook-secret') ||
+      body.secret;
     const expectedSecret = Deno.env.get('WEBHOOK_SHARED_SECRET');
     const secretMatches = !!expectedSecret && providedSecret === expectedSecret;
 
@@ -187,8 +194,6 @@ Deno.serve(async (req) => {
         return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
       }
     }
-
-    const body = await req.json().catch(() => ({}));
 
     // Accept either { message_ids: [...] } (poller) or { data: { new_message_ids: [...] } } (webhook)
     let ids = [];

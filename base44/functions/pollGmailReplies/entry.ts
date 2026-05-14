@@ -43,10 +43,21 @@ Deno.serve(async (req) => {
       return Response.json({ success: true, polled: allIds.length, new: 0 });
     }
 
-    // Delegate to ingestGmailReply
-    const ingestRes = await base44.asServiceRole.functions.invoke('ingestGmailReply', { message_ids: newIds });
+    // Delegate to ingestGmailReply.
+    // We pass the shared secret so ingestGmailReply's auth check passes
+    // (service-role function invocations have no user, so the admin-user check
+    // in ingestGmailReply would otherwise 401 us).
+    const sharedSecret = Deno.env.get('WEBHOOK_SHARED_SECRET');
+    const ingestRes = await base44.asServiceRole.functions.invoke(
+      'ingestGmailReply',
+      { message_ids: newIds, secret: sharedSecret }
+    );
 
-    return Response.json({ success: true, polled: allIds.length, new: newIds.length, ingest: ingestRes });
+    // ingestRes is an Axios-like response with circular req/res references —
+    // we must extract only the JSON-serializable `data` field before returning.
+    const ingestData = ingestRes?.data ?? null;
+
+    return Response.json({ success: true, polled: allIds.length, new: newIds.length, ingest: ingestData });
   } catch (error) {
     console.error('pollGmailReplies error', error);
     return Response.json({ error: error.message }, { status: 500 });
