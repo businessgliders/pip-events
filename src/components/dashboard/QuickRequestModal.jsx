@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import RequestForm from '../../pages/RequestForm';
 
 export default function QuickRequestModal({ open, onClose }) {
   useEffect(() => {
@@ -27,16 +28,14 @@ export default function QuickRequestModal({ open, onClose }) {
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 hover:bg-white shadow-md transition-colors"
+          className="absolute top-3 right-3 z-50 w-9 h-9 rounded-full flex items-center justify-center bg-white/90 hover:bg-white shadow-md transition-colors"
           title="Close"
         >
           <X className="w-4 h-4" style={{ color: '#5a3535' }} />
         </button>
-        <iframe
-          src="/RequestForm"
-          title="New Request"
-          className="w-full h-full border-0"
-        />
+        <div className="w-full h-full overflow-y-auto">
+          <RequestForm />
+        </div>
       </div>
     </div>
   );
