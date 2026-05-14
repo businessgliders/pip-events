@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom';
+import { Lock } from 'lucide-react';
 import HlsVideo from '../components/HlsVideo';
-import Navbar from '../components/layout/Navbar';
 import CalendarGrid from '../components/calendar/CalendarGrid';
 
 export default function Calendar() {
@@ -11,8 +12,24 @@ export default function Calendar() {
         style={{zIndex: 0}}
       />
       <div className="fixed inset-0" style={{zIndex: 1, background: 'rgba(248, 210, 220, 0.85)'}} />
+
+      {/* Glass padlock — staff dashboard link */}
+      <Link
+        to="/RequestBoard"
+        title="Staff Dashboard"
+        className="fixed top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+        style={{
+          zIndex: 10,
+          background: 'rgba(255,255,255,0.18)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.35)',
+        }}
+      >
+        <Lock className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.85)' }} />
+      </Link>
+
       <div className="relative" style={{zIndex: 2}}>
-        <Navbar />
         <div className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
 
           <div className="text-center mb-4">
