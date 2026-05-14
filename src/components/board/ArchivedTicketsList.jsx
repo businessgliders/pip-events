@@ -1,21 +1,24 @@
 import { useState, useMemo } from 'react';
-import { Archive, ChevronDown, ChevronRight } from 'lucide-react';
+import { Archive, Ban, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 function getClosedTimestamp(ticket) {
   const hist = ticket.status_history || [];
-  const closedEntry = [...hist].reverse().find(e => e.status === 'Completed' || e.status === 'Closed');
+  const closedEntry = [...hist].reverse().find(e => e.status === 'Completed' || e.status === 'Closed' || e.status === 'Cancelled');
   if (closedEntry?.timestamp) return closedEntry.timestamp;
   if (hist.length > 0) return hist[hist.length - 1].timestamp;
   return ticket.created_date;
 }
 
-export default function ArchivedTicketsList({ tickets, onView, onRestore }) {
+export default function ArchivedTicketsList({ tickets, cancelledTickets = [], onView, onRestore }) {
+  const [tab, setTab] = useState('archived'); // 'archived' | 'cancelled'
+  const activeTickets = tab === 'archived' ? tickets : cancelledTickets;
+
   // Group by year → month
   const grouped = useMemo(() => {
     const byYear = {};
-    tickets.forEach(t => {
+    activeTickets.forEach(t => {
       const ts = getClosedTimestamp(t);
       if (!ts) return;
       const d = new Date(ts);
@@ -28,7 +31,7 @@ export default function ArchivedTicketsList({ tickets, onView, onRestore }) {
       byYear[year].total++;
     });
     return byYear;
-  }, [tickets]);
+  }, [activeTickets]);
 
   const years = Object.keys(grouped).sort((a, b) => b - a);
   const firstYear = years[0];
@@ -36,28 +39,71 @@ export default function ArchivedTicketsList({ tickets, onView, onRestore }) {
   const [openYears, setOpenYears] = useState(firstYear ? { [firstYear]: true } : {});
   const [selectedMonth, setSelectedMonth] = useState(firstMonth);
 
+  // Keep the selected month in sync when switching tabs
+  const validMonth = useMemo(() => {
+    if (selectedMonth && years.some(y => grouped[y].months[selectedMonth])) return selectedMonth;
+    return firstMonth;
+  }, [selectedMonth, years, grouped, firstMonth]);
+
   const currentMonthData = useMemo(() => {
     for (const y of years) {
-      if (grouped[y].months[selectedMonth]) return grouped[y].months[selectedMonth];
+      if (grouped[y].months[validMonth]) return grouped[y].months[validMonth];
     }
     return null;
-  }, [grouped, years, selectedMonth]);
+  }, [grouped, years, validMonth]);
 
-  if (tickets.length === 0) {
+  const tabsRow = (
+    <div className="inline-flex rounded-full overflow-hidden bg-white/30 backdrop-blur shadow-sm mb-4">
+      <button
+        onClick={() => setTab('archived')}
+        className="px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+        style={{
+          background: tab === 'archived' ? '#3a1f1f' : 'transparent',
+          color: tab === 'archived' ? 'white' : 'rgba(255,255,255,0.85)',
+        }}
+      >
+        <Archive className="w-3.5 h-3.5" /> Archived
+        <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold"
+          style={{ background: tab === 'archived' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.35)', color: 'white' }}>
+          {tickets.length}
+        </span>
+      </button>
+      <button
+        onClick={() => setTab('cancelled')}
+        className="px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+        style={{
+          background: tab === 'cancelled' ? '#3a1f1f' : 'transparent',
+          color: tab === 'cancelled' ? 'white' : 'rgba(255,255,255,0.85)',
+        }}
+      >
+        <Ban className="w-3.5 h-3.5" /> Cancelled
+        <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold"
+          style={{ background: tab === 'cancelled' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.35)', color: 'white' }}>
+          {cancelledTickets.length}
+        </span>
+      </button>
+    </div>
+  );
+
+  if (activeTickets.length === 0) {
     return (
-      <div className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-2xl p-12 shadow-xl flex-1 flex flex-col items-center justify-center text-white/70">
-        <Archive className="w-12 h-12 mb-3" />
-        <p className="text-lg font-medium">No archived inquiries</p>
+      <div className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-2xl p-6 shadow-xl flex-1 flex flex-col">
+        {tabsRow}
+        <div className="flex-1 flex flex-col items-center justify-center text-white/70 py-12">
+          {tab === 'archived' ? <Archive className="w-12 h-12 mb-3" /> : <Ban className="w-12 h-12 mb-3" />}
+          <p className="text-lg font-medium">No {tab} inquiries</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="backdrop-blur-xl bg-white/20 border border-white/30 rounded-2xl p-4 md:p-6 shadow-xl flex-1 overflow-hidden">
-      <div className="flex flex-col md:flex-row gap-4 h-full max-h-[calc(100vh-220px)]">
+      {tabsRow}
+      <div className="flex flex-col md:flex-row gap-4 h-full max-h-[calc(100vh-260px)]">
         {/* Sidebar */}
         <aside className="md:w-60 flex-shrink-0 overflow-y-auto custom-scrollbar">
-          <h2 className="text-white font-bold text-lg mb-3 px-2">Archive</h2>
+          <h2 className="text-white font-bold text-lg mb-3 px-2">{tab === 'archived' ? 'Archive' : 'Cancelled'}</h2>
           {years.map(year => (
             <div key={year} className="mb-1">
               <button
@@ -72,7 +118,7 @@ export default function ArchivedTicketsList({ tickets, onView, onRestore }) {
                 <div className="ml-6 mt-1 space-y-0.5">
                   {Object.keys(grouped[year].months).sort().reverse().map(mk => {
                     const m = grouped[year].months[mk];
-                    const isSelected = selectedMonth === mk;
+                    const isSelected = validMonth === mk;
                     return (
                       <button
                         key={mk}
