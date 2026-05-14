@@ -1,14 +1,12 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const STAFF_DOMAIN = 'pilatesinpinkstudio.com';
-
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!user.email?.toLowerCase().endsWith(`@${STAFF_DOMAIN}`)) {
-      return Response.json({ error: 'Forbidden — staff only' }, { status: 403 });
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
     }
 
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD

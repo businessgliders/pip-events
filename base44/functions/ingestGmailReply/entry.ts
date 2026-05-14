@@ -170,6 +170,15 @@ async function processOne(base44, accessToken, messageId, stats) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+
+    // Lock to admin — invoked by pollGmailReplies (admin) or Gmail connector
+    // automation (which forwards admin context).
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => ({}));
 
     // Accept either { message_ids: [...] } (poller) or { data: { new_message_ids: [...] } } (webhook)

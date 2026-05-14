@@ -62,7 +62,54 @@ async function fetchSentMeta(accessToken, gmailId) {
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
-  const { form, record_id, app_url } = await req.json();
+  const { record_id } = await req.json();
+
+  // ── ANTI-RELAY GUARD ──────────────────────────────────────────
+  // This endpoint is public (called from the unauthenticated event request form).
+  // To prevent it being used as an open email relay, we IGNORE any `form` data
+  // sent in the request body and instead load the just-created EventRequest by id.
+  // The recipient address, name, and event details all come from the DB row that
+  // was just created via RLS-allowed `create` rule.
+  if (!record_id || typeof record_id !== 'string') {
+    return Response.json({ error: 'record_id required' }, { status: 400 });
+  }
+
+  let record;
+  try {
+    record = await base44.asServiceRole.entities.EventRequest.get(record_id);
+  } catch {
+    return Response.json({ error: 'Record not found' }, { status: 404 });
+  }
+  if (!record) return Response.json({ error: 'Record not found' }, { status: 404 });
+
+  // Refuse to re-send the welcome email for a record that already has one.
+  // Stops attackers from spamming the same recipient by replaying record_id.
+  const alreadySent = await base44.asServiceRole.entities.EmailMessage.filter(
+    { ticket_id: record.id, is_welcome: true },
+    null,
+    1
+  );
+  if (alreadySent.length > 0) {
+    return Response.json({ success: true, skipped: 'welcome_already_sent' });
+  }
+
+  // Build `form` strictly from the trusted DB record — never from the request body.
+  const form = {
+    full_name: record.full_name,
+    email: record.email,
+    phone: record.phone,
+    event_type: record.event_type,
+    event_date: record.event_date,
+    additional_dates: record.additional_dates,
+    preferred_times: record.preferred_times,
+    number_of_guests: record.number_of_guests,
+    time_slot: record.time_slot,
+    duration: record.duration,
+    selected_classes: record.selected_classes || [],
+    add_ons: record.add_ons || [],
+    notes: record.notes,
+    budget: record.budget,
+  };
 
   const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
@@ -262,17 +309,7 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
-  // Look up the just-created EventRequest record so we can use its request # in the subject + dashboard deep-link.
-  // Prefer the explicit record_id passed by the frontend; fall back to email+date lookup for safety.
-  let record = null;
-  if (record_id) {
-    try { record = await base44.asServiceRole.entities.EventRequest.get(record_id); } catch { /* fall through */ }
-  }
-  if (!record) {
-    const records = await base44.asServiceRole.entities.EventRequest.filter({ email: form.email, event_date: form.event_date }, '-created_date', 1);
-    record = records?.[0];
-  }
-
+  // `record` is already loaded + verified at the top of the handler.
   // Assign a sequential ticket_number if this record doesn't have one yet
   let requestNumber = record?.ticket_number;
   if (record && !requestNumber) {

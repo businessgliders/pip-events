@@ -1,9 +1,17 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
-  const body = await req.json();
   const base44 = createClientFromRequest(req);
 
+  // Lock to admin — this endpoint is invoked by an authenticated Gmail connector
+  // automation (which forwards admin context) or by staff manually.
+  const user = await base44.auth.me();
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (user.role !== 'admin') {
+    return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
+  }
+
+  const body = await req.json();
   const messageIds = body.data?.new_message_ids ?? [];
 
   if (messageIds.length === 0) {

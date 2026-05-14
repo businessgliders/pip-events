@@ -7,8 +7,8 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!user.email || !user.email.toLowerCase().endsWith(`@${STAFF_DOMAIN}`)) {
-      return Response.json({ error: 'Forbidden — staff only' }, { status: 403 });
+    if (user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
     }
 
     const all = await base44.asServiceRole.entities.EventRequest.list('-created_date', 5000);
