@@ -186,8 +186,8 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
           <span className="text-[11px] text-gray-500">{formatRelativeTime(ticket.submitted_date || ticket.created_date)}</span>
           {daysInfo && (
             <span
-              className="inline-flex items-center gap-1 h-5 px-2 rounded-full text-[10px] font-semibold flex-shrink-0"
-              style={{ background: `${daysInfo.color}1f`, color: daysInfo.color, border: `1px solid ${daysInfo.color}55` }}
+              className="inline-flex items-center gap-1 h-5 px-2 rounded-full text-[10px] font-semibold flex-shrink-0 text-white shadow-sm"
+              style={{ background: daysInfo.color }}
               title={`Event ${daysInfo.diffDays < 0 ? 'was' : 'is'} ${formatEventDate(ticket.event_date)}`}
             >
               <Clock className="w-2.5 h-2.5" />
