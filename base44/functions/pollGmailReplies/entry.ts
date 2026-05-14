@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
     // List recent inbound messages (last hour, not in sent)
     const listRes = await fetch(
       'https://gmail.googleapis.com/gmail/v1/users/me/messages?q=' +
-        encodeURIComponent('newer_than:1h -in:sent') +
+        encodeURIComponent('newer_than:1h -in:sent in:inbox') +
         '&maxResults=50',
       { headers: { 'Authorization': `Bearer ${accessToken}` } }
     );
