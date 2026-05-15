@@ -58,8 +58,8 @@ export default function KanbanColumn({
   return (
     <div
       data-swimlane
-      className={`backdrop-blur-xl bg-gradient-to-b ${colorCls} border rounded-2xl overflow-hidden shadow-xl flex flex-col max-h-[70vh] lg:max-h-none lg:h-[calc(100vh-300px)] ${
-        isDimmed ? 'opacity-70 hover:opacity-100 transition-opacity' : ''
+      className={`backdrop-blur-xl bg-gradient-to-b ${colorCls} border rounded-2xl overflow-hidden shadow-xl flex flex-col max-h-[70vh] lg:max-h-none lg:h-[calc(100vh-300px)] group/swimlane ${
+        isDimmed ? 'grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300' : ''
       }`}
     >
       <div className={`backdrop-blur-md ${headerCls} border-b px-3 md:px-4 py-3 md:py-4 flex-shrink-0`}>
