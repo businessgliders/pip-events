@@ -254,18 +254,23 @@ export default function Dashboard() {
         <div className="sticky top-0 z-30 px-4 md:px-8 pt-4 md:pt-8 pb-3">
           <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4 px-2">
             {/* Left — logo + counts */}
-            <Link to="/" className="flex items-center gap-3 min-w-0 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-3 min-w-0 flex-shrink-0 cursor-pointer"
+              title="Reload board"
+            >
               <img
                 src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/719e48f6d_1e65b0238_PiPEvents.png"
                 alt="PIP Events"
                 className="w-11 h-11 rounded-xl object-cover shadow-sm flex-shrink-0"
               />
-              <div className="hidden sm:block text-sm font-medium leading-tight truncate" style={{ color: '#5a3535' }}>
+              <div className="hidden sm:block text-sm font-medium leading-tight truncate text-left" style={{ color: '#5a3535' }}>
                 <span className="font-semibold">{activeTickets.length}</span> active ticket{activeTickets.length === 1 ? '' : 's'}
                 <span className="mx-1.5 opacity-50">•</span>
                 <span className="font-semibold">{(ticketsByColumn['New'] || []).length}</span> in New
               </div>
-            </Link>
+            </button>
 
             {/* Right — actions */}
             <div className="ml-auto flex items-center gap-2 md:gap-3">
