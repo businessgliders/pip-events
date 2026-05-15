@@ -1,21 +1,27 @@
 import { useState, useEffect } from 'react';
-import { X, LayoutGrid, MessageSquare, Check, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Search, Bell, Hash, Check, ArrowRight, Sparkles } from 'lucide-react';
 
-const STORAGE_KEY = 'pip_whatsnew_dismissed_v1';
-const CAMPAIGN_END = new Date('2026-05-18T23:59:59Z'); // 7 days from May 11, 2026
+const STORAGE_KEY = 'pip_whatsnew_dismissed_v2';
+const CAMPAIGN_END = new Date('2026-05-22T23:59:59Z');
 
 const FEATURES = [
   {
-    icon: LayoutGrid,
-    title: 'Kanban Swimlanes',
-    description: 'Drag and drop tickets across New, In Conversations, Confirmed, and Completed lanes. Status changes are tracked with notes for full audit history.',
-    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/beae01683_generated_image.png',
+    icon: Bell,
+    title: 'Unread Message Tracking',
+    description: 'New mail badges appear directly on ticket cards, plus a bell in the header shows all unread replies. Messages auto-mark as read when you view them in the conversation.',
+    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/751b3eb8e_generated_image.png',
   },
   {
-    icon: MessageSquare,
-    title: 'Email Communications',
-    description: 'View every client conversation inside each ticket. Reply with AI-assisted suggestions, templates, and full Gmail threading — no more switching tabs.',
-    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/a89c3e0b1_generated_image.png',
+    icon: Search,
+    title: 'Search Now Includes Archive',
+    description: 'Searching the board now also finds matches in archived and cancelled tickets. A quick pill button takes you straight to the archive view to see them.',
+    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/4233e1104_generated_image.png',
+  },
+  {
+    icon: Hash,
+    title: 'Ticket # in Archive',
+    description: 'Archived and cancelled ticket rows now show their ticket number, making it easier to reference past inquiries at a glance.',
+    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/b7932fa10_generated_image.png',
   },
 ];
 
