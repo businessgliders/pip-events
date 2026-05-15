@@ -324,14 +324,13 @@ export default function Dashboard() {
 
               <button
                 onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm"
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm"
+                style={{
+                  background: view === 'archive' ? '#a855f7' : 'rgba(255,255,255,0.7)',
+                }}
                 title={view === 'archive' ? 'Back to Board' : 'Archive'}
               >
-                {view === 'archive' ? (
-                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
-                ) : (
-                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
-                )}
+                <Archive className="w-4 h-4" style={{ color: view === 'archive' ? 'white' : '#5a3535' }} />
               </button>
 
               <UserMenu />
