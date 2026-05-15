@@ -288,26 +288,6 @@ export default function Dashboard() {
                 <Plus className="w-4 h-4" />
               </a>
 
-              <button
-                onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm relative"
-                title={view === 'archive' ? 'Back to Board' : `Archive (${archivedTickets.length + cancelledTickets.length})`}
-              >
-                {view === 'archive' ? (
-                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
-                ) : (
-                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
-                )}
-                {view !== 'archive' && (archivedTickets.length + cancelledTickets.length) > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
-                    style={{ background: '#e86c84' }}
-                  >
-                    {archivedTickets.length + cancelledTickets.length}
-                  </span>
-                )}
-              </button>
-
               <div className="relative flex-1 min-w-0 sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#a07878' }} />
                 <input
@@ -318,6 +298,18 @@ export default function Dashboard() {
                   style={{ color: '#5a3535' }}
                 />
               </div>
+
+              <button
+                onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm"
+                title={view === 'archive' ? 'Back to Board' : 'Archive'}
+              >
+                {view === 'archive' ? (
+                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
+                ) : (
+                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
+                )}
+              </button>
 
               <div className="hidden md:inline-flex rounded-full overflow-hidden bg-white/70 shadow-sm">
                 <button
