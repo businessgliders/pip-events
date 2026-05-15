@@ -140,8 +140,13 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
         </span>
       )}
 
+      {/* Calendar date block — absolute top-right */}
+      <div className="absolute top-2 right-2 z-10">
+        <CalendarDateBlock eventDate={ticket.event_date} size="sm" />
+      </div>
+
       {/* Mobile compact */}
-      <div className="md:hidden">
+      <div className="md:hidden pr-12">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-base flex-shrink-0">{emoji}</span>
@@ -150,7 +155,6 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
               {ticket.full_name}
             </p>
           </div>
-          <CalendarDateBlock eventDate={ticket.event_date} size="sm" />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -177,7 +181,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       </div>
 
       {/* Desktop */}
-      <div className="hidden md:block">
+      <div className="hidden md:block pr-14">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start gap-2 min-w-0 flex-1">
             <span className="text-xl flex-shrink-0">{emoji}</span>
@@ -191,26 +195,23 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
               </Badge>
             </div>
           </div>
-          <div className="flex items-start gap-1 flex-shrink-0">
-            <CalendarDateBlock eventDate={ticket.event_date} />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  onClick={(e) => e.stopPropagation()}
-                  className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-pink-100 flex-shrink-0"
-                >
-                  <MoreVertical className="w-4 h-4 text-gray-500" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                <DropdownMenuLabel>Move to</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {STATUS_OPTIONS.filter(s => s !== ticket.status).map(s => (
-                  <DropdownMenuItem key={s} onClick={() => onStatusChange?.(ticket.id, s)}>{s}</DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-pink-100 flex-shrink-0"
+              >
+                <MoreVertical className="w-4 h-4 text-gray-500" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuLabel>Move to</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {STATUS_OPTIONS.filter(s => s !== ticket.status).map(s => (
+                <DropdownMenuItem key={s} onClick={() => onStatusChange?.(ticket.id, s)}>{s}</DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="mt-3 flex items-center gap-3 text-xs text-gray-600">
