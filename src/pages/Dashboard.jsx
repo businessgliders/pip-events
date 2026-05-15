@@ -95,14 +95,25 @@ export default function Dashboard() {
     });
   }, [tickets, search]);
 
+  const matchesSearch = (t) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      t.full_name?.toLowerCase().includes(q) ||
+      t.email?.toLowerCase().includes(q) ||
+      t.event_type?.toLowerCase().includes(q) ||
+      String(t.ticket_number || '').includes(q)
+    );
+  };
+
   const archivedTickets = useMemo(
-    () => tickets.filter(t => t.archived && t.status !== 'Cancelled'),
-    [tickets]
+    () => tickets.filter(t => t.archived && t.status !== 'Cancelled' && matchesSearch(t)),
+    [tickets, search]
   );
 
   const cancelledTickets = useMemo(
-    () => tickets.filter(t => t.status === 'Cancelled'),
-    [tickets]
+    () => tickets.filter(t => t.status === 'Cancelled' && matchesSearch(t)),
+    [tickets, search]
   );
 
   const ticketsByColumn = useMemo(() => {
@@ -344,6 +355,16 @@ export default function Dashboard() {
         </div>
 
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-4 md:pt-6 pb-2">
+          {view !== 'archive' && search && (archivedTickets.length + cancelledTickets.length) > 0 && (
+            <button
+              onClick={() => setView('archive')}
+              className="mb-3 text-xs px-3 py-1.5 rounded-full bg-white/70 hover:bg-white shadow-sm transition-colors inline-flex items-center gap-1.5"
+              style={{ color: '#5a3535' }}
+            >
+              <Archive className="w-3 h-3" />
+              {archivedTickets.length + cancelledTickets.length} match{archivedTickets.length + cancelledTickets.length === 1 ? '' : 'es'} in Archive — view
+            </button>
+          )}
           {view === 'archive' ? (
             <ArchivedTicketsList
               tickets={archivedTickets}
