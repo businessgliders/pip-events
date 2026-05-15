@@ -299,18 +299,6 @@ export default function Dashboard() {
                 />
               </div>
 
-              <button
-                onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm"
-                title={view === 'archive' ? 'Back to Board' : 'Archive'}
-              >
-                {view === 'archive' ? (
-                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
-                ) : (
-                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
-                )}
-              </button>
-
               <div className="hidden md:inline-flex rounded-full overflow-hidden bg-white/70 shadow-sm">
                 <button
                   onClick={() => setView('board')}
@@ -333,6 +321,18 @@ export default function Dashboard() {
                   <CalendarDays className="w-3.5 h-3.5" /> Calendar
                 </button>
               </div>
+
+              <button
+                onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
+                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/70 hover:bg-white transition-colors shadow-sm"
+                title={view === 'archive' ? 'Back to Board' : 'Archive'}
+              >
+                {view === 'archive' ? (
+                  <LayoutGrid className="w-4 h-4" style={{ color: '#5a3535' }} />
+                ) : (
+                  <Archive className="w-4 h-4" style={{ color: '#5a3535' }} />
+                )}
+              </button>
 
               <UserMenu />
             </div>
