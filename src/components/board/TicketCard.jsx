@@ -151,7 +151,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
         <div className="flex items-start justify-between gap-2 mt-0.5">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-base flex-shrink-0">{emoji}</span>
-            <p className="text-xs font-semibold break-words" style={{ color: '#5a3535' }}>
+            <p className="text-xs font-semibold truncate" style={{ color: '#5a3535' }} title={ticket.full_name}>
               {ticket.full_name}
             </p>
           </div>
@@ -182,7 +182,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
           <div className="flex items-start gap-2 min-w-0 flex-1">
             <span className="text-xl flex-shrink-0">{emoji}</span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold break-words leading-tight" style={{ color: '#5a3535' }}>
+              <p className="text-sm font-semibold truncate leading-tight" style={{ color: '#5a3535' }} title={ticket.full_name}>
                 {ticket.full_name}
               </p>
             </div>
