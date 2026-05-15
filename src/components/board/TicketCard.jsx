@@ -147,7 +147,8 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
 
       {/* Mobile compact */}
       <div className="md:hidden pr-12">
-        <div className="flex items-start justify-between gap-2">
+        <span className="text-[10px] text-gray-400 font-bold block">{ticketTag}</span>
+        <div className="flex items-start justify-between gap-2 mt-0.5">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-base flex-shrink-0">{emoji}</span>
             <p className="text-xs font-semibold break-words" style={{ color: '#5a3535' }}>
@@ -172,13 +173,11 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex items-center justify-between mt-1.5 gap-2">
-          <span className="text-[10px] text-gray-400 font-bold">{ticketTag}</span>
-        </div>
       </div>
 
       {/* Desktop */}
       <div className="hidden md:block pr-14">
+        <span className="text-[10px] text-gray-400 font-bold block mb-1">{ticketTag}</span>
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start gap-2 min-w-0 flex-1">
             <span className="text-xl flex-shrink-0">{emoji}</span>
@@ -186,7 +185,6 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
               <p className="text-sm font-semibold break-words leading-tight" style={{ color: '#5a3535' }}>
                 {ticket.full_name}
               </p>
-              <span className="text-[10px] text-gray-400 font-bold mt-0.5 inline-block">{ticketTag}</span>
             </div>
           </div>
           <DropdownMenu>
