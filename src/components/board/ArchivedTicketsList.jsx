@@ -154,7 +154,10 @@ export default function ArchivedTicketsList({ tickets, cancelledTickets = [], on
                     className="backdrop-blur-md bg-white/40 border border-white/40 rounded-xl p-3 flex flex-col md:flex-row md:items-center gap-3"
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] text-gray-400 font-bold block">
+                        {t.ticket_number ? `#${t.ticket_number}` : `#${t.id?.slice(-6)}`}
+                      </span>
+                      <div className="flex items-center gap-2 flex-wrap mt-0.5">
                         <p className="font-semibold text-sm truncate" style={{ color: '#5a3535' }}>{t.full_name}</p>
                         <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/60">{t.event_type}</Badge>
                         <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/60">{t.status}</Badge>
