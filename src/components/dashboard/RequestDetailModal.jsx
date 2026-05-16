@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { X, Mail, Phone, Trash2, User, Calendar, Tag, Sparkles, StickyNote, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 import EmailThreadPanel from '@/components/email/EmailThreadPanel';
+import { findAddon } from '@/components/requestForm/addonsConfig';
 
 const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'No Response', 'Hosted', 'Completed', 'Cancelled'];
 
@@ -180,12 +181,28 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
               <InfoBlock icon={<Tag className="w-3.5 h-3.5" />} title="Add-Ons">
                 {request.add_ons?.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {request.add_ons.map(a => (
-                      <span key={a} className="text-xs px-2.5 py-1 rounded-full font-medium"
-                        style={{ background: 'rgba(182,118,81,0.08)', color: '#b67651', border: '1px solid rgba(182,118,81,0.2)' }}>
-                        {a}
-                      </span>
-                    ))}
+                    {request.add_ons.map(a => {
+                      const info = findAddon(a);
+                      return (
+                        <span
+                          key={a}
+                          className="text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1.5"
+                          style={{
+                            background: info.included ? 'rgba(22,163,74,0.08)' : 'rgba(182,118,81,0.08)',
+                            color: info.included ? '#16a34a' : '#b67651',
+                            border: `1px solid ${info.included ? 'rgba(22,163,74,0.25)' : 'rgba(182,118,81,0.2)'}`,
+                          }}
+                        >
+                          {a}
+                          {info.price && (
+                            <span className="text-[10px] font-bold opacity-80">{info.price}</span>
+                          )}
+                          {info.included && (
+                            <span className="text-[9px] uppercase font-bold opacity-70">incl</span>
+                          )}
+                        </span>
+                      );
+                    })}
                   </div>
                 ) : <p className="text-xs italic" style={{ color: '#d4b8bc' }}>None selected</p>}
               </InfoBlock>

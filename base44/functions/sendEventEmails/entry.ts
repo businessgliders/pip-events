@@ -3,6 +3,29 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 const SENDER_EMAIL = 'events@pilatesinpinkstudio.com';
 const OWNER_EMAIL = 'info@pilatesinpinkstudio.com';
 
+// Keep in sync with components/requestForm/addonsConfig.js
+const INCLUDED_ADDON_NAMES = new Set([
+  'Sparkling & Still Water',
+  'Cold Towels',
+  'Consent to Photos & Social Media',
+]);
+const ADDON_PRICES = {
+  'Extra Plinth': '$20',
+  'Custom Board Easel': '$60',
+  'Balloon on Each Reformer': '$6 / balloon',
+  '1 Ripple Board (TBD)': 'Quoted on confirmation',
+  'Decor Option 1 — Balloon Garland & Signage': 'Quoted on confirmation',
+  'Decor Option 2 — Heart Balloon Display': 'Quoted on confirmation',
+};
+
+function renderAddonLine(name) {
+  if (INCLUDED_ADDON_NAMES.has(name)) {
+    return `${name} <span style="color:#16a34a;font-size:11px;font-weight:700;">(included)</span>`;
+  }
+  const price = ADDON_PRICES[name];
+  return price ? `${name} <span style="color:#b67651;font-size:11px;font-weight:700;">— ${price}</span>` : name;
+}
+
 function encodeHeader(str) {
   return `=?UTF-8?B?${btoa(unescape(encodeURIComponent(str)))}?=`;
 }
@@ -163,7 +186,7 @@ Deno.serve(async (req) => {
                 ${form.duration ? `<tr><td style="padding:6px 0;color:#a07878;">Duration</td><td style="padding:6px 0;font-weight:600;color:#5a3535;">${form.duration}</td></tr>` : ''}
                 ${form.preferred_times ? `<tr style="background:rgba(241,136,155,0.05);"><td style="padding:6px 0;color:#a07878;">Preferred Time(s)</td><td style="padding:6px 0;font-weight:600;color:#5a3535;">${form.preferred_times}</td></tr>` : ''}
                 ${form.selected_classes?.length ? `<tr><td style="padding:6px 0;color:#a07878;vertical-align:top;">Classes</td><td style="padding:6px 0;font-weight:600;color:#5a3535;">${form.selected_classes.join('<br/>')}</td></tr>` : ''}
-                ${form.add_ons?.length ? `<tr style="background:rgba(241,136,155,0.05);"><td style="padding:6px 0;color:#a07878;vertical-align:top;">Add-Ons</td><td style="padding:6px 0;font-weight:600;color:#5a3535;">${form.add_ons.join('<br/>')}</td></tr>` : ''}
+                ${form.add_ons?.length ? `<tr style="background:rgba(241,136,155,0.05);"><td style="padding:6px 0;color:#a07878;vertical-align:top;">Add-Ons</td><td style="padding:6px 0;font-weight:600;color:#5a3535;">${form.add_ons.map(renderAddonLine).join('<br/>')}</td></tr>` : ''}
                 ${form.budget ? `<tr><td style="padding:6px 0;color:#a07878;">Budget</td><td style="padding:6px 0;font-weight:600;color:#5a3535;">${form.budget}</td></tr>` : ''}
                 ${form.notes ? `<tr style="background:rgba(241,136,155,0.05);"><td style="padding:6px 0;color:#a07878;vertical-align:top;">Notes</td><td style="padding:6px 0;font-weight:600;color:#5a3535;">${form.notes}</td></tr>` : ''}
               </table>
@@ -281,7 +304,7 @@ Deno.serve(async (req) => {
           <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#b67651;text-transform:uppercase;letter-spacing:1px;">✨ Add-Ons Requested</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf2f7;border-radius:14px;border:1px solid #f7b1bd;margin-bottom:20px;">
             <tr><td style="padding:16px 24px;">
-              ${form.add_ons.map(a => `<p style="margin:4px 0;font-size:14px;color:#5a3535;">• ${a}</p>`).join('')}
+              ${form.add_ons.map(a => `<p style="margin:4px 0;font-size:14px;color:#5a3535;">• ${renderAddonLine(a)}</p>`).join('')}
             </td></tr>
           </table>` : ''}
 

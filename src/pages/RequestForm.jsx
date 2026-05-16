@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import HlsVideo from '../components/HlsVideo';
 import GlassNav from '../components/layout/GlassNav';
+import AddonsStep from '../components/requestForm/AddonsStep';
+import { DEFAULT_PRESELECTED_ADDONS } from '../components/requestForm/addonsConfig';
 import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronRight, ChevronLeft, Check, Lock } from 'lucide-react';
 
 const EVENT_TYPE_ICONS = {
@@ -20,14 +22,6 @@ const CLASS_OPTIONS = [
   { name: 'Pink Pilates Flow', desc: 'A balanced, all-levels class with smooth transitions' },
   { name: 'Reformer Basics', desc: 'Intro to reformer for all fitness levels' },
   { name: 'Stretch & Glow', desc: 'Flexibility, recovery and glow' },
-];
-
-const ADDON_OPTIONS = [
-  { name: 'Sparkling Water & Snacks', desc: 'Refreshments for your group' },
-  { name: 'Studio Décor Package', desc: 'Themed decorations, custom signage, balloons & 1 bottle of champagne (21+ only)' },
-  { name: 'Photography Add-On', desc: 'Professional photos of your event' },
-  { name: 'Custom Playlist', desc: 'Curated music for your vibe' },
-  { name: 'Extra Mats & Towels', desc: 'Additional equipment for your guests' },
 ];
 
 const EVENT_TYPES = ['Birthday', 'Bridal Shower', 'Bachelorette Party', 'Corporate Wellness Event', 'Private Class', 'Other'];
@@ -97,7 +91,7 @@ export default function RequestForm() {
     time_slot: '',
     duration: '',
     selected_classes: [],
-    add_ons: [],
+    add_ons: DEFAULT_PRESELECTED_ADDONS,
     notes: '',
     budget: '',
   });
@@ -410,28 +404,7 @@ export default function RequestForm() {
               {/* Add-Ons */}
               <div>
                 <SectionHeader icon={Sparkles} title="Add-Ons" subtitle="Enhance your event experience" />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                  {ADDON_OPTIONS.map(a => {
-                    const checked = form.add_ons.includes(a.name);
-                    return (
-                      <label key={a.name} className="flex items-center gap-3.5 p-4 rounded-xl cursor-pointer transition-all"
-                        style={{
-                          border: checked ? '1.5px solid #f1889b' : '1.5px solid rgba(220,200,205,0.4)',
-                          background: checked ? 'rgba(241,136,155,0.06)' : 'rgba(255,255,255,0.4)',
-                        }}>
-                        <div className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-all"
-                          style={{background: checked ? '#f1889b' : 'white', border: checked ? 'none' : '1.5px solid #d4b8bb'}}>
-                          {checked && <Check className="w-3 h-3 text-white" />}
-                        </div>
-                        <input type="checkbox" checked={checked} onChange={() => toggleArray('add_ons', a.name)} className="sr-only" />
-                        <div>
-                          <p className="text-sm font-semibold" style={{color: checked ? '#f1889b' : '#6b4e4e'}}>{a.name}</p>
-                          <p className="text-xs mt-0.5" style={{color: '#a07878'}}>{a.desc}</p>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
+                <AddonsStep selected={form.add_ons} onToggle={(name) => toggleArray('add_ons', name)} />
               </div>
             </div>
           )}
