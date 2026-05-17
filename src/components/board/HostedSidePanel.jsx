@@ -11,7 +11,7 @@ export default function HostedSidePanel({
   highlightedTicketId,
   unreadCountByTicket = {},
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const count = tickets.length;
 
   return (

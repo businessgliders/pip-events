@@ -18,7 +18,7 @@ function isEditorEmpty(html) {
 const DRAFT_KEY = (ticketId) => `email_draft_${ticketId}`;
 const AUTOSAVE_INTERVAL_MS = 30 * 1000; // 30 seconds
 
-export default function EmailComposer({ ticket, currentUser, onSent, onCancel, autoFocus, onDirtyChange }) {
+export default function EmailComposer({ ticket, currentUser, onSent, onCancel, autoFocus, onDirtyChange, saveDraftRef }) {
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [sending, setSending] = useState(false);
@@ -101,6 +101,24 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     }, AUTOSAVE_INTERVAL_MS);
     return () => clearInterval(id);
   }, [saveDraft]);
+
+  // Expose imperative save + discard to parent
+  useEffect(() => {
+    if (saveDraftRef) {
+      saveDraftRef.current = {
+        save: () => saveDraft(),
+        discard: () => {
+          if (editorRef.current) editorRef.current.innerHTML = '';
+          setEmpty(true);
+          setAttachments([]);
+          localStorage.removeItem(DRAFT_KEY(ticket.id));
+          setDraftSavedAt(null);
+          isDirtyRef.current = false;
+          onDirtyChange?.(false);
+        },
+      };
+    }
+  }, [saveDraft, ticket.id, saveDraftRef, onDirtyChange]);
 
   // Warn on browser navigation/refresh while dirty
   useEffect(() => {

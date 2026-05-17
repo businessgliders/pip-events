@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { X, Mail, Phone, Trash2, User, Calendar, Tag, Sparkles, StickyNote, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 import EmailThreadPanel from '@/components/email/EmailThreadPanel';
 import { findAddon } from '@/components/requestForm/addonsConfig';
+import UnsavedDraftDialog from '@/components/email/UnsavedDraftDialog';
 
 const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'No Response', 'Hosted', 'Completed', 'Cancelled'];
 
@@ -27,12 +28,26 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
   const [deleting, setDeleting] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [draftDirty, setDraftDirty] = useState(false);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const saveDraftRef = useRef(null);
 
   const handleClose = () => {
     if (draftDirty) {
-      const ok = window.confirm('You have unsaved changes in your reply. Save draft before closing?\n\nClick OK to save & close, or Cancel to keep editing.');
-      if (!ok) return;
+      setShowUnsavedDialog(true);
+      return;
     }
+    onClose();
+  };
+
+  const handleSaveAndClose = () => {
+    saveDraftRef.current?.save?.();
+    setShowUnsavedDialog(false);
+    onClose();
+  };
+
+  const handleDiscardAndClose = () => {
+    saveDraftRef.current?.discard?.();
+    setShowUnsavedDialog(false);
     onClose();
   };
 
@@ -121,7 +136,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
 
           {/* LEFT — Email comms */}
           <div className="flex-1 flex flex-col min-h-0 min-w-0" style={{ borderRight: '1px solid rgba(247,177,189,0.25)' }}>
-            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} onDraftDirtyChange={setDraftDirty} />
+            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} onDraftDirtyChange={setDraftDirty} saveDraftRef={saveDraftRef} />
           </div>
 
           {/* RIGHT — Details */}
@@ -260,6 +275,13 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
 
         </div>
       </div>
+
+      <UnsavedDraftDialog
+        open={showUnsavedDialog}
+        onSaveAndClose={handleSaveAndClose}
+        onDiscard={handleDiscardAndClose}
+        onCancel={() => setShowUnsavedDialog(false)}
+      />
     </div>
   );
 }

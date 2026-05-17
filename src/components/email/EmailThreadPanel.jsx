@@ -10,7 +10,7 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 
 const STAFF_DOMAIN = 'pilatesinpinkstudio.com';
 
-export default function EmailThreadPanel({ ticket, currentUser, highlightMessageId, focusComposer, onDraftDirtyChange }) {
+export default function EmailThreadPanel({ ticket, currentUser, highlightMessageId, focusComposer, onDraftDirtyChange, saveDraftRef }) {
   const queryClient = useQueryClient();
   const scrollRef = useRef(null);
   const initialScrolled = useRef(false);
@@ -157,7 +157,7 @@ export default function EmailThreadPanel({ ticket, currentUser, highlightMessage
 
       {/* Composer */}
       <div className="px-3 pb-3 pt-2 flex-shrink-0">
-        <EmailComposer ticket={ticket} currentUser={currentUser} onSent={handleSent} autoFocus={focusComposer} onDirtyChange={onDraftDirtyChange} />
+        <EmailComposer ticket={ticket} currentUser={currentUser} onSent={handleSent} autoFocus={focusComposer} onDirtyChange={onDraftDirtyChange} saveDraftRef={saveDraftRef} />
       </div>
     </div>
   );
