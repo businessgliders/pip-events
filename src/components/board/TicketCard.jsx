@@ -158,15 +158,11 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
             {ticket.event_type}
           </Badge>
         </div>
-        <div className="flex items-start gap-2">
-          <div className="flex items-start gap-2 min-w-0 flex-1">
-            <span className="text-xl flex-shrink-0">{emoji}</span>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold whitespace-nowrap leading-tight" style={{ color: '#5a3535' }}>
-                {ticket.full_name}
-              </p>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xl flex-shrink-0">{emoji}</span>
+          <p className="text-sm font-semibold whitespace-nowrap leading-tight" style={{ color: '#5a3535' }}>
+            {ticket.full_name}
+          </p>
         </div>
 
         <div className="mt-3 flex items-center gap-3 text-xs text-gray-600">
