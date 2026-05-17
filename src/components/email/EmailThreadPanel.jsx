@@ -95,7 +95,11 @@ export default function EmailThreadPanel({ ticket, currentUser, highlightMessage
     return [...list, ...messages];
   }, [intakeBubble, welcomeBubble, messages]);
 
-  // Scroll behavior
+  // Scroll behavior — reset when ticket changes
+  useEffect(() => {
+    initialScrolled.current = false;
+  }, [ticket.id]);
+
   useEffect(() => {
     if (!scrollRef.current) return;
     if (initialScrolled.current) return;
