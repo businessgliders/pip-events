@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Sparkles, AlertTriangle, Check, Paperclip, FileText, Image as ImageIcon, Download } from 'lucide-react';
 import { format } from 'date-fns';
@@ -261,14 +262,14 @@ function FullModal({ open, setOpen, message }) {
         </DialogContent>
       </Dialog>
 
-      {/* Lightbox for image attachments */}
-      {lightboxAttachment && (
+      {/* Lightbox for image attachments — rendered via portal to sit above Radix Dialog */}
+      {lightboxAttachment && createPortal(
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center backdrop-blur"
-          style={{ zIndex: 100 }}
+          style={{ zIndex: 9999 }}
           onClick={() => setLightboxAttachment(null)}
         >
-          <div className="max-w-4xl max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
             <img
               src={lightboxAttachment.url}
               alt={lightboxAttachment.filename}
@@ -277,13 +278,14 @@ function FullModal({ open, setOpen, message }) {
             <p className="text-white text-sm mt-3 text-center">{lightboxAttachment.filename}</p>
             <button
               onClick={() => setLightboxAttachment(null)}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 text-2xl"
+              className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white text-black hover:bg-gray-200 flex items-center justify-center text-xl font-bold shadow-lg"
               title="Close"
             >
               ×
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
