@@ -94,22 +94,26 @@ export default function AddonsStep({ selected, onToggle }) {
 
   return (
     <div className="space-y-6">
-      {/* INCLUDED */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <Gift className="w-4 h-4" style={{ color: '#16a34a' }} />
-          <h3 className="text-sm font-bold uppercase tracking-wide" style={{ color: '#16a34a' }}>
-            Included with every booking
-          </h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+      {/* INCLUDED — read-only checklist */}
+      <div className="rounded-2xl py-5 px-4" style={{ background: 'rgba(251,224,226,0.35)' }}>
+        <p className="text-center text-[11px] font-bold uppercase tracking-[0.2em] mb-4" style={{ color: '#b67651' }}>
+          Included
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {INCLUDED_ADDONS.map(item => (
-            <AddonCheckbox
-              key={item.name}
-              item={item}
-              checked={selected.includes(item.name)}
-              onToggle={() => onToggle(item.name)}
-            />
+            <div key={item.name} className="flex flex-col items-center text-center px-2">
+              <div
+                className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2.5 shadow-sm"
+              >
+                <Check className="w-4 h-4" style={{ color: '#f1889b' }} strokeWidth={2.5} />
+              </div>
+              <p className="text-sm font-semibold mb-1" style={{ color: '#5a3535' }}>
+                {item.name}
+              </p>
+              <p className="text-xs leading-relaxed" style={{ color: '#a07878' }}>
+                {item.desc}
+              </p>
+            </div>
           ))}
         </div>
       </div>
