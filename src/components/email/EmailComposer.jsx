@@ -87,15 +87,20 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     e.target.value = ''; // reset so same file can be re-picked later
     if (files.length === 0) return;
 
-    // Optimistic placeholders
-    const placeholders = files.map(f => ({
-      name: f.name,
-      size: f.size,
-      type: f.type || 'application/octet-stream',
-      url: null,
-      uploading: true,
-      tmpId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-    }));
+    // Optimistic placeholders — generate local preview URL for images
+    const placeholders = files.map(f => {
+      const type = f.type || 'application/octet-stream';
+      const isImage = type.startsWith('image/');
+      return {
+        name: f.name,
+        size: f.size,
+        type,
+        url: null,
+        previewUrl: isImage ? URL.createObjectURL(f) : null,
+        uploading: true,
+        tmpId: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      };
+    });
     setAttachments(prev => [...prev, ...placeholders]);
     setUploadingCount(c => c + files.length);
 
@@ -116,8 +121,20 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
   };
 
   const removeAttachment = (tmpId) => {
-    setAttachments(prev => prev.filter(a => a.tmpId !== tmpId));
+    setAttachments(prev => {
+      const target = prev.find(a => a.tmpId === tmpId);
+      if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
+      return prev.filter(a => a.tmpId !== tmpId);
+    });
   };
+
+  // Cleanup any blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      attachments.forEach(a => { if (a.previewUrl) URL.revokeObjectURL(a.previewUrl); });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePolish = async () => {
     const draft = getEditorHtml();
@@ -197,28 +214,60 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
 
       {/* Attachments list */}
       {attachments.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-2">
-          {attachments.map(a => (
-            <div
-              key={a.tmpId}
-              className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md"
-              style={{ background: 'rgba(247,177,189,0.18)', border: '1px solid rgba(247,177,189,0.5)', color: '#6b4e4e' }}
-            >
-              {a.uploading
-                ? <Loader2 className="w-3 h-3 animate-spin" style={{ color: '#e86c84' }} />
-                : <FileText className="w-3 h-3" style={{ color: '#e86c84' }} />
-              }
-              <span className="max-w-[180px] truncate font-medium">{a.name}</span>
-              {a.size ? <span className="text-[10px]" style={{ color: '#9a7070' }}>{formatBytes(a.size)}</span> : null}
-              <button
-                onClick={() => removeAttachment(a.tmpId)}
-                className="ml-0.5 p-0.5 rounded-full hover:bg-pink-100"
-                title="Remove"
+        <div className="flex flex-wrap gap-2 mt-2">
+          {attachments.map(a => {
+            const isImage = a.type?.startsWith('image/');
+            if (isImage && a.previewUrl) {
+              return (
+                <div
+                  key={a.tmpId}
+                  className="relative group rounded-md overflow-hidden"
+                  style={{ border: '1px solid rgba(247,177,189,0.5)', background: 'white' }}
+                  title={`${a.name}${a.size ? ` · ${formatBytes(a.size)}` : ''}`}
+                >
+                  <img
+                    src={a.previewUrl}
+                    alt={a.name}
+                    className="block object-cover"
+                    style={{ width: 64, height: 64 }}
+                  />
+                  {a.uploading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => removeAttachment(a.tmpId)}
+                    className="absolute top-0.5 right-0.5 p-0.5 rounded-full bg-white/90 hover:bg-white shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Remove"
+                  >
+                    <X className="w-3 h-3" style={{ color: '#6b4e4e' }} />
+                  </button>
+                </div>
+              );
+            }
+            return (
+              <div
+                key={a.tmpId}
+                className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md"
+                style={{ background: 'rgba(247,177,189,0.18)', border: '1px solid rgba(247,177,189,0.5)', color: '#6b4e4e' }}
               >
-                <X className="w-3 h-3" style={{ color: '#9a7070' }} />
-              </button>
-            </div>
-          ))}
+                {a.uploading
+                  ? <Loader2 className="w-3 h-3 animate-spin" style={{ color: '#e86c84' }} />
+                  : <FileText className="w-3 h-3" style={{ color: '#e86c84' }} />
+                }
+                <span className="max-w-[180px] truncate font-medium">{a.name}</span>
+                {a.size ? <span className="text-[10px]" style={{ color: '#9a7070' }}>{formatBytes(a.size)}</span> : null}
+                <button
+                  onClick={() => removeAttachment(a.tmpId)}
+                  className="ml-0.5 p-0.5 rounded-full hover:bg-pink-100"
+                  title="Remove"
+                >
+                  <X className="w-3 h-3" style={{ color: '#9a7070' }} />
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
 
