@@ -26,11 +26,13 @@ export const EXTRA_ADDON_SECTIONS = [
         name: 'Decor Option 1 — Balloon Garland & Signage',
         desc: 'Balloon Garland (2 colours of your choice) · 1 Ripple board with "Happy birthday" / NAME signage · Black or Pink bow · 1 Plinth · Heart Balloons on each reformer',
         price: 'Quoted on confirmation',
+        descOnHover: true,
       },
       {
         name: 'Decor Option 2 — Heart Balloon Display',
         desc: 'Heart Balloon Display · 1 Plinth · Custom Board Easel · Heart Balloon on each reformer',
         price: 'Quoted on confirmation',
+        descOnHover: true,
       },
     ],
   },

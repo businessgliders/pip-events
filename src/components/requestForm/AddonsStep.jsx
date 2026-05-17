@@ -1,4 +1,4 @@
-import { Check, Gift, Plus, Camera } from 'lucide-react';
+import { Check, Gift, Plus, Camera, Info } from 'lucide-react';
 import { INCLUDED_ADDONS, EXTRA_ADDON_SECTIONS, CONSENT_ADDON } from './addonsConfig';
 
 function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
@@ -34,6 +34,20 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
           <p className="text-sm font-semibold" style={{ color: checked ? '#f1889b' : '#6b4e4e' }}>
             {item.name}
           </p>
+          {item.descOnHover && (
+            <span
+              className="relative group inline-flex items-center"
+              onClick={(e) => e.preventDefault()}
+            >
+              <Info className="w-3.5 h-3.5 cursor-help" style={{ color: '#b67651' }} />
+              <span
+                className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute z-20 left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2.5 rounded-lg shadow-lg text-xs leading-relaxed pointer-events-none"
+                style={{ background: '#3a2424', color: 'white' }}
+              >
+                {item.desc}
+              </span>
+            </span>
+          )}
           {price && (
             <span
               className="text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
@@ -51,9 +65,11 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
             </span>
           )}
         </div>
-        <p className="text-xs mt-0.5" style={{ color: '#a07878' }}>
-          {item.desc}
-        </p>
+        {!item.descOnHover && (
+          <p className="text-xs mt-0.5" style={{ color: '#a07878' }}>
+            {item.desc}
+          </p>
+        )}
       </div>
     </label>
   );
@@ -112,9 +128,6 @@ export default function AddonsStep({ selected, onToggle }) {
           highlight
           onToggle={() => onToggle(CONSENT_ADDON.name)}
         />
-        <p className="text-xs italic mt-2" style={{ color: '#a07878' }}>
-          Casual photos only — we do not provide professional photography.
-        </p>
       </div>
 
       {/* EXTRA SECTIONS */}
