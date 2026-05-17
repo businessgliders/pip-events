@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import KanbanColumn from '../components/board/KanbanColumn';
+import HostedSidePanel from '../components/board/HostedSidePanel';
 import ArchivedTicketsList from '../components/board/ArchivedTicketsList';
 import StatusChangeDialog from '../components/board/StatusChangeDialog';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
@@ -16,6 +17,7 @@ import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
 
 const STATUS_COLUMNS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'No Response', 'Hosted'];
+const BOARD_COLUMNS = STATUS_COLUMNS.filter(c => c !== 'Hosted');
 
 export default function Dashboard() {
   const { user, isAuthenticated, navigateToLogin } = useAuth();
@@ -376,8 +378,8 @@ export default function Dashboard() {
             <CalendarView requests={activeTickets} onSelect={setSelectedRequest} />
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="grid gap-2 md:gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                {STATUS_COLUMNS.map(col => (
+              <div className="grid gap-2 md:gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                {BOARD_COLUMNS.map(col => (
                   <KanbanColumn
                     key={col}
                     status={col}
@@ -392,6 +394,13 @@ export default function Dashboard() {
                   />
                 ))}
               </div>
+              <HostedSidePanel
+                tickets={ticketsByColumn['Hosted'] || []}
+                onStatusChange={handleStatusChangeFromMenu}
+                onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
+                highlightedTicketId={highlightedTicketId}
+                unreadCountByTicket={unreadCountByTicket}
+              />
             </DragDropContext>
           )}
         </div>
