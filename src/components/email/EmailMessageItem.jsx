@@ -277,7 +277,7 @@ function FullModal({ open, setOpen, message }) {
             />
             <p className="text-white text-sm mt-3 text-center">{lightboxAttachment.filename}</p>
             <button
-              onClick={() => setLightboxAttachment(null)}
+              onClick={(e) => { e.stopPropagation(); setLightboxAttachment(null); }}
               className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white text-black hover:bg-gray-200 flex items-center justify-center text-xl font-bold shadow-lg"
               title="Close"
             >
