@@ -152,7 +152,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
 
       {/* Desktop */}
       <div className="hidden md:block">
-        <div className="flex items-center justify-between gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1">
           <span className="text-[10px] text-gray-400 font-bold">{ticketTag}</span>
           <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/60 border-pink-200 text-pink-700 flex-shrink-0">
             {ticket.event_type}
