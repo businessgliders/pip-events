@@ -16,7 +16,7 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
 
-const STATUS_COLUMNS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'No Response', 'Hosted'];
+const STATUS_COLUMNS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'Closed', 'Hosted'];
 const BOARD_COLUMNS = STATUS_COLUMNS.filter(c => c !== 'Hosted');
 
 export default function Dashboard() {
@@ -191,10 +191,10 @@ export default function Dashboard() {
   };
 
   const handleArchiveAll = async () => {
-    const noResponse = ticketsByColumn['No Response'] || [];
-    if (!noResponse.length) return;
-    if (!confirm(`Archive ${noResponse.length} ticket${noResponse.length === 1 ? '' : 's'}?`)) return;
-    await Promise.all(noResponse.map(t => base44.entities.EventRequest.update(t.id, { archived: true })));
+    const closed = ticketsByColumn['Closed'] || [];
+    if (!closed.length) return;
+    if (!confirm(`Archive ${closed.length} request${closed.length === 1 ? '' : 's'}?`)) return;
+    await Promise.all(closed.map(t => base44.entities.EventRequest.update(t.id, { archived: true })));
     queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
   };
 
@@ -389,7 +389,7 @@ export default function Dashboard() {
                     isLoading={isLoading}
                     highlightedTicketId={highlightedTicketId}
                     viewMode="status"
-                    onArchiveAll={col === 'No Response' ? handleArchiveAll : undefined}
+                    onArchiveAll={col === 'Closed' ? handleArchiveAll : undefined}
                     unreadCountByTicket={unreadCountByTicket}
                   />
                 ))}

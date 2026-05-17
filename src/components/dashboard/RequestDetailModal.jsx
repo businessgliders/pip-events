@@ -6,14 +6,14 @@ import EmailThreadPanel from '@/components/email/EmailThreadPanel';
 import { findAddon, EXTRA_ADDON_SECTIONS } from '@/components/requestForm/addonsConfig';
 import UnsavedDraftDialog from '@/components/email/UnsavedDraftDialog';
 
-const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'No Response', 'Hosted', 'Completed', 'Cancelled'];
+const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'Closed', 'Hosted', 'Completed', 'Cancelled'];
 
 const STATUS_STYLES = {
   'New':                 { bg: 'rgba(254,243,226,0.9)', text: '#9a3412', border: 'rgba(251,146,60,0.5)' },
   'In Conversations':    { bg: 'rgba(254,249,195,0.9)', text: '#854d0e', border: 'rgba(253,224,71,0.6)' },
   'Waiting for Payment': { bg: 'rgba(255,237,213,0.9)', text: '#9a3412', border: 'rgba(251,146,60,0.5)' },
   'Confirmed':           { bg: 'rgba(219,234,254,0.9)', text: '#1e40af', border: 'rgba(147,197,253,0.6)' },
-  'No Response':         { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
+  'Closed':              { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
   'Hosted':              { bg: 'rgba(237,233,254,0.9)', text: '#5b21b6', border: 'rgba(196,181,253,0.6)' },
   'Completed':           { bg: 'rgba(220,252,231,0.9)', text: '#166534', border: 'rgba(134,239,172,0.6)' },
   'Cancelled':           { bg: 'rgba(243,244,246,0.9)', text: '#6b7280', border: 'rgba(209,213,219,0.6)' },
