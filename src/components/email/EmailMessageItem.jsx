@@ -39,7 +39,7 @@ function AttachmentChips({ attachments, compact }) {
   );
 }
 
-// Strip HTML tags + Gmail quoted-reply chains so previews are clean
+// Strip HTML tags + Gmail quoted-reply chains + signatures so previews are clean
 function cleanPreview(html, text) {
   const raw = text || html || '';
   // Strip HTML tags
@@ -54,6 +54,8 @@ function cleanPreview(html, text) {
   plain = plain.split(/On .+ wrote:/i)[0];
   // Strip leading "> " markers
   plain = plain.split('\n').filter(l => !l.trim().startsWith('>')).join('\n');
+  // Strip signature (anything after "Pilates in Pink" or similar signature markers)
+  plain = plain.split(/Pilates in Pink|--+/i)[0];
   return plain.replace(/\s+/g, ' ').trim();
 }
 
