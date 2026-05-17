@@ -203,9 +203,23 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
 
               {/* Add-ons */}
               <InfoBlock icon={<Tag className="w-3.5 h-3.5" />} title="Add-Ons">
-                {request.add_ons?.length > 0 ? (
+                {request.add_ons?.length > 0 || !request.add_ons?.includes('Consent to Photos & Social Media') ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {request.add_ons.map(a => {
+                    {!request.add_ons?.includes('Consent to Photos & Social Media') && (
+                      <span
+                        className="text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1.5"
+                        style={{
+                          background: '#fef3c7',
+                          color: '#b45309',
+                          border: '1px solid #fcd34d',
+                          fontWeight: '600',
+                        }}
+                        title="Client has not consented to photos"
+                      >
+                        ⚠ Consent to Photos & Social Media
+                      </span>
+                    )}
+                    {request.add_ons?.map(a => {
                       const info = findAddon(a);
                       const isDecorOption = a.toLowerCase().includes('decor option');
                       const hideQuoted = info.price && info.price.toLowerCase().includes('quoted on confirmation');
