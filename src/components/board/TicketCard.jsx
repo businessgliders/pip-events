@@ -152,7 +152,12 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
 
       {/* Desktop */}
       <div className="hidden md:block">
-        <span className="text-[10px] text-gray-400 font-bold block mb-1">{ticketTag}</span>
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <span className="text-[10px] text-gray-400 font-bold">{ticketTag}</span>
+          <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/60 border-pink-200 text-pink-700 flex-shrink-0">
+            {ticket.event_type}
+          </Badge>
+        </div>
         <div className="flex items-start gap-2">
           <div className="flex items-start gap-2 min-w-0 flex-1">
             <span className="text-xl flex-shrink-0">{emoji}</span>
@@ -174,12 +179,9 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
           <span className="text-[11px] text-gray-500">{formatRelativeTime(ticket.submitted_date || ticket.created_date)}</span>
         </div>
 
-        {/* Stacked pills bottom-right: category above days-left */}
-        <div className="absolute bottom-2 right-2 flex flex-col items-end gap-1">
-          <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/60 border-pink-200 text-pink-700">
-            {ticket.event_type}
-          </Badge>
-          {daysInfo && (
+        {/* Days-left pill bottom-right */}
+        {daysInfo && (
+          <div className="absolute bottom-2 right-2">
             <span
               className="inline-flex items-center gap-1 h-5 px-2 rounded-full text-[10px] font-semibold flex-shrink-0 text-white shadow-sm"
               style={{ background: daysInfo.color }}
@@ -188,8 +190,8 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
               <Clock className="w-2.5 h-2.5" />
               {daysInfo.label}
             </span>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <style>{`
