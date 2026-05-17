@@ -9,13 +9,18 @@
 export const INCLUDED_ADDONS = [
   { name: 'Sparkling & Still Water', desc: 'Refreshments for your group', preselect: true },
   { name: 'Cold Towels', desc: 'Refreshing cold towels for your guests', preselect: true },
-  { name: 'Consent to Photos & Social Media', desc: 'Casual photos taken by our team — not professional photography', preselect: false, highlight: true },
 ];
+
+export const CONSENT_ADDON = {
+  name: 'Consent to Photos & Social Media',
+  desc: 'Casual photos taken by our team — not professional photography',
+};
 
 export const EXTRA_ADDON_SECTIONS = [
   {
     title: 'Decor Options',
     subtitle: 'Choose one styled package — perfect as a complete look',
+    exclusive: true,
     items: [
       {
         name: 'Decor Option 1 — Balloon Garland & Signage',
@@ -49,7 +54,7 @@ export const EXTRA_ADDON_SECTIONS = [
 export const EXTRA_ADDONS = EXTRA_ADDON_SECTIONS.flatMap(s => s.items);
 
 // All add-ons combined (used by emails for label + price lookup)
-export const ALL_ADDONS = [...INCLUDED_ADDONS, ...EXTRA_ADDONS];
+export const ALL_ADDONS = [...INCLUDED_ADDONS, CONSENT_ADDON, ...EXTRA_ADDONS];
 
 // Default selections for new form
 export const DEFAULT_PRESELECTED_ADDONS = INCLUDED_ADDONS
@@ -60,6 +65,7 @@ export const DEFAULT_PRESELECTED_ADDONS = INCLUDED_ADDONS
 export function findAddon(name) {
   const included = INCLUDED_ADDONS.find(a => a.name === name);
   if (included) return { name: included.name, price: null, included: true };
+  if (name === CONSENT_ADDON.name) return { name, price: null, included: true };
   const extra = EXTRA_ADDONS.find(a => a.name === name);
   if (extra) return { name: extra.name, price: extra.price, included: false };
   return { name, price: null, included: false }; // unknown / legacy

@@ -1,5 +1,5 @@
 import { Check, Gift, Plus, Camera } from 'lucide-react';
-import { INCLUDED_ADDONS, EXTRA_ADDON_SECTIONS } from './addonsConfig';
+import { INCLUDED_ADDONS, EXTRA_ADDON_SECTIONS, CONSENT_ADDON } from './addonsConfig';
 
 function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
   return (
@@ -36,8 +36,8 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
           </p>
           {price && (
             <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(182,118,81,0.12)', color: '#b67651' }}
+              className="text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
+              style={{ background: 'rgba(182,118,81,0.12)', color: '#b67651', marginRight: '4px' }}
             >
               {price}
             </span>
@@ -60,6 +60,22 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
 }
 
 export default function AddonsStep({ selected, onToggle }) {
+  // Exclusive section: selecting one item deselects others in the same section
+  const handleExclusiveToggle = (section, itemName) => {
+    const isChecked = selected.includes(itemName);
+    if (isChecked) {
+      onToggle(itemName);
+    } else {
+      // Deselect all other items in this section first, then select the new one
+      section.items.forEach(other => {
+        if (other.name !== itemName && selected.includes(other.name)) {
+          onToggle(other.name);
+        }
+      });
+      onToggle(itemName);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* INCLUDED */}
@@ -76,13 +92,27 @@ export default function AddonsStep({ selected, onToggle }) {
               key={item.name}
               item={item}
               checked={selected.includes(item.name)}
-              highlight={item.highlight}
               onToggle={() => onToggle(item.name)}
             />
           ))}
         </div>
+      </div>
+
+      {/* CONSENT — standalone opt-in */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Camera className="w-4 h-4" style={{ color: '#e86c84' }} />
+          <h3 className="text-sm font-bold uppercase tracking-wide" style={{ color: '#e86c84' }}>
+            Photo & Social Media Consent
+          </h3>
+        </div>
+        <AddonCheckbox
+          item={CONSENT_ADDON}
+          checked={selected.includes(CONSENT_ADDON.name)}
+          highlight
+          onToggle={() => onToggle(CONSENT_ADDON.name)}
+        />
         <p className="text-xs italic mt-2" style={{ color: '#a07878' }}>
-          <Camera className="w-3 h-3 inline mr-1" />
           Casual photos only — we do not provide professional photography.
         </p>
       </div>
@@ -93,7 +123,10 @@ export default function AddonsStep({ selected, onToggle }) {
           <div className="flex items-center gap-2 mb-1">
             <Plus className="w-4 h-4" style={{ color: '#b67651' }} />
             <h3 className="text-sm font-bold uppercase tracking-wide" style={{ color: '#b67651' }}>
-              {section.title} <span className="font-normal text-xs normal-case" style={{ color: '#a07878' }}>(additional cost)</span>
+              {section.title}{' '}
+              <span className="font-normal text-xs normal-case" style={{ color: '#a07878' }}>
+                {section.exclusive ? '(choose one — additional cost)' : '(additional cost)'}
+              </span>
             </h3>
           </div>
           {section.subtitle && (
@@ -108,7 +141,11 @@ export default function AddonsStep({ selected, onToggle }) {
                 item={item}
                 checked={selected.includes(item.name)}
                 price={item.price}
-                onToggle={() => onToggle(item.name)}
+                onToggle={() =>
+                  section.exclusive
+                    ? handleExclusiveToggle(section, item.name)
+                    : onToggle(item.name)
+                }
               />
             ))}
           </div>
