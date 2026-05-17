@@ -17,12 +17,71 @@ function extractBodies(payload) {
   function walk(part) {
     if (!part) return;
     const mime = part.mimeType || '';
-    if (mime === 'text/html' && part.body?.data && !html) html = base64UrlDecode(part.body.data);
-    else if (mime === 'text/plain' && part.body?.data && !text) text = base64UrlDecode(part.body.data);
+    // Only treat as body if it's NOT an attachment (no filename)
+    const isAttachment = !!part.filename && part.filename.length > 0;
+    if (!isAttachment) {
+      if (mime === 'text/html' && part.body?.data && !html) html = base64UrlDecode(part.body.data);
+      else if (mime === 'text/plain' && part.body?.data && !text) text = base64UrlDecode(part.body.data);
+    }
     if (part.parts) part.parts.forEach(walk);
   }
   walk(payload);
   return { html, text };
+}
+
+function extractAttachmentParts(payload) {
+  const out = [];
+  function walk(part) {
+    if (!part) return;
+    if (part.filename && part.filename.length > 0 && part.body?.attachmentId) {
+      // Skip inline images embedded in HTML (Content-Disposition: inline with Content-ID)
+      const headers = part.headers || [];
+      const disposition = (headers.find(h => h.name.toLowerCase() === 'content-disposition')?.value || '').toLowerCase();
+      const isInline = disposition.startsWith('inline');
+      if (!isInline) {
+        out.push({
+          filename: part.filename,
+          contentType: part.mimeType || 'application/octet-stream',
+          attachmentId: part.body.attachmentId,
+          size: part.body.size || 0,
+        });
+      }
+    }
+    if (part.parts) part.parts.forEach(walk);
+  }
+  walk(payload);
+  return out;
+}
+
+async function downloadAndUploadAttachment(base44, accessToken, messageId, att) {
+  // Fetch attachment bytes from Gmail
+  const res = await fetch(
+    `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}/attachments/${att.attachmentId}`,
+    { headers: { 'Authorization': `Bearer ${accessToken}` } }
+  );
+  if (!res.ok) throw new Error(`Gmail attachment fetch failed: ${res.status}`);
+  const data = await res.json();
+  if (!data.data) throw new Error('No attachment data returned');
+
+  // base64url -> binary -> Blob -> File
+  const b64 = data.data.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = b64 + '='.repeat((4 - b64.length % 4) % 4);
+  const bin = atob(padded);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const blob = new Blob([bytes], { type: att.contentType });
+  const file = new File([blob], att.filename, { type: att.contentType });
+
+  const uploadRes = await base44.asServiceRole.integrations.Core.UploadFile({ file });
+  const fileUrl = uploadRes?.file_url || uploadRes?.url || uploadRes?.data?.file_url || uploadRes?.data?.url;
+  if (!fileUrl) throw new Error('UploadFile returned no url');
+
+  return {
+    filename: att.filename,
+    url: fileUrl,
+    content_type: att.contentType,
+    size: att.size,
+  };
 }
 
 function parseFromHeader(value) {
@@ -140,6 +199,18 @@ async function processOne(base44, accessToken, messageId, stats) {
   const { html, text } = extractBodies(msg.payload);
   const sentAt = dateHeader ? new Date(dateHeader).toISOString() : new Date().toISOString();
 
+  // Extract & upload attachments (skip inline images)
+  const attachmentParts = extractAttachmentParts(msg.payload);
+  const uploadedAttachments = [];
+  for (const part of attachmentParts) {
+    try {
+      const uploaded = await downloadAndUploadAttachment(base44, accessToken, messageId, part);
+      uploadedAttachments.push(uploaded);
+    } catch (e) {
+      console.error('attachment upload failed', part.filename, e);
+    }
+  }
+
   await base44.asServiceRole.entities.EmailMessage.create({
     ticket_id: parentId,
     gmail_thread_id: msg.threadId,
@@ -157,6 +228,7 @@ async function processOne(base44, accessToken, messageId, stats) {
     snippet: msg.snippet || '',
     sent_at: sentAt,
     send_status: 'received',
+    attachments: uploadedAttachments,
     read_by: [],
     read_at: [],
   });
