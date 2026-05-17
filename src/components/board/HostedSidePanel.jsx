@@ -15,10 +15,20 @@ export default function HostedSidePanel({
   const count = tickets.length;
 
   return (
-    <div
-      className="hidden lg:flex fixed right-0 top-1/2 -translate-y-1/2 z-20 items-center"
-      style={{ pointerEvents: 'none' }}
-    >
+    <>
+      {/* Backdrop blur overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-10 bg-black/20 backdrop-blur-sm transition-opacity"
+          onClick={() => setOpen(false)}
+          style={{ pointerEvents: 'auto' }}
+        />
+      )}
+
+      <div
+        className="hidden lg:flex fixed right-0 top-1/2 -translate-y-1/2 z-20 items-center"
+        style={{ pointerEvents: 'none' }}
+      >
       {/* Toggle handle */}
       <button
         onClick={() => setOpen(v => !v)}
@@ -112,6 +122,7 @@ export default function HostedSidePanel({
           .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
         `}</style>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
