@@ -14,13 +14,17 @@ const EVENT_TYPE_ICONS = {
   'Other': Sparkles,
 };
 
+// Match swimlane header colors from KanbanColumn
 const STATUS_COLORS = {
-  'New': '#fb923c',
-  'In Conversations': '#f59e0b',
-  'Pending': '#f59e0b',
-  'Confirmed': '#3b82f6',
-  'Completed': '#22c55e',
-  'Cancelled': '#9ca3af',
+  'New':                 '#ec4899', // pink-500
+  'In Conversations':    '#f59e0b', // amber-500
+  'Pending':             '#f59e0b', // legacy → amber
+  'Waiting for Payment': '#f97316', // orange-500
+  'Confirmed':           '#0ea5e9', // sky-500
+  'Hosted':              '#a855f7', // purple-500
+  'Completed':           '#10b981', // emerald-500
+  'No Response':         '#6b7280', // gray-500
+  'Cancelled':           '#6b7280', // gray-500
 };
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
