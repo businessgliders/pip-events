@@ -61,12 +61,21 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
             </span>
           )}
           {price && (
-            <span
-              className="text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
-              style={{ background: 'rgba(182,118,81,0.12)', color: '#b67651', marginRight: '4px' }}
-            >
-              {price}
-            </span>
+            price.toLowerCase().includes('quoted') ? (
+              <span
+                className="text-[11px] italic whitespace-nowrap"
+                style={{ color: '#a07878' }}
+              >
+                {price}
+              </span>
+            ) : (
+              <span
+                className="text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
+                style={{ background: 'rgba(182,118,81,0.12)', color: '#b67651', marginRight: '4px' }}
+              >
+                {price}
+              </span>
+            )
           )}
           {highlight && !checked && (
             <span
