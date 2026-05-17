@@ -38,32 +38,74 @@ function base64UrlEncode(str) {
     .replace(/=+$/, '');
 }
 
-function buildMime({ to, subject, htmlBody, textBody, inReplyTo, references }) {
-  const boundary = `b_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+function chunkBase64(b64, size = 76) {
+  return b64.replace(new RegExp(`(.{1,${size}})`, 'g'), '$1\r\n').trim();
+}
+
+async function fetchAttachmentBase64(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch attachment: ${url}`);
+  const buf = new Uint8Array(await res.arrayBuffer());
+  let bin = '';
+  for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
+  const contentType = res.headers.get('content-type') || 'application/octet-stream';
+  return { base64: btoa(bin), contentType };
+}
+
+function buildMime({ to, subject, htmlBody, textBody, inReplyTo, references, attachments = [] }) {
+  const altBoundary = `alt_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const mixedBoundary = `mix_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const hasAttachments = attachments && attachments.length > 0;
+
   const lines = [
     `From: ${encodeRfc2047(SENDER_NAME)} <${SENDER_EMAIL}>`,
     `To: ${to}`,
     `Subject: ${encodeRfc2047(subject)}`,
     `MIME-Version: 1.0`,
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
   ];
+  if (hasAttachments) {
+    lines.push(`Content-Type: multipart/mixed; boundary="${mixedBoundary}"`);
+  } else {
+    lines.push(`Content-Type: multipart/alternative; boundary="${altBoundary}"`);
+  }
   if (inReplyTo) lines.push(`In-Reply-To: ${inReplyTo}`);
   if (references) lines.push(`References: ${references}`);
   lines.push('');
 
-  lines.push(`--${boundary}`);
+  if (hasAttachments) {
+    lines.push(`--${mixedBoundary}`);
+    lines.push(`Content-Type: multipart/alternative; boundary="${altBoundary}"`);
+    lines.push('');
+  }
+
+  // Alternative part (plain + html)
+  lines.push(`--${altBoundary}`);
   lines.push(`Content-Type: text/plain; charset=UTF-8`);
   lines.push(`Content-Transfer-Encoding: quoted-printable`);
   lines.push('');
   lines.push(toQuotedPrintable(textBody));
 
-  lines.push(`--${boundary}`);
+  lines.push(`--${altBoundary}`);
   lines.push(`Content-Type: text/html; charset=UTF-8`);
   lines.push(`Content-Transfer-Encoding: quoted-printable`);
   lines.push('');
   lines.push(toQuotedPrintable(htmlBody));
 
-  lines.push(`--${boundary}--`);
+  lines.push(`--${altBoundary}--`);
+
+  // Attachments
+  if (hasAttachments) {
+    for (const att of attachments) {
+      lines.push(`--${mixedBoundary}`);
+      lines.push(`Content-Type: ${att.contentType}; name="${att.filename}"`);
+      lines.push(`Content-Transfer-Encoding: base64`);
+      lines.push(`Content-Disposition: attachment; filename="${att.filename}"`);
+      lines.push('');
+      lines.push(chunkBase64(att.base64));
+    }
+    lines.push(`--${mixedBoundary}--`);
+  }
+
   return lines.join('\r\n');
 }
 
@@ -76,9 +118,23 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden — admin only' }, { status: 403 });
     }
 
-    const { ticket_id, body_html, is_welcome } = await req.json();
+    const { ticket_id, body_html, is_welcome, attachments: attachmentInputs } = await req.json();
     if (!ticket_id || !body_html) {
       return Response.json({ error: 'Missing ticket_id or body_html' }, { status: 400 });
+    }
+
+    // Fetch attachments and base64-encode them (server-side, so we have raw bytes)
+    const attachments = [];
+    if (Array.isArray(attachmentInputs)) {
+      for (const att of attachmentInputs) {
+        if (!att?.url || !att?.filename) continue;
+        const { base64, contentType } = await fetchAttachmentBase64(att.url);
+        attachments.push({
+          filename: att.filename,
+          contentType: att.contentType || contentType,
+          base64,
+        });
+      }
     }
 
     const ticket = await base44.asServiceRole.entities.EventRequest.get(ticket_id);
@@ -152,6 +208,7 @@ Deno.serve(async (req) => {
       textBody,
       inReplyTo,
       references,
+      attachments,
     });
 
     const raw = base64UrlEncode(mime);
