@@ -279,7 +279,7 @@ export default function Dashboard() {
                 className="w-11 h-11 rounded-xl object-cover shadow-sm flex-shrink-0"
               />
               <div className="hidden sm:block text-sm font-medium leading-tight truncate text-left" style={{ color: '#5a3535' }}>
-                <span className="font-semibold">{activeTickets.length}</span> active ticket{activeTickets.length === 1 ? '' : 's'}
+                <span className="font-semibold">{activeTickets.length}</span> active request{activeTickets.length === 1 ? '' : 's'}
                 <span className="mx-1.5 opacity-50">•</span>
                 <span className="font-semibold">{(ticketsByColumn['New'] || []).length}</span> in New
               </div>
