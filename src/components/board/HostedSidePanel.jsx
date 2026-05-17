@@ -33,7 +33,7 @@ export default function HostedSidePanel({
         }}
         title={open ? 'Hide Hosted' : 'Show Hosted'}
       >
-        <span className="text-[9px] font-bold leading-tight text-center mb-1">HOSTED</span>
+        <span className="text-[9px] font-bold text-center" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>HOSTED</span>
         {open ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
       </button>
 
