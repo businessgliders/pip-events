@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { X, Mail, Phone, Trash2, User, Calendar, Tag, Sparkles, StickyNote, DollarSign } from 'lucide-react';
 import { format } from 'date-fns';
 import EmailThreadPanel from '@/components/email/EmailThreadPanel';
-import { findAddon } from '@/components/requestForm/addonsConfig';
+import { findAddon, EXTRA_ADDON_SECTIONS } from '@/components/requestForm/addonsConfig';
 import UnsavedDraftDialog from '@/components/email/UnsavedDraftDialog';
 
 const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'No Response', 'Hosted', 'Completed', 'Cancelled'];
@@ -209,15 +209,20 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
                       const info = findAddon(a);
                       const isDecorOption = a.toLowerCase().includes('decor option');
                       const hideQuoted = info.price && info.price.toLowerCase().includes('quoted on confirmation');
+                      const decorItem = isDecorOption
+                        ? EXTRA_ADDON_SECTIONS.flatMap(s => s.items).find(i => i.name === a)
+                        : null;
                       return (
                         <span
                           key={a}
-                          className="text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1.5"
+                          title={decorItem?.desc || undefined}
+                          className="text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1.5 relative group"
                           style={{
                             background: isDecorOption ? 'rgba(241,136,155,0.2)' : info.included ? 'rgba(22,163,74,0.08)' : 'rgba(182,118,81,0.08)',
                             color: isDecorOption ? '#e86c84' : info.included ? '#16a34a' : '#b67651',
                             border: `1px solid ${isDecorOption ? 'rgba(241,136,155,0.5)' : info.included ? 'rgba(22,163,74,0.25)' : 'rgba(182,118,81,0.2)'}`,
                             fontWeight: isDecorOption ? '600' : '500',
+                            cursor: decorItem ? 'help' : 'default',
                           }}
                         >
                           {a}
@@ -226,6 +231,29 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
                           )}
                           {info.included && !isDecorOption && (
                             <span className="text-[9px] uppercase font-bold opacity-70">incl</span>
+                          )}
+                          {decorItem && (
+                            <span
+                              className="absolute left-0 top-full mt-1.5 z-50 hidden group-hover:block w-72 p-3 rounded-lg shadow-xl text-[11px] leading-relaxed font-normal pointer-events-none"
+                              style={{
+                                background: 'white',
+                                color: '#6b4e4e',
+                                border: '1px solid rgba(241,136,155,0.4)',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
+                              }}
+                            >
+                              {decorItem.image && (
+                                <img
+                                  src={decorItem.image}
+                                  alt={decorItem.displayName || decorItem.name}
+                                  className="w-full h-32 object-cover rounded-md mb-2"
+                                />
+                              )}
+                              <p className="font-bold mb-1" style={{ color: '#e86c84' }}>
+                                {decorItem.displayName || decorItem.name}
+                              </p>
+                              <p>{decorItem.desc}</p>
+                            </span>
                           )}
                         </span>
                       );
