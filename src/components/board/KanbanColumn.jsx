@@ -13,7 +13,7 @@ const columnColors = {
   'Confirmed':           'from-blue-400/20 to-sky-300/20 border-sky-300/40',
   'Hosted':              'from-violet-400/20 to-purple-300/20 border-purple-300/40',
   'Completed':           'from-emerald-400/20 to-green-300/20 border-green-300/40',
-  'No Response':         'from-slate-400/20 to-gray-300/20 border-gray-300/40',
+  'Closed':              'from-slate-400/20 to-gray-300/20 border-gray-300/40',
   // Category columns
   'Birthday':                 'from-pink-400/20 to-rose-300/20 border-rose-300/40',
   'Bridal Shower':            'from-fuchsia-400/20 to-pink-300/20 border-pink-300/40',
@@ -30,7 +30,7 @@ const headerColors = {
   'Confirmed':           'bg-sky-500/30 border-sky-400/40',
   'Hosted':              'bg-purple-500/30 border-purple-400/40',
   'Completed':           'bg-emerald-500/30 border-emerald-400/40',
-  'No Response':         'bg-gray-500/30 border-gray-400/40',
+  'Closed':              'bg-gray-500/30 border-gray-400/40',
   'Birthday':                 'bg-rose-500/30 border-rose-400/40',
   'Bridal Shower':            'bg-pink-500/30 border-pink-400/40',
   'Bachelorette Party':       'bg-fuchsia-500/30 border-fuchsia-400/40',
@@ -51,7 +51,7 @@ export default function KanbanColumn({
   viewMode,
   unreadCountByTicket = {},
 }) {
-  const isDimmed = status === 'No Response';
+  const isDimmed = status === 'Closed';
   const colorCls = columnColors[status] || 'from-white/20 to-white/10 border-white/30';
   const headerCls = headerColors[status] || 'bg-white/30 border-white/40';
 
@@ -69,7 +69,7 @@ export default function KanbanColumn({
             {tickets.length}
           </span>
         </div>
-        {status === 'No Response' && tickets.length > 0 && (
+        {status === 'Closed' && tickets.length > 0 && (
           <div className="flex gap-2 mt-2">
             {onTidyUp && (
               <Button size="sm" variant="secondary" className="h-7 px-2 bg-white/70 hover:bg-white/90 text-xs" onClick={onTidyUp}>
