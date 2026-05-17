@@ -206,7 +206,10 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
                 {request.add_ons?.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {request.add_ons
-                      .filter(a => !a.toLowerCase().includes('quoted on confirmation'))
+                      .filter(a => {
+                        const info = findAddon(a);
+                        return !info.price || !info.price.toLowerCase().includes('quoted on confirmation');
+                      })
                       .map(a => {
                         const info = findAddon(a);
                         const isDecorOption = a.toLowerCase().includes('decor option');
