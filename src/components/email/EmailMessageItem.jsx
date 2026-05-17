@@ -174,38 +174,96 @@ export default function EmailMessageItem({ message, isHighlighted, isUnread, onM
 }
 
 function FullModal({ open, setOpen, message }) {
+  const [lightboxAttachment, setLightboxAttachment] = useState(null);
+
+  const handleAttachmentClick = (e, attachment) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isImage = (attachment.content_type || '').startsWith('image/');
+    if (isImage) {
+      setLightboxAttachment(attachment);
+    } else {
+      // For non-images, download directly
+      window.open(attachment.url, '_blank');
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="text-base" style={{ color: '#6b4e4e' }}>{message.subject || '(no subject)'}</DialogTitle>
-        </DialogHeader>
-        <div className="text-xs space-y-0.5 pb-3 border-b" style={{ color: '#9a7070', borderColor: '#f7b1bd' }}>
-          <p><strong>From:</strong> {message.from_name ? `${message.from_name} <${message.from_email}>` : message.from_email}</p>
-          <p><strong>To:</strong> {message.to_email}</p>
-          <p><strong>Date:</strong> {message.sent_at ? format(new Date(message.sent_at), 'PPpp') : ''}</p>
-        </div>
-        <div className="flex-1 overflow-y-auto pt-3">
-          {message.body_html ? (
-            <div
-              className="prose prose-sm max-w-none"
-              style={{ fontFamily: "'Helvetica Neue',Arial,sans-serif", fontSize: '14px', lineHeight: '1.6', color: '#333' }}
-              dangerouslySetInnerHTML={{ __html: message.body_html }}
-            />
-          ) : (
-            <p className="text-sm whitespace-pre-wrap" style={{ color: '#4a3838' }}>{message.body_text || '(no content)'}</p>
-          )}
-          {message.attachments?.length > 0 && (
-            <div className="mt-4 pt-3 border-t" style={{ borderColor: '#f7b1bd' }}>
-              <div className="flex items-center gap-1.5 mb-2 text-xs font-semibold" style={{ color: '#e86c84' }}>
-                <Paperclip className="w-3 h-3" />
-                {message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-base" style={{ color: '#6b4e4e' }}>{message.subject || '(no subject)'}</DialogTitle>
+          </DialogHeader>
+          <div className="text-xs space-y-0.5 pb-3 border-b" style={{ color: '#9a7070', borderColor: '#f7b1bd' }}>
+            <p><strong>From:</strong> {message.from_name ? `${message.from_name} <${message.from_email}>` : message.from_email}</p>
+            <p><strong>To:</strong> {message.to_email}</p>
+            <p><strong>Date:</strong> {message.sent_at ? format(new Date(message.sent_at), 'PPpp') : ''}</p>
+          </div>
+          <div className="flex-1 overflow-y-auto pt-3">
+            {message.body_html ? (
+              <div
+                className="prose prose-sm max-w-none"
+                style={{ fontFamily: "'Helvetica Neue',Arial,sans-serif", fontSize: '14px', lineHeight: '1.6', color: '#333' }}
+                dangerouslySetInnerHTML={{ __html: message.body_html }}
+              />
+            ) : (
+              <p className="text-sm whitespace-pre-wrap" style={{ color: '#4a3838' }}>{message.body_text || '(no content)'}</p>
+            )}
+            {message.attachments?.length > 0 && (
+              <div className="mt-4 pt-3 border-t" style={{ borderColor: '#f7b1bd' }}>
+                <div className="flex items-center gap-1.5 mb-2 text-xs font-semibold" style={{ color: '#e86c84' }}>
+                  <Paperclip className="w-3 h-3" />
+                  {message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {message.attachments.map((a, i) => {
+                    const isImage = (a.content_type || '').startsWith('image/');
+                    const Icon = isImage ? ImageIcon : FileText;
+                    return (
+                      <button
+                        key={i}
+                        onClick={(e) => handleAttachmentClick(e, a)}
+                        title={`${a.filename}${a.size ? ` · ${formatBytes(a.size)}` : ''}`}
+                        className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md transition-colors hover:bg-pink-100"
+                        style={{ background: 'rgba(247,177,189,0.18)', border: '1px solid rgba(247,177,189,0.5)', color: '#6b4e4e' }}
+                      >
+                        <Icon className="w-3 h-3" style={{ color: '#e86c84' }} />
+                        <span className="max-w-[140px] truncate font-medium">{a.filename}</span>
+                        {a.size ? <span className="text-[9px]" style={{ color: '#9a7070' }}>{formatBytes(a.size)}</span> : null}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <AttachmentChips attachments={message.attachments} />
-            </div>
-          )}
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Lightbox for image attachments */}
+      {lightboxAttachment && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur"
+          onClick={() => setLightboxAttachment(null)}
+        >
+          <div className="max-w-4xl max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={lightboxAttachment.url}
+              alt={lightboxAttachment.filename}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            />
+            <p className="text-white text-sm mt-3 text-center">{lightboxAttachment.filename}</p>
+            <button
+              onClick={() => setLightboxAttachment(null)}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 text-2xl"
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </>
   );
 }
