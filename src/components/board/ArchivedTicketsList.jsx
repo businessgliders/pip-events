@@ -56,28 +56,28 @@ export default function ArchivedTicketsList({ tickets, cancelledTickets = [], on
     <div className="inline-flex rounded-full overflow-hidden bg-white/30 backdrop-blur shadow-sm mb-4">
       <button
         onClick={() => setTab('archived')}
-        className="px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+        className="px-6 py-3 text-sm font-semibold flex items-center gap-2 transition-colors"
         style={{
           background: tab === 'archived' ? '#3a1f1f' : 'transparent',
           color: tab === 'archived' ? 'white' : 'rgba(255,255,255,0.85)',
         }}
       >
-        <Archive className="w-3.5 h-3.5" /> Archived
-        <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold"
+        <Archive className="w-4 h-4" /> Archived
+        <span className="ml-1 inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-xs font-bold"
           style={{ background: tab === 'archived' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.35)', color: 'white' }}>
           {tickets.length}
         </span>
       </button>
       <button
         onClick={() => setTab('cancelled')}
-        className="px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+        className="px-6 py-3 text-sm font-semibold flex items-center gap-2 transition-colors"
         style={{
           background: tab === 'cancelled' ? '#3a1f1f' : 'transparent',
           color: tab === 'cancelled' ? 'white' : 'rgba(255,255,255,0.85)',
         }}
       >
-        <Ban className="w-3.5 h-3.5" /> Cancelled
-        <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold"
+        <Ban className="w-4 h-4" /> Cancelled
+        <span className="ml-1 inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-xs font-bold"
           style={{ background: tab === 'cancelled' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.35)', color: 'white' }}>
           {cancelledTickets.length}
         </span>
