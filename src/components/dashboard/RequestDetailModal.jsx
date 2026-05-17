@@ -205,35 +205,31 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
               <InfoBlock icon={<Tag className="w-3.5 h-3.5" />} title="Add-Ons">
                 {request.add_ons?.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {request.add_ons
-                      .filter(a => {
-                        const info = findAddon(a);
-                        return !info.price || !info.price.toLowerCase().includes('quoted on confirmation');
-                      })
-                      .map(a => {
-                        const info = findAddon(a);
-                        const isDecorOption = a.toLowerCase().includes('decor option');
-                        return (
-                          <span
-                            key={a}
-                            className="text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1.5"
-                            style={{
-                              background: isDecorOption ? 'rgba(241,136,155,0.2)' : info.included ? 'rgba(22,163,74,0.08)' : 'rgba(182,118,81,0.08)',
-                              color: isDecorOption ? '#e86c84' : info.included ? '#16a34a' : '#b67651',
-                              border: `1px solid ${isDecorOption ? 'rgba(241,136,155,0.5)' : info.included ? 'rgba(22,163,74,0.25)' : 'rgba(182,118,81,0.2)'}`,
-                              fontWeight: isDecorOption ? '600' : '500',
-                            }}
-                          >
-                            {a}
-                            {info.price && (
-                              <span className="text-[10px] font-bold opacity-80">{info.price}</span>
-                            )}
-                            {info.included && !isDecorOption && (
-                              <span className="text-[9px] uppercase font-bold opacity-70">incl</span>
-                            )}
-                          </span>
-                        );
-                      })}
+                    {request.add_ons.map(a => {
+                      const info = findAddon(a);
+                      const isDecorOption = a.toLowerCase().includes('decor option');
+                      const hideQuoted = info.price && info.price.toLowerCase().includes('quoted on confirmation');
+                      return (
+                        <span
+                          key={a}
+                          className="text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1.5"
+                          style={{
+                            background: isDecorOption ? 'rgba(241,136,155,0.2)' : info.included ? 'rgba(22,163,74,0.08)' : 'rgba(182,118,81,0.08)',
+                            color: isDecorOption ? '#e86c84' : info.included ? '#16a34a' : '#b67651',
+                            border: `1px solid ${isDecorOption ? 'rgba(241,136,155,0.5)' : info.included ? 'rgba(22,163,74,0.25)' : 'rgba(182,118,81,0.2)'}`,
+                            fontWeight: isDecorOption ? '600' : '500',
+                          }}
+                        >
+                          {a}
+                          {info.price && !hideQuoted && (
+                            <span className="text-[10px] font-bold opacity-80">{info.price}</span>
+                          )}
+                          {info.included && !isDecorOption && (
+                            <span className="text-[9px] uppercase font-bold opacity-70">incl</span>
+                          )}
+                        </span>
+                      );
+                    })}
                   </div>
                 ) : <p className="text-xs italic" style={{ color: '#d4b8bc' }}>None selected</p>}
               </InfoBlock>
