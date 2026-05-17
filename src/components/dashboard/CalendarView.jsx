@@ -137,6 +137,16 @@ export default function CalendarView({ requests, onSelect }) {
           );
         })}
       </div>
+
+      {/* Legend */}
+      <div className="px-5 py-3 flex flex-wrap gap-3" style={{borderTop: '1px solid rgba(247,177,189,0.3)', background: 'rgba(251,224,226,0.1)'}}>
+        {Object.entries(STATUS_COLORS).filter(([status]) => !['Pending', 'Cancelled'].includes(status)).map(([status, color]) => (
+          <div key={status} className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{background: color}}></div>
+            <span className="text-xs font-medium" style={{color: '#7a5555'}}>{status}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
