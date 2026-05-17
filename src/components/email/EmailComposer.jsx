@@ -215,13 +215,16 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     await Promise.all(files.map(async (file, idx) => {
       const tmpId = placeholders[idx].tmpId;
       try {
-        const { data } = await base44.integrations.Core.UploadFile({ file });
+        const res = await base44.integrations.Core.UploadFile({ file });
+        // SDK returns { file_url } directly (not wrapped in { data })
+        const uploadedUrl = res?.file_url || res?.url || res?.data?.file_url || res?.data?.url;
+        if (!uploadedUrl) throw new Error('No file_url returned');
         setAttachments(prev => prev.map(a =>
-          a.tmpId === tmpId ? { ...a, url: data?.file_url || data?.url, uploading: false } : a
+          a.tmpId === tmpId ? { ...a, url: uploadedUrl, uploading: false } : a
         ));
       } catch (err) {
         setAttachments(prev => prev.filter(a => a.tmpId !== tmpId));
-        alert(`Failed to upload ${file.name}`);
+        alert(`Failed to upload ${file.name}: ${err.message || ''}`);
       } finally {
         setUploadingCount(c => c - 1);
       }
