@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Sparkles, Lightbulb, Bold, Italic, List, Link as LinkIcon, Send, Trash2, Wand2, X, Loader2, Paperclip, Plus, FileText } from 'lucide-react';
+import { Sparkles, Lightbulb, Bold, Italic, List, Link as LinkIcon, Send, Trash2, Wand2, X, Loader2, Paperclip, Plus, FileText, CheckCircle2 } from 'lucide-react';
 import TemplatePicker from './TemplatePicker';
 import AiAssistBar from './AiAssistBar';
 
@@ -15,7 +15,10 @@ function isEditorEmpty(html) {
   return !(html || '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '').trim();
 }
 
-export default function EmailComposer({ ticket, currentUser, onSent, onCancel, autoFocus }) {
+const DRAFT_KEY = (ticketId) => `email_draft_${ticketId}`;
+const AUTOSAVE_INTERVAL_MS = 30 * 1000; // 30 seconds
+
+export default function EmailComposer({ ticket, currentUser, onSent, onCancel, autoFocus, onDirtyChange }) {
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const [sending, setSending] = useState(false);
@@ -25,6 +28,39 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
   const [empty, setEmpty] = useState(true);
   const [attachments, setAttachments] = useState([]); // { name, size, type, url, uploading }
   const [uploadingCount, setUploadingCount] = useState(0);
+  const [draftSavedAt, setDraftSavedAt] = useState(null);
+  const isDirtyRef = useRef(false);
+
+  const setDirty = (val) => {
+    if (isDirtyRef.current !== val) {
+      isDirtyRef.current = val;
+      onDirtyChange?.(val);
+    }
+  };
+
+  // Restore draft on mount (per ticket)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY(ticket.id));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.html && editorRef.current) {
+          editorRef.current.innerHTML = parsed.html;
+          setEmpty(isEditorEmpty(parsed.html));
+        }
+        if (Array.isArray(parsed.attachments)) {
+          setAttachments(parsed.attachments.map(a => ({
+            ...a,
+            uploading: false,
+            previewUrl: null,
+            tmpId: a.tmpId || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          })));
+        }
+        if (parsed.savedAt) setDraftSavedAt(parsed.savedAt);
+      }
+    } catch { /* ignore */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticket.id]);
 
   // Auto-focus editor when deep-linked from owner email button
   useEffect(() => {
@@ -36,16 +72,68 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     }
   }, [autoFocus]);
 
+  const saveDraft = useCallback(() => {
+    const html = editorRef.current?.innerHTML || '';
+    const persistableAttachments = attachments
+      .filter(a => a.url && !a.uploading)
+      .map(({ name, size, type, url, tmpId }) => ({ name, size, type, url, tmpId }));
+    const hasContent = !isEditorEmpty(html) || persistableAttachments.length > 0;
+    if (!hasContent) {
+      localStorage.removeItem(DRAFT_KEY(ticket.id));
+      setDraftSavedAt(null);
+      setDirty(false);
+      return;
+    }
+    const now = Date.now();
+    localStorage.setItem(DRAFT_KEY(ticket.id), JSON.stringify({
+      html,
+      attachments: persistableAttachments,
+      savedAt: now,
+    }));
+    setDraftSavedAt(now);
+    setDirty(false);
+  }, [attachments, ticket.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Periodic auto-save
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (isDirtyRef.current) saveDraft();
+    }, AUTOSAVE_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [saveDraft]);
+
+  // Warn on browser navigation/refresh while dirty
+  useEffect(() => {
+    const handler = (e) => {
+      if (isDirtyRef.current) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, []);
+
+  const clearDraftStorage = () => {
+    localStorage.removeItem(DRAFT_KEY(ticket.id));
+    setDraftSavedAt(null);
+    setDirty(false);
+  };
+
   const setEditorHtml = (html) => {
     if (editorRef.current) {
       editorRef.current.innerHTML = html;
       setEmpty(isEditorEmpty(html));
+      setDirty(true);
     }
   };
 
   const getEditorHtml = () => editorRef.current?.innerHTML || '';
 
-  const handleInput = () => setEmpty(isEditorEmpty(getEditorHtml()));
+  const handleInput = () => {
+    setEmpty(isEditorEmpty(getEditorHtml()));
+    setDirty(true);
+  };
 
   const exec = (cmd, val = null) => {
     document.execCommand(cmd, false, val);
@@ -76,6 +164,7 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
       setAttachments([]);
       setShowDescribe(false);
       setShowSuggest(false);
+      clearDraftStorage();
       onSent?.();
     } else {
       alert('Failed to send: ' + (res?.data?.error || 'unknown error'));
@@ -103,6 +192,7 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     });
     setAttachments(prev => [...prev, ...placeholders]);
     setUploadingCount(c => c + files.length);
+    setDirty(true);
 
     await Promise.all(files.map(async (file, idx) => {
       const tmpId = placeholders[idx].tmpId;
@@ -126,6 +216,7 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
       if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
       return prev.filter(a => a.tmpId !== tmpId);
     });
+    setDirty(true);
   };
 
   // Cleanup any blob URLs on unmount
@@ -148,6 +239,17 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
   const handleClear = () => {
     if (!isEditorEmpty(getEditorHtml()) && !window.confirm('Clear the draft?')) return;
     setEditorHtml('');
+    setAttachments([]);
+    clearDraftStorage();
+  };
+
+  const formatSavedTime = (ts) => {
+    if (!ts) return '';
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 5) return 'just now';
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const handleTemplate = ({ body_html }) => setEditorHtml(body_html);
@@ -303,12 +405,18 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
           </button>
           <button
             onClick={handleClear}
-            disabled={empty}
+            disabled={empty && attachments.length === 0}
             className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-all disabled:opacity-50"
             style={{ background: 'rgba(220,200,205,0.2)', color: '#9a7070', border: '1px solid rgba(220,200,205,0.5)' }}
           >
             <Trash2 className="w-3.5 h-3.5" /> Clear
           </button>
+          {draftSavedAt && (
+            <span className="flex items-center gap-1 text-[11px]" style={{ color: '#10b981' }} title={`Draft auto-saved at ${new Date(draftSavedAt).toLocaleString()}`}>
+              <CheckCircle2 className="w-3 h-3" />
+              Draft saved {formatSavedTime(draftSavedAt)}
+            </span>
+          )}
         </div>
         <button
           onClick={handleSend}

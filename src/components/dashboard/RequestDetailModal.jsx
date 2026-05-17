@@ -26,6 +26,15 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [draftDirty, setDraftDirty] = useState(false);
+
+  const handleClose = () => {
+    if (draftDirty) {
+      const ok = window.confirm('You have unsaved changes in your reply. Save draft before closing?\n\nClick OK to save & close, or Cancel to keep editing.');
+      if (!ok) return;
+    }
+    onClose();
+  };
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => setCurrentUser(null));
@@ -66,7 +75,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
   const submittedAt = request.submitted_date || request.created_date;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={handleClose}>
       <div
         className="bg-white rounded-2xl shadow-2xl w-full flex flex-col"
         style={{ maxWidth: '1100px', maxHeight: '90vh', overflow: 'hidden' }}
@@ -101,7 +110,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
             <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
               {status}
             </span>
-            <button onClick={onClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors ml-1">
+            <button onClick={handleClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors ml-1">
               <X className="w-5 h-5" style={{ color: '#c48a96' }} />
             </button>
           </div>
@@ -112,7 +121,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
 
           {/* LEFT — Email comms */}
           <div className="flex-1 flex flex-col min-h-0 min-w-0" style={{ borderRight: '1px solid rgba(247,177,189,0.25)' }}>
-            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} />
+            <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} onDraftDirtyChange={setDraftDirty} />
           </div>
 
           {/* RIGHT — Details */}
