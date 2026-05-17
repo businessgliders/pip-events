@@ -60,7 +60,7 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
                   <img
                     src={item.image}
                     alt={item.displayName || item.name}
-                    className="w-full h-32 object-cover"
+                    className="w-full h-auto object-contain"
                   />
                 )}
                 <span className="block p-2.5">{item.desc}</span>
