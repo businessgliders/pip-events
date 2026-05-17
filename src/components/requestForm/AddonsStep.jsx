@@ -31,8 +31,20 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
       <input type="checkbox" checked={checked} onChange={onToggle} className="sr-only" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
+          {item.option && (
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
+              style={{
+                background: checked ? 'rgba(241,136,155,0.18)' : 'rgba(182,118,81,0.12)',
+                color: checked ? '#e86c84' : '#b67651',
+                letterSpacing: '0.05em',
+              }}
+            >
+              {item.option}
+            </span>
+          )}
           <p className="text-sm font-semibold" style={{ color: checked ? '#f1889b' : '#6b4e4e' }}>
-            {item.name}
+            {item.displayName || item.name}
           </p>
           {item.descOnHover && (
             <span
