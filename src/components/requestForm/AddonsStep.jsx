@@ -53,10 +53,17 @@ function AddonCheckbox({ item, checked, onToggle, highlight, price }) {
             >
               <Info className="w-3.5 h-3.5 cursor-help" style={{ color: '#b67651' }} />
               <span
-                className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute z-20 left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2.5 rounded-lg shadow-lg text-xs leading-relaxed pointer-events-none"
+                className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute z-20 left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 rounded-lg shadow-lg text-xs leading-relaxed pointer-events-none overflow-hidden"
                 style={{ background: '#3a2424', color: 'white' }}
               >
-                {item.desc}
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.displayName || item.name}
+                    className="w-full h-32 object-cover"
+                  />
+                )}
+                <span className="block p-2.5">{item.desc}</span>
               </span>
             </span>
           )}
