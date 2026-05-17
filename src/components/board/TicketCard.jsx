@@ -77,17 +77,17 @@ function CalendarDateBlock({ eventDate, size = 'md' }) {
   return (
     <div
       className={`flex flex-col items-center justify-center rounded-md overflow-hidden bg-white shadow-sm border border-pink-200 flex-shrink-0 ${
-        isSm ? 'w-9' : 'w-11'
+        isSm ? 'w-8' : 'w-11'
       }`}
     >
       <div
-        className={`w-full text-center font-bold text-white leading-none ${isSm ? 'text-[8px] py-0.5' : 'text-[9px] py-0.5'}`}
+        className={`w-full text-center font-bold text-white leading-none ${isSm ? 'text-[7px] py-0.5' : 'text-[9px] py-0.5'}`}
         style={{ background: '#e86c84' }}
       >
         {parts.month}
       </div>
       <div
-        className={`w-full text-center font-bold leading-none ${isSm ? 'text-sm py-1' : 'text-base py-1'}`}
+        className={`w-full text-center font-bold leading-none ${isSm ? 'text-xs py-0.5' : 'text-base py-1'}`}
         style={{ color: '#5a3535' }}
       >
         {parts.day}
