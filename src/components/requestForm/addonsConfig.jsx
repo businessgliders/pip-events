@@ -19,7 +19,6 @@ export const CONSENT_ADDON = {
 export const EXTRA_ADDON_SECTIONS = [
   {
     title: 'Decor Options',
-    subtitle: 'Choose one styled package — perfect as a complete look',
     exclusive: true,
     items: [
       {
@@ -38,7 +37,6 @@ export const EXTRA_ADDON_SECTIONS = [
   },
   {
     title: 'Decor Add-ons',
-    subtitle: 'Mix & match individual extras',
     items: [
       { name: 'Extra Plinth', desc: 'Additional plinth for displays', price: '$20' },
       { name: 'Custom Board Easel', desc: 'Personalized custom board easel', price: '$60' },
