@@ -79,7 +79,6 @@
         "No Response",
         "Hosted",
         "Pending",
-        "Completed",
         "Cancelled"
       ],
       "default": "New"

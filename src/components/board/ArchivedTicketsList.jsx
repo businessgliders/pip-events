@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 
 function getClosedTimestamp(ticket) {
   const hist = ticket.status_history || [];
-  const closedEntry = [...hist].reverse().find(e => e.status === 'Completed' || e.status === 'Closed' || e.status === 'Cancelled');
+  const closedEntry = [...hist].reverse().find(e => e.status === 'Closed' || e.status === 'Cancelled');
   if (closedEntry?.timestamp) return closedEntry.timestamp;
   if (hist.length > 0) return hist[hist.length - 1].timestamp;
   return ticket.created_date;

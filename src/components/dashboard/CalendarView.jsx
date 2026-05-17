@@ -22,7 +22,6 @@ const STATUS_COLORS = {
   'Waiting for Payment': '#f97316', // orange-500
   'Confirmed':           '#0ea5e9', // sky-500
   'Hosted':              '#a855f7', // purple-500
-  'Completed':           '#10b981', // emerald-500
   'Closed':              '#6b7280', // gray-500
   'Cancelled':           '#6b7280', // gray-500
 };

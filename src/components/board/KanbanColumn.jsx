@@ -12,7 +12,6 @@ const columnColors = {
   'Waiting for Payment': 'from-orange-400/20 to-amber-300/20 border-orange-300/40',
   'Confirmed':           'from-blue-400/20 to-sky-300/20 border-sky-300/40',
   'Hosted':              'from-violet-400/20 to-purple-300/20 border-purple-300/40',
-  'Completed':           'from-emerald-400/20 to-green-300/20 border-green-300/40',
   'Closed':              'from-slate-400/20 to-gray-300/20 border-gray-300/40',
   // Category columns
   'Birthday':                 'from-pink-400/20 to-rose-300/20 border-rose-300/40',
@@ -29,7 +28,6 @@ const headerColors = {
   'Waiting for Payment': 'bg-orange-500/30 border-orange-400/40',
   'Confirmed':           'bg-sky-500/30 border-sky-400/40',
   'Hosted':              'bg-purple-500/30 border-purple-400/40',
-  'Completed':           'bg-emerald-500/30 border-emerald-400/40',
   'Closed':              'bg-gray-500/30 border-gray-400/40',
   'Birthday':                 'bg-rose-500/30 border-rose-400/40',
   'Bridal Shower':            'bg-pink-500/30 border-pink-400/40',
