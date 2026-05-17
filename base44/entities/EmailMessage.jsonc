@@ -73,6 +73,28 @@
     "send_error": {
       "type": "string"
     },
+    "attachments": {
+      "type": "array",
+      "description": "Attachments included with this email",
+      "items": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          }
+        }
+      },
+      "default": []
+    },
     "read_by": {
       "type": "array",
       "items": {

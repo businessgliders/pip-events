@@ -125,14 +125,22 @@ Deno.serve(async (req) => {
 
     // Fetch attachments and base64-encode them (server-side, so we have raw bytes)
     const attachments = [];
+    const attachmentMeta = []; // for storing on EmailMessage record
     if (Array.isArray(attachmentInputs)) {
       for (const att of attachmentInputs) {
         if (!att?.url || !att?.filename) continue;
         const { base64, contentType } = await fetchAttachmentBase64(att.url);
+        const resolvedType = att.contentType || contentType;
         attachments.push({
           filename: att.filename,
-          contentType: att.contentType || contentType,
+          contentType: resolvedType,
           base64,
+        });
+        attachmentMeta.push({
+          filename: att.filename,
+          url: att.url,
+          content_type: resolvedType,
+          size: att.size || null,
         });
       }
     }
@@ -241,6 +249,7 @@ Deno.serve(async (req) => {
         is_welcome: !!is_welcome,
         send_status: 'failed',
         send_error: JSON.stringify(sendResult).slice(0, 500),
+        attachments: attachmentMeta,
         read_by: [user.email],
       });
       return Response.json({ error: 'Gmail send failed', details: sendResult }, { status: 500 });
@@ -283,6 +292,7 @@ Deno.serve(async (req) => {
       sent_at: new Date().toISOString(),
       is_welcome: !!is_welcome,
       send_status: 'sent',
+      attachments: attachmentMeta,
       read_by: [user.email],
       read_at: [{ email: user.email, timestamp: new Date().toISOString() }],
     });

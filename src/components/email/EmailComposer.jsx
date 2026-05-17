@@ -170,7 +170,7 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     setSending(true);
     const readyAttachments = attachments
       .filter(a => a.url && !a.uploading)
-      .map(a => ({ url: a.url, filename: a.name, contentType: a.type }));
+      .map(a => ({ url: a.url, filename: a.name, contentType: a.type, size: a.size }));
     const res = await base44.functions.invoke('sendTicketEmail', {
       ticket_id: ticket.id,
       body_html: html,
