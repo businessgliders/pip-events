@@ -216,19 +216,39 @@ function FullModal({ open, setOpen, message }) {
                   <Paperclip className="w-3 h-3" />
                   {message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}
                 </div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   {message.attachments.map((a, i) => {
                     const isImage = (a.content_type || '').startsWith('image/');
-                    const Icon = isImage ? ImageIcon : FileText;
+                    if (isImage) {
+                      return (
+                        <button
+                          key={i}
+                          onClick={(e) => handleAttachmentClick(e, a)}
+                          title={`${a.filename}${a.size ? ` · ${formatBytes(a.size)}` : ''}`}
+                          className="group relative rounded-lg overflow-hidden hover:ring-2 hover:ring-pink-400 transition-all"
+                          style={{ border: '1px solid rgba(247,177,189,0.5)', background: 'white' }}
+                        >
+                          <img
+                            src={a.url}
+                            alt={a.filename}
+                            className="block object-cover"
+                            style={{ width: 96, height: 96 }}
+                          />
+                          <div className="absolute bottom-0 left-0 right-0 px-1.5 py-0.5 text-[9px] truncate text-white text-left" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+                            {a.filename}
+                          </div>
+                        </button>
+                      );
+                    }
                     return (
                       <button
                         key={i}
                         onClick={(e) => handleAttachmentClick(e, a)}
                         title={`${a.filename}${a.size ? ` · ${formatBytes(a.size)}` : ''}`}
-                        className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md transition-colors hover:bg-pink-100"
+                        className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md transition-colors hover:bg-pink-100 self-start"
                         style={{ background: 'rgba(247,177,189,0.18)', border: '1px solid rgba(247,177,189,0.5)', color: '#6b4e4e' }}
                       >
-                        <Icon className="w-3 h-3" style={{ color: '#e86c84' }} />
+                        <FileText className="w-3 h-3" style={{ color: '#e86c84' }} />
                         <span className="max-w-[140px] truncate font-medium">{a.filename}</span>
                         {a.size ? <span className="text-[9px]" style={{ color: '#9a7070' }}>{formatBytes(a.size)}</span> : null}
                       </button>
@@ -244,7 +264,8 @@ function FullModal({ open, setOpen, message }) {
       {/* Lightbox for image attachments */}
       {lightboxAttachment && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center backdrop-blur"
+          style={{ zIndex: 100 }}
           onClick={() => setLightboxAttachment(null)}
         >
           <div className="max-w-4xl max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
