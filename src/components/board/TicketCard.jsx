@@ -1,14 +1,6 @@
-import { MoreVertical, Users, Calendar, Mail, Clock } from 'lucide-react';
+import { Users, Calendar, Mail, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 
 const EVENT_TYPE_EMOJI = {
   'Birthday': '🎂',
@@ -146,39 +138,22 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       </div>
 
       {/* Mobile compact */}
-      <div className="md:hidden pr-12">
+      <div className="md:hidden">
         <span className="text-[10px] text-gray-400 font-bold block">{ticketTag}</span>
-        <div className="flex items-start justify-between gap-2 mt-0.5">
+        <div className="flex items-start gap-2 mt-0.5">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-base flex-shrink-0">{emoji}</span>
             <p className="text-xs font-semibold whitespace-nowrap" style={{ color: '#5a3535' }}>
               {ticket.full_name}
             </p>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                onClick={(e) => e.stopPropagation()}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-pink-100 flex-shrink-0"
-              >
-                <MoreVertical className="w-3.5 h-3.5 text-gray-500" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-              <DropdownMenuLabel>Move to</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {STATUS_OPTIONS.filter(s => s !== ticket.status).map(s => (
-                <DropdownMenuItem key={s} onClick={() => onStatusChange?.(ticket.id, s)}>{s}</DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
       {/* Desktop */}
-      <div className="hidden md:block pr-14">
+      <div className="hidden md:block">
         <span className="text-[10px] text-gray-400 font-bold block mb-1">{ticketTag}</span>
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start gap-2">
           <div className="flex items-start gap-2 min-w-0 flex-1">
             <span className="text-xl flex-shrink-0">{emoji}</span>
             <div className="min-w-0 flex-1">
@@ -187,23 +162,6 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
               </p>
             </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                onClick={(e) => e.stopPropagation()}
-                className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-pink-100 flex-shrink-0"
-              >
-                <MoreVertical className="w-4 h-4 text-gray-500" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-              <DropdownMenuLabel>Move to</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {STATUS_OPTIONS.filter(s => s !== ticket.status).map(s => (
-                <DropdownMenuItem key={s} onClick={() => onStatusChange?.(ticket.id, s)}>{s}</DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
 
         <div className="mt-3 flex items-center gap-3 text-xs text-gray-600">
