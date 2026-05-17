@@ -11,20 +11,25 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function AttachmentChips({ attachments, compact }) {
+function AttachmentChips({ attachments, compact, onImageClick }) {
   if (!attachments?.length) return null;
   return (
     <div className={`flex flex-wrap gap-1.5 ${compact ? 'mt-1.5' : 'mt-2'}`}>
       {attachments.map((a, i) => {
         const isImage = (a.content_type || '').startsWith('image/');
         const Icon = isImage ? ImageIcon : FileText;
+        const handleClick = (e) => {
+          e.stopPropagation();
+          if (isImage && onImageClick) {
+            onImageClick(a);
+          } else {
+            window.open(a.url, '_blank');
+          }
+        };
         return (
-          <a
+          <button
             key={i}
-            href={a.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
+            onClick={handleClick}
             title={`${a.filename}${a.size ? ` · ${formatBytes(a.size)}` : ''}`}
             className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-md transition-colors hover:bg-pink-100"
             style={{ background: 'rgba(247,177,189,0.18)', border: '1px solid rgba(247,177,189,0.5)', color: '#6b4e4e' }}
@@ -33,7 +38,7 @@ function AttachmentChips({ attachments, compact }) {
             <span className="max-w-[140px] truncate font-medium">{a.filename}</span>
             {a.size ? <span className="text-[9px]" style={{ color: '#9a7070' }}>{formatBytes(a.size)}</span> : null}
             {!compact && <Download className="w-2.5 h-2.5 ml-0.5" style={{ color: '#9a7070' }} />}
-          </a>
+          </button>
         );
       })}
     </div>
@@ -62,6 +67,7 @@ function cleanPreview(html, text) {
 
 export default function EmailMessageItem({ message, isHighlighted, isUnread, onMarkRead }) {
   const [open, setOpen] = useState(false);
+  const [lightboxAttachment, setLightboxAttachment] = useState(null);
   const isInbound = message.direction === 'inbound';
   const isFailed = message.send_status === 'failed';
   const isWelcome = message.is_welcome;
@@ -92,8 +98,9 @@ export default function EmailMessageItem({ message, isHighlighted, isUnread, onM
           </div>
           <p className="text-xs line-clamp-1" style={{ color: '#9a5a6a' }}>{preview.slice(0, 80) || 'Welcome email sent on inquiry submission'}</p>
           <p className="text-[10px] mt-1" style={{ color: '#c48a96' }}>{time}</p>
+          <AttachmentChips attachments={message.attachments} onImageClick={setLightboxAttachment} compact />
         </div>
-        <FullModal open={open} setOpen={setOpen} message={message} />
+        <FullModal open={open} setOpen={setOpen} message={message} lightboxAttachment={lightboxAttachment} setLightboxAttachment={setLightboxAttachment} />
       </div>
     );
   }
@@ -142,7 +149,7 @@ export default function EmailMessageItem({ message, isHighlighted, isUnread, onM
             {message.attachments.length} attachment{message.attachments.length > 1 ? 's' : ''}
           </div>
         )}
-        <AttachmentChips attachments={message.attachments} compact />
+        <AttachmentChips attachments={message.attachments} onImageClick={setLightboxAttachment} compact />
         {preview.length > 140 && (
           <p className="text-[10px] mt-1 italic" style={{ color: '#9a7070' }}>Tap to view full message</p>
         )}
@@ -160,7 +167,7 @@ export default function EmailMessageItem({ message, isHighlighted, isUnread, onM
           )}
         </div>
       </div>
-      <FullModal open={open} setOpen={setOpen} message={message} />
+      <FullModal open={open} setOpen={setOpen} message={message} lightboxAttachment={lightboxAttachment} setLightboxAttachment={setLightboxAttachment} />
       <style>{`
         @keyframes bubble-pulse {
           0%, 100% { transform: scale(1); }
@@ -174,8 +181,7 @@ export default function EmailMessageItem({ message, isHighlighted, isUnread, onM
   );
 }
 
-function FullModal({ open, setOpen, message }) {
-  const [lightboxAttachment, setLightboxAttachment] = useState(null);
+function FullModal({ open, setOpen, message, lightboxAttachment, setLightboxAttachment }) {
 
   const handleAttachmentClick = (e, attachment) => {
     e.preventDefault();
