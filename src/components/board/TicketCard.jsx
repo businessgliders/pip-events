@@ -22,12 +22,12 @@ function daysUntilInfo(eventDateStr) {
   eventDay.setHours(0, 0, 0, 0);
   const diffDays = Math.round((eventDay - today) / (1000 * 60 * 60 * 24));
   let label, color;
-  if (diffDays < 0) { label = `${Math.abs(diffDays)}d past`; color = '#ef4444'; }
-  else if (diffDays === 0) { label = 'Today'; color = '#ef4444'; }
-  else if (diffDays === 1) { label = 'Tomorrow'; color = '#f97316'; }
-  else if (diffDays < 14) { label = `${diffDays}d left`; color = '#f97316'; }
-  else if (diffDays <= 30) { label = `${diffDays}d left`; color = '#eab308'; }
-  else { label = `${diffDays}d left`; color = '#10b981'; }
+  if (diffDays < 0) { label = `${Math.abs(diffDays)}d past`; color = '#f87171'; }
+  else if (diffDays === 0) { label = 'Today'; color = '#f87171'; }
+  else if (diffDays === 1) { label = 'Tomorrow'; color = '#fb923c'; }
+  else if (diffDays < 14) { label = `${diffDays}d left`; color = '#fb923c'; }
+  else if (diffDays <= 30) { label = `${diffDays}d left`; color = '#fcd34d'; }
+  else { label = `${diffDays}d left`; color = '#34d399'; }
   return { label, color, diffDays };
 }
 
