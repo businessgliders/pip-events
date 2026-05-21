@@ -70,9 +70,9 @@ export default function Landing() {
           {/* Hero */}
           <div className="flex flex-col items-center text-center">
             <img
-              src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/4cc1e649a_Gemini_Generated_Image_utlyq4utlyq4utly.png"
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69b4780e4278ece8feeae352/86f0df21b_Pilatesinpinklogojusticon1.png"
               alt="Pilates in Pink"
-              className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-lg mb-6"
+              className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-md mb-5"
             />
             <p className="text-sm sm:text-base font-medium tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(255,255,255,0.9)' }}>
               Pilates in Pink™
