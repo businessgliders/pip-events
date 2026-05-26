@@ -15,7 +15,6 @@ function isEditorEmpty(html) {
   return !(html || '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '').trim();
 }
 
-const DRAFT_KEY = (ticketId) => `email_draft_${ticketId}`;
 const AUTOSAVE_INTERVAL_MS = 30 * 1000; // 30 seconds
 
 export default function EmailComposer({ ticket, currentUser, onSent, onCancel, autoFocus, onDirtyChange, saveDraftRef }) {
@@ -29,7 +28,9 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
   const [attachments, setAttachments] = useState([]); // { name, size, type, url, uploading }
   const [uploadingCount, setUploadingCount] = useState(0);
   const [draftSavedAt, setDraftSavedAt] = useState(null);
+  const [draftId, setDraftId] = useState(null);
   const isDirtyRef = useRef(false);
+  const savingRef = useRef(false);
 
   const setDirty = (val) => {
     if (isDirtyRef.current !== val) {
@@ -38,29 +39,38 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     }
   };
 
-  // Restore draft on mount (per ticket)
+  // Restore draft on mount (per ticket + per user) from database
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY(ticket.id));
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.html && editorRef.current) {
-          editorRef.current.innerHTML = parsed.html;
-          setEmpty(isEditorEmpty(parsed.html));
+    let cancelled = false;
+    (async () => {
+      if (!currentUser?.email) return;
+      try {
+        const rows = await base44.entities.EmailDraft.filter(
+          { ticket_id: ticket.id, owner_email: currentUser.email },
+          '-updated_date',
+          1
+        );
+        if (cancelled || !rows?.[0]) return;
+        const draft = rows[0];
+        setDraftId(draft.id);
+        if (draft.body_html && editorRef.current) {
+          editorRef.current.innerHTML = draft.body_html;
+          setEmpty(isEditorEmpty(draft.body_html));
         }
-        if (Array.isArray(parsed.attachments)) {
-          setAttachments(parsed.attachments.map(a => ({
+        if (Array.isArray(draft.attachments)) {
+          setAttachments(draft.attachments.map(a => ({
             ...a,
             uploading: false,
             previewUrl: null,
             tmpId: a.tmpId || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
           })));
         }
-        if (parsed.savedAt) setDraftSavedAt(parsed.savedAt);
-      }
-    } catch { /* ignore */ }
+        if (draft.updated_date) setDraftSavedAt(new Date(draft.updated_date).getTime());
+      } catch { /* ignore */ }
+    })();
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticket.id]);
+  }, [ticket.id, currentUser?.email]);
 
   // Auto-focus editor when deep-linked from owner email button
   useEffect(() => {
@@ -72,27 +82,45 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     }
   }, [autoFocus]);
 
-  const saveDraft = useCallback(() => {
+  const saveDraft = useCallback(async () => {
+    if (savingRef.current || !currentUser?.email) return;
     const html = editorRef.current?.innerHTML || '';
     const persistableAttachments = attachments
       .filter(a => a.url && !a.uploading)
       .map(({ name, size, type, url, tmpId }) => ({ name, size, type, url, tmpId }));
     const hasContent = !isEditorEmpty(html) || persistableAttachments.length > 0;
-    if (!hasContent) {
-      localStorage.removeItem(DRAFT_KEY(ticket.id));
-      setDraftSavedAt(null);
+
+    savingRef.current = true;
+    try {
+      if (!hasContent) {
+        if (draftId) {
+          await base44.entities.EmailDraft.delete(draftId);
+          setDraftId(null);
+        }
+        setDraftSavedAt(null);
+        setDirty(false);
+        return;
+      }
+      if (draftId) {
+        await base44.entities.EmailDraft.update(draftId, {
+          body_html: html,
+          attachments: persistableAttachments,
+        });
+      } else {
+        const created = await base44.entities.EmailDraft.create({
+          ticket_id: ticket.id,
+          owner_email: currentUser.email,
+          body_html: html,
+          attachments: persistableAttachments,
+        });
+        if (created?.id) setDraftId(created.id);
+      }
+      setDraftSavedAt(Date.now());
       setDirty(false);
-      return;
+    } finally {
+      savingRef.current = false;
     }
-    const now = Date.now();
-    localStorage.setItem(DRAFT_KEY(ticket.id), JSON.stringify({
-      html,
-      attachments: persistableAttachments,
-      savedAt: now,
-    }));
-    setDraftSavedAt(now);
-    setDirty(false);
-  }, [attachments, ticket.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [attachments, ticket.id, currentUser?.email, draftId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Periodic auto-save
   useEffect(() => {
@@ -107,18 +135,21 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     if (saveDraftRef) {
       saveDraftRef.current = {
         save: () => saveDraft(),
-        discard: () => {
+        discard: async () => {
           if (editorRef.current) editorRef.current.innerHTML = '';
           setEmpty(true);
           setAttachments([]);
-          localStorage.removeItem(DRAFT_KEY(ticket.id));
+          if (draftId) {
+            try { await base44.entities.EmailDraft.delete(draftId); } catch { /* ignore */ }
+            setDraftId(null);
+          }
           setDraftSavedAt(null);
           isDirtyRef.current = false;
           onDirtyChange?.(false);
         },
       };
     }
-  }, [saveDraft, ticket.id, saveDraftRef, onDirtyChange]);
+  }, [saveDraft, ticket.id, saveDraftRef, onDirtyChange, draftId]);
 
   // Warn on browser navigation/refresh while dirty
   useEffect(() => {
@@ -132,8 +163,11 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
     return () => window.removeEventListener('beforeunload', handler);
   }, []);
 
-  const clearDraftStorage = () => {
-    localStorage.removeItem(DRAFT_KEY(ticket.id));
+  const clearDraftStorage = async () => {
+    if (draftId) {
+      try { await base44.entities.EmailDraft.delete(draftId); } catch { /* ignore */ }
+      setDraftId(null);
+    }
     setDraftSavedAt(null);
     setDirty(false);
   };
