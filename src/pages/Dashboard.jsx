@@ -417,8 +417,8 @@ export default function Dashboard() {
                 .board-height-wrap [data-kanban-column] {
                   height: 100%;
                   max-height: 100%;
-                  /* Responsive width: w-72 on small, w-80 on md+ */
-                  width: 18rem;
+                  /* Responsive width: w-72 on small, w-80 on md+ (override Master's w-80) */
+                  width: 18rem !important;
                   backdrop-filter: blur(24px);
                   -webkit-backdrop-filter: blur(24px);
                   box-shadow: 0 8px 32px rgba(0,0,0,0.06);
@@ -426,7 +426,14 @@ export default function Dashboard() {
                   animation: column-fade-in 0.4s ease-out;
                 }
                 @media (min-width: 768px) {
-                  .board-height-wrap [data-kanban-column] { width: 20rem; }
+                  .board-height-wrap [data-kanban-column] { width: 20rem !important; }
+                }
+
+                /* ===== Empty-state text — light over column tint ===== */
+                .board-height-wrap [data-kanban-column] > div:last-child > div.text-center {
+                  color: rgba(255,255,255,0.85) !important;
+                  font-weight: 500;
+                  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
                 }
                 @keyframes column-fade-in {
                   from { opacity: 0; transform: translateY(8px); }
