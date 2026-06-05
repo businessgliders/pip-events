@@ -1,5 +1,4 @@
-import { Users, Calendar, Mail, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Users, Mail, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const EVENT_TYPE_EMOJI = {
@@ -10,8 +9,6 @@ const EVENT_TYPE_EMOJI = {
   'Private Class': '🧘‍♀️',
   'Other': '✨',
 };
-
-const STATUS_OPTIONS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'Hosted', 'No Response'];
 
 // Days-until-event → label + color
 function daysUntilInfo(eventDateStr) {
@@ -46,13 +43,6 @@ function formatRelativeTime(dateString) {
   const diffDays = Math.floor(diffHrs / 24);
   if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function initialsColor(email = '') {
-  let h = 0;
-  for (let i = 0; i < email.length; i++) h = email.charCodeAt(i) + ((h << 5) - h);
-  const hue = Math.abs(h) % 360;
-  return `hsl(${hue}, 60%, 55%)`;
 }
 
 function formatEventDate(eventDate) {
@@ -96,34 +86,31 @@ function CalendarDateBlock({ eventDate, size = 'md' }) {
   );
 }
 
-export default function TicketCard({ ticket, onStatusChange, onClick, isDragging, isHighlighted, viewMode, unreadCount = 0 }) {
+/**
+ * TicketCardContent — spoke-specific (pip-events) card body rendered inside
+ * MasterKanbanCard via the `renderCardContent` prop. All event-domain UI
+ * (calendar date block, days-until pill, event-type emoji, guest count,
+ * unread mail badge) lives here, not in Master.
+ */
+export default function TicketCardContent({ ticket, viewMode, unreadCount = 0 }) {
   const emoji = EVENT_TYPE_EMOJI[ticket.event_type] || '✨';
   const ticketTag = ticket.ticket_number ? `#${ticket.ticket_number}` : `#${ticket.id?.slice(-6)}`;
   const daysInfo = daysUntilInfo(ticket.event_date);
   const hasUnread = unreadCount > 0;
 
   return (
-    <div
-      onClick={() => onClick && onClick(ticket)}
-      className={`relative overflow-hidden backdrop-blur-md bg-white/40 border border-white/40 rounded-xl p-2 md:p-4 group ${
-        isDragging
-          ? 'shadow-2xl bg-white/90 cursor-grabbing ring-4 ring-white/60'
-          : isHighlighted
-          ? 'shadow-2xl bg-white/70 ring-4 ring-yellow-400/50 animate-shake cursor-grab transition-all'
-          : 'hover:bg-white/50 shadow-lg hover:shadow-xl cursor-grab transition-all'
-      }`}
-    >
+    <div className="relative">
       {/* Watermark — status in category view */}
       {viewMode === 'category' && (
-        <span className="pointer-events-none absolute top-1 right-2 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-900/10">
+        <span className="pointer-events-none absolute -top-1 right-2 text-[10px] md:text-xs font-black uppercase tracking-wider text-gray-900/10">
           {ticket.status}
         </span>
       )}
 
-      {/* Unread email badge — moved to top-left to avoid the calendar date block */}
+      {/* Unread email badge */}
       {hasUnread && (
         <span
-          className="absolute top-2 left-2 inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[10px] font-bold text-white shadow-md z-10 animate-pulse-soft"
+          className="absolute -top-1 left-0 inline-flex items-center gap-1 h-5 px-1.5 rounded-full text-[10px] font-bold text-white shadow-md z-10 animate-pulse-soft"
           style={{ background: '#e86c84', border: '1px solid rgba(255,255,255,0.6)' }}
           title={`${unreadCount} unread message${unreadCount === 1 ? '' : 's'}`}
         >
@@ -133,7 +120,7 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       )}
 
       {/* Calendar date block — absolute top-right */}
-      <div className="absolute top-2 right-2 z-10">
+      <div className="absolute top-0 right-0 z-10">
         <CalendarDateBlock eventDate={ticket.event_date} size="sm" />
       </div>
 
@@ -171,13 +158,13 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
           ) : null}
         </div>
 
-        <div className="mt-2 flex items-end justify-between gap-2">
+        <div className="mt-2 flex items-end justify-between gap-2 pr-12">
           <span className="text-[11px] text-gray-500">{formatRelativeTime(ticket.submitted_date || ticket.created_date)}</span>
         </div>
 
         {/* Days-left pill bottom-right */}
         {daysInfo && (
-          <div className="absolute bottom-2 right-2">
+          <div className="mt-2 flex justify-end">
             <span
               className="inline-flex items-center gap-1 h-5 px-2 rounded-full text-[10px] font-semibold flex-shrink-0 text-white shadow-sm"
               style={{ background: daysInfo.color }}
@@ -191,12 +178,6 @@ export default function TicketCard({ ticket, onStatusChange, onClick, isDragging
       </div>
 
       <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-        .animate-shake { animation: shake 0.5s ease-in-out 3; }
         @keyframes pulse-soft {
           0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232,108,132,0.6); }
           50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(232,108,132,0); }

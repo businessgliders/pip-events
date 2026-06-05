@@ -1,9 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import { DragDropContext } from '@hello-pangea/dnd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
-import KanbanColumn from '../components/board/KanbanColumn';
+import MasterKanbanBoard from '../components/master-kanban/MasterKanbanBoard';
+import TicketCardContent from '../components/board/TicketCardContent';
+import { COLUMN_COLOR_CLASSES, COLUMN_HEADER_CLASSES, DEFAULT_COLOR, DEFAULT_HEADER } from '../components/board/columnTheme';
 import HostedSidePanel from '../components/board/HostedSidePanel';
 import ArchivedTicketsList from '../components/board/ArchivedTicketsList';
 import StatusChangeDialog from '../components/board/StatusChangeDialog';
@@ -377,23 +378,32 @@ export default function Dashboard() {
           ) : view === 'calendar' ? (
             <CalendarView requests={activeTickets} onSelect={setSelectedRequest} />
           ) : (
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="grid gap-2 md:gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-                {BOARD_COLUMNS.map(col => (
-                  <KanbanColumn
-                    key={col}
-                    status={col}
-                    tickets={ticketsByColumn[col] || []}
-                    onStatusChange={handleStatusChangeFromMenu}
-                    onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
-                    isLoading={isLoading}
-                    highlightedTicketId={highlightedTicketId}
+            <>
+              <MasterKanbanBoard
+                columns={BOARD_COLUMNS.map(col => ({
+                  status: col,
+                  tickets: ticketsByColumn[col] || [],
+                  colorClasses: COLUMN_COLOR_CLASSES[col] || DEFAULT_COLOR,
+                  headerClasses: COLUMN_HEADER_CLASSES[col] || DEFAULT_HEADER,
+                  isDimmed: col === 'Closed',
+                  emptyLabel: 'No inquiries',
+                }))}
+                onDragEnd={handleDragEnd}
+                isLoading={isLoading}
+                highlightedTicketId={highlightedTicketId}
+                unreadByTicket={unreadCountByTicket}
+                onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
+                renderCardContent={(ticket) => (
+                  <TicketCardContent
+                    ticket={ticket}
                     viewMode="status"
-                    onArchiveAll={col === 'Closed' ? handleArchiveAll : undefined}
-                    unreadCountByTicket={unreadCountByTicket}
+                    unreadCount={unreadCountByTicket[ticket.id] || 0}
                   />
-                ))}
-              </div>
+                )}
+                getActions={(status) =>
+                  status === 'Closed' ? { onArchiveAll: handleArchiveAll } : {}
+                }
+              />
               <HostedSidePanel
                 tickets={ticketsByColumn['Hosted'] || []}
                 onStatusChange={handleStatusChangeFromMenu}
@@ -401,7 +411,7 @@ export default function Dashboard() {
                 highlightedTicketId={highlightedTicketId}
                 unreadCountByTicket={unreadCountByTicket}
               />
-            </DragDropContext>
+            </>
           )}
         </div>
 

@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import { useState } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-import TicketCard from './TicketCard';
+import TicketCardContent from './TicketCardContent';
 
 export default function HostedSidePanel({
   tickets = [],
@@ -92,15 +92,22 @@ export default function HostedSidePanel({
                               {...prov.dragHandleProps}
                               style={prov.draggableProps.style}
                             >
-                              <TicketCard
-                                ticket={ticket}
-                                onStatusChange={onStatusChange}
-                                onClick={onTicketClick}
-                                isDragging={snap.isDragging}
-                                isHighlighted={highlightedTicketId === ticket.id}
-                                viewMode="status"
-                                unreadCount={unreadCountByTicket[ticket.id] || 0}
-                              />
+                              <div
+                                onClick={() => onTicketClick && onTicketClick(ticket)}
+                                className={`relative overflow-hidden backdrop-blur-md bg-white/40 border border-white/40 rounded-xl p-2 md:p-4 group ${
+                                  snap.isDragging
+                                    ? 'shadow-2xl bg-white/90 cursor-grabbing ring-4 ring-white/60'
+                                    : highlightedTicketId === ticket.id
+                                    ? 'shadow-2xl bg-white/70 ring-4 ring-yellow-400/50 cursor-grab transition-all'
+                                    : 'hover:bg-white/50 shadow-lg hover:shadow-xl cursor-grab transition-all'
+                                }`}
+                              >
+                                <TicketCardContent
+                                  ticket={ticket}
+                                  viewMode="status"
+                                  unreadCount={unreadCountByTicket[ticket.id] || 0}
+                                />
+                              </div>
                             </div>
                           );
                           return snap.isDragging ? ReactDOM.createPortal(card, document.body) : card;
