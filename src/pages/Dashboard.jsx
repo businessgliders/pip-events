@@ -379,7 +379,9 @@ export default function Dashboard() {
             <CalendarView requests={activeTickets} onSelect={setSelectedRequest} />
           ) : (
             <>
+              <div className="board-height-wrap">
               <MasterKanbanBoard
+                className="h-full"
                 columns={BOARD_COLUMNS.map(col => ({
                   status: col,
                   tickets: ticketsByColumn[col] || [],
@@ -404,6 +406,13 @@ export default function Dashboard() {
                   status === 'Closed' ? { onArchiveAll: handleArchiveAll } : {}
                 }
               />
+              </div>
+              <style>{`
+                .board-height-wrap { height: calc(100vh - 220px); overflow: hidden; }
+                .board-height-wrap > div { height: 100%; }
+                .board-height-wrap > div > div[class*="overflow-x-auto"] { height: 100%; padding-bottom: 0; }
+                .board-height-wrap [data-kanban-column] { height: 100%; max-height: 100%; }
+              `}</style>
               <HostedSidePanel
                 tickets={ticketsByColumn['Hosted'] || []}
                 onStatusChange={handleStatusChangeFromMenu}
