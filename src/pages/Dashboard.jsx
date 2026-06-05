@@ -408,35 +408,72 @@ export default function Dashboard() {
               />
               </div>
               <style>{`
-                /* Bounded board height so columns scroll internally */
+                /* ===== Bounded board height so columns scroll internally ===== */
                 .board-height-wrap { height: calc(100vh - 220px); overflow: hidden; }
                 .board-height-wrap > div { height: 100%; }
                 .board-height-wrap > div > div[class*="overflow-x-auto"] { height: 100%; padding-bottom: 0; }
-                .board-height-wrap [data-kanban-column] { height: 100%; max-height: 100%; }
 
-                /* Restore pre-port glassmorphism: stronger blur on columns */
+                /* ===== Pre-port column chrome ===== */
                 .board-height-wrap [data-kanban-column] {
+                  height: 100%;
+                  max-height: 100%;
+                  /* Responsive width: w-72 on small, w-80 on md+ */
+                  width: 18rem;
                   backdrop-filter: blur(24px);
                   -webkit-backdrop-filter: blur(24px);
-                  box-shadow: 0 8px 32px rgba(255,255,255,0.1);
+                  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+                  overflow: hidden;
+                  animation: column-fade-in 0.4s ease-out;
+                }
+                @media (min-width: 768px) {
+                  .board-height-wrap [data-kanban-column] { width: 20rem; }
+                }
+                @keyframes column-fade-in {
+                  from { opacity: 0; transform: translateY(8px); }
+                  to   { opacity: 1; transform: translateY(0); }
                 }
 
-                /* Restore translucent glassy cards (Master ships opaque bg-white) */
-                .board-height-wrap [data-kanban-column] [data-kanban-column] {
-                  /* no-op — guards against nested matches */
+                /* ===== Header — white text on saturated tint ===== */
+                .board-height-wrap [data-kanban-column] > div:first-child {
+                  backdrop-filter: blur(8px);
+                  -webkit-backdrop-filter: blur(8px);
                 }
-                .board-height-wrap [data-kanban-column] > div:last-child > div {
-                  /* targets the draggable card wrapper inside the droppable */
+                .board-height-wrap [data-kanban-column] > div:first-child h3 {
+                  color: white !important;
+                  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+                  font-weight: 600;
+                  font-size: 0.875rem;
+                  letter-spacing: 0.01em;
                 }
+                .board-height-wrap [data-kanban-column] > div:first-child h3 + span {
+                  background: rgba(255,255,255,0.4) !important;
+                  color: white !important;
+                  font-weight: 700;
+                  backdrop-filter: blur(4px);
+                }
+
+                /* ===== Translucent glassy cards (Master ships opaque bg-white) ===== */
                 .board-height-wrap .bg-white {
                   background: rgba(255,255,255,0.55) !important;
                   backdrop-filter: blur(12px);
                   -webkit-backdrop-filter: blur(12px);
                   border-color: rgba(255,255,255,0.5) !important;
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+                  transition: all 0.2s ease;
                 }
                 .board-height-wrap .bg-white:hover {
-                  background: rgba(255,255,255,0.7) !important;
+                  background: rgba(255,255,255,0.75) !important;
+                  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+                  transform: translateY(-1px);
                 }
+
+                /* ===== Custom scrollbar inside columns ===== */
+                .board-height-wrap [data-kanban-column] > div:last-child::-webkit-scrollbar { width: 6px; }
+                .board-height-wrap [data-kanban-column] > div:last-child::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
+                .board-height-wrap [data-kanban-column] > div:last-child::-webkit-scrollbar-thumb {
+                  background: rgba(255,255,255,0.4); border-radius: 8px;
+                }
+                .board-height-wrap [data-kanban-column] > div:last-child::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
               `}</style>
               <HostedSidePanel
                 tickets={ticketsByColumn['Hosted'] || []}
