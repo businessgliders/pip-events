@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import { useState } from 'react';
-import { Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import TicketCardContent from './TicketCardContent';
 
@@ -10,6 +10,7 @@ export default function HostedSidePanel({
   onTicketClick,
   highlightedTicketId,
   unreadCountByTicket = {},
+  onDragEnd,
 }) {
   const [open, setOpen] = useState(false);
   const count = tickets.length;
@@ -70,6 +71,7 @@ export default function HostedSidePanel({
               </div>
             </div>
 
+            <DragDropContext onDragEnd={onDragEnd || (() => {})}>
             <Droppable droppableId="Hosted">
               {(provided, snapshot) => (
                 <div
@@ -119,6 +121,7 @@ export default function HostedSidePanel({
                 </div>
               )}
             </Droppable>
+            </DragDropContext>
           </>
         )}
 
