@@ -408,10 +408,35 @@ export default function Dashboard() {
               />
               </div>
               <style>{`
+                /* Bounded board height so columns scroll internally */
                 .board-height-wrap { height: calc(100vh - 220px); overflow: hidden; }
                 .board-height-wrap > div { height: 100%; }
                 .board-height-wrap > div > div[class*="overflow-x-auto"] { height: 100%; padding-bottom: 0; }
                 .board-height-wrap [data-kanban-column] { height: 100%; max-height: 100%; }
+
+                /* Restore pre-port glassmorphism: stronger blur on columns */
+                .board-height-wrap [data-kanban-column] {
+                  backdrop-filter: blur(24px);
+                  -webkit-backdrop-filter: blur(24px);
+                  box-shadow: 0 8px 32px rgba(255,255,255,0.1);
+                }
+
+                /* Restore translucent glassy cards (Master ships opaque bg-white) */
+                .board-height-wrap [data-kanban-column] [data-kanban-column] {
+                  /* no-op — guards against nested matches */
+                }
+                .board-height-wrap [data-kanban-column] > div:last-child > div {
+                  /* targets the draggable card wrapper inside the droppable */
+                }
+                .board-height-wrap .bg-white {
+                  background: rgba(255,255,255,0.55) !important;
+                  backdrop-filter: blur(12px);
+                  -webkit-backdrop-filter: blur(12px);
+                  border-color: rgba(255,255,255,0.5) !important;
+                }
+                .board-height-wrap .bg-white:hover {
+                  background: rgba(255,255,255,0.7) !important;
+                }
               `}</style>
               <HostedSidePanel
                 tickets={ticketsByColumn['Hosted'] || []}

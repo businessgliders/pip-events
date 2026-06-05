@@ -94,12 +94,12 @@ export default function HostedSidePanel({
                             >
                               <div
                                 onClick={() => onTicketClick && onTicketClick(ticket)}
-                                className={`relative overflow-hidden backdrop-blur-md bg-white/40 border border-white/40 rounded-xl p-2 md:p-4 group ${
+                                className={`relative backdrop-blur-md border rounded-xl p-3 group transition-all ${
                                   snap.isDragging
-                                    ? 'shadow-2xl bg-white/90 cursor-grabbing ring-4 ring-white/60'
+                                    ? 'shadow-2xl bg-white/90 border-white/60 cursor-grabbing ring-4 ring-white/60'
                                     : highlightedTicketId === ticket.id
-                                    ? 'shadow-2xl bg-white/70 ring-4 ring-yellow-400/50 cursor-grab transition-all'
-                                    : 'hover:bg-white/50 shadow-lg hover:shadow-xl cursor-grab transition-all'
+                                    ? 'shadow-2xl bg-white/70 border-white/50 ring-4 ring-yellow-400/50 cursor-grab'
+                                    : 'bg-white/55 border-white/50 hover:bg-white/70 shadow-lg hover:shadow-xl cursor-grab'
                                 }`}
                               >
                                 <TicketCardContent
