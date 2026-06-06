@@ -46,3 +46,10 @@ All files are fetched from `https://raw.githubusercontent.com/businessgliders/pi
 - Master Kanban files are READ-ONLY in spokes. Do not edit them locally.
 - Spoke-specific customizations go outside the master files.
 - `MASTER_KANBAN_VERSION` in `components/master-kanban/index.js` is your source of truth.
+
+---
+
+## Sync history
+
+- Master Kanban v0.1.1 synced 2026-06-06 from pip-hub
+- Master Kanban v0.1.0 synced (initial)
