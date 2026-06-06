@@ -31,6 +31,11 @@ export default function Dashboard() {
   const [focusComposer, setFocusComposer] = useState(false);
   const [pendingStatusChange, setPendingStatusChange] = useState(null);
   const [highlightedTicketId, setHighlightedTicketId] = useState(null);
+  // Local optimistic order overrides for same-column drag reorders.
+  // We use plain React state (not queryClient.setQueryData) because flushSync
+  // truly forces a synchronous re-render here, eliminating the 1-frame "old
+  // order" flash that @hello-pangea/dnd shows after clearing its drop transforms.
+  const [orderOverrides, setOrderOverrides] = useState({});
   const { unreadMessages, unreadCountByTicket, totalUnread, markAsRead } = useUnreadMessages(user?.email);
 
   const handleNotificationSelect = (ticket, messageId) => {
@@ -136,8 +141,13 @@ export default function Dashboard() {
     Object.keys(map).forEach(k => {
       const sortKey = k === 'In Conversations' ? 'updated_date' : 'submitted_date';
       map[k].sort((a, b) => {
-        const aMan = typeof a.manual_order === 'number' ? a.manual_order : null;
-        const bMan = typeof b.manual_order === 'number' ? b.manual_order : null;
+        // Local override (set synchronously on drop) wins, then persisted manual_order, then default sort.
+        const aMan = orderOverrides[a.id] !== undefined
+          ? orderOverrides[a.id]
+          : (typeof a.manual_order === 'number' ? a.manual_order : null);
+        const bMan = orderOverrides[b.id] !== undefined
+          ? orderOverrides[b.id]
+          : (typeof b.manual_order === 'number' ? b.manual_order : null);
         if (aMan !== null && bMan !== null) return aMan - bMan;
         if (aMan !== null) return -1; // manually-sorted cards float to top
         if (bMan !== null) return 1;
@@ -145,7 +155,7 @@ export default function Dashboard() {
       });
     });
     return map;
-  }, [activeTickets]);
+  }, [activeTickets, orderOverrides]);
 
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
@@ -164,22 +174,28 @@ export default function Dashboard() {
       const [moved] = reordered.splice(source.index, 1);
       reordered.splice(destination.index, 0, moved);
 
-      // Optimistic update — flushSync forces the re-order to paint in the same
-      // frame as @hello-pangea/dnd's drop animation, preventing a brief
-      // "snap-back" flicker before the new manual order takes effect.
+      // flushSync on plain React state guarantees the new order paints in the
+      // SAME frame @hello-pangea/dnd clears its drop transforms — no "old order"
+      // flash. (react-query setQueryData does NOT flush synchronously because
+      // notifyManager batches subscriber notifications.)
       const orderMap = {};
       reordered.forEach((t, i) => { orderMap[t.id] = i; });
       flushSync(() => {
-        queryClient.setQueryData(['eventRequests'], (old) =>
-          !old ? old : old.map(t => orderMap[t.id] !== undefined ? { ...t, manual_order: orderMap[t.id] } : t)
-        );
+        setOrderOverrides(prev => ({ ...prev, ...orderMap }));
       });
 
-      // Persist
+      // Persist in background, then invalidate. Keep the local override in
+      // place until refetched data confirms the new order (so there's no flash
+      // between override-cleared and cache-updated).
       await Promise.all(
         reordered.map((t, i) => base44.entities.EventRequest.update(t.id, { manual_order: i }))
       );
-      queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
+      await queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
+      setOrderOverrides(prev => {
+        const next = { ...prev };
+        Object.keys(orderMap).forEach(id => { delete next[id]; });
+        return next;
+      });
       return;
     }
 
