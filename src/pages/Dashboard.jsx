@@ -300,7 +300,7 @@ export default function Dashboard() {
                 href="/RequestForm"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm text-white hover:opacity-90"
+                className="hidden md:flex w-10 h-10 rounded-full items-center justify-center transition-colors shadow-sm text-white hover:opacity-90"
                 style={{ background: '#f1889b' }}
                 title="New request (opens in new tab)"
               >
