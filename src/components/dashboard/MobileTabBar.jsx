@@ -6,20 +6,20 @@ import UserMenu from './UserMenu';
  * Reserves safe-area space for the home indicator via env(safe-area-inset-bottom).
  * Home (logo), Search, Archived, Profile (UserMenu context menu).
  */
-export default function MobileTabBar({ activeView, onHome, onFocusSearch, onArchive }) {
+export default function MobileTabBar({ activeView, searchActive = false, onHome, onFocusSearch, onArchive }) {
   const items = [
     {
       key: 'home',
       label: 'Home',
       type: 'logo',
-      active: activeView === 'board',
+      active: activeView === 'board' && !searchActive,
       onClick: onHome,
     },
     {
       key: 'search',
       label: 'Search',
       Icon: Search,
-      active: false,
+      active: searchActive,
       onClick: onFocusSearch,
     },
     {

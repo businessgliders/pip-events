@@ -26,6 +26,7 @@ export default function Dashboard() {
   const { user, isAuthenticated, navigateToLogin } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
   const searchInputRef = useRef(null);
   const [view, setView] = useState('board'); // 'board' | 'calendar' | 'archive'
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -365,7 +366,9 @@ export default function Dashboard() {
                   placeholder="Search tickets..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-full text-sm bg-white/80 focus:bg-white border-0 focus:outline-none focus:ring-2 focus:ring-white/60 placeholder:text-gray-400"
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setSearchFocused(false)}
+                  className="w-full pl-9 pr-3 py-2 rounded-full text-sm bg-white/80 focus:bg-white border-0 focus:outline-none focus:ring-2 focus:ring-pink-300 placeholder:text-gray-400 transition-shadow"
                   style={{ color: '#5a3535' }}
                 />
               </div>
@@ -596,6 +599,7 @@ export default function Dashboard() {
 
       <MobileTabBar
         activeView={view}
+        searchActive={searchFocused || !!search}
         onHome={() => {
           setView('board');
           setSearch('');
