@@ -51,6 +51,7 @@ All files are fetched from `https://raw.githubusercontent.com/businessgliders/pi
 
 ## Sync history
 
+- Master Kanban v0.1.3 synced 2026-06-06 from pip-hub — responsive default column width (`w-[42vw] md:w-72 lg:w-80 h-full`) + new `boardHeightClasses` prop on MasterKanbanBoard for bounded scroll row. Back-compatible. Files: `index.jsx`, `MasterKanbanBoard.jsx`, `MasterKanbanColumn.jsx`.
 - Master Kanban v0.1.2 synced 2026-06-06 from pip-hub
 - Master Kanban v0.1.1 synced 2026-06-06 from pip-hub
 - Master Kanban v0.1.0 synced (initial)
