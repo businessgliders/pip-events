@@ -124,21 +124,8 @@ export default function TicketCardContent({ ticket, viewMode, unreadCount = 0 })
         <CalendarDateBlock eventDate={ticket.event_date} size="sm" />
       </div>
 
-      {/* Mobile compact */}
-      <div className="md:hidden">
-        <span className="text-[10px] text-gray-400 font-bold block">{ticketTag}</span>
-        <div className="flex items-start gap-2 mt-0.5">
-          <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            <span className="text-base flex-shrink-0">{emoji}</span>
-            <p className="text-xs font-semibold whitespace-nowrap" style={{ color: '#5a3535' }}>
-              {ticket.full_name}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop */}
-      <div className="hidden md:block">
+      {/* Full card details (all viewports) */}
+      <div>
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[10px] text-gray-400 font-bold">{ticketTag}</span>
           <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/60 border-pink-200 text-pink-700 flex-shrink-0">
