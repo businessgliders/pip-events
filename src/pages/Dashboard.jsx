@@ -491,18 +491,21 @@ export default function Dashboard() {
                 }
 
                 /* ===== Translucent glassy cards (Master ships opaque bg-white) ===== */
+                /* IMPORTANT: do NOT transition transform / position properties — */
+                /* @hello-pangea/dnd manipulates transform during drag + drop, and */
+                /* a CSS transition on transform causes a visible "slide-back" flicker */
+                /* after onDragEnd fires. Keep transitions to colors + shadow only. */
                 .board-height-wrap .bg-white {
                   background: rgba(255,255,255,0.55) !important;
                   backdrop-filter: blur(12px);
                   -webkit-backdrop-filter: blur(12px);
                   border-color: rgba(255,255,255,0.5) !important;
                   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-                  transition: all 0.2s ease;
+                  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
                 }
                 .board-height-wrap .bg-white:hover {
                   background: rgba(255,255,255,0.75) !important;
                   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-                  transform: translateY(-1px);
                 }
 
                 /* ===== Custom scrollbar inside columns ===== */
