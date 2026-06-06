@@ -12,7 +12,7 @@ All files are fetched from `https://raw.githubusercontent.com/businessgliders/pi
 
 | File | Source URL |
 |---|---|
-| `components/master-kanban/index.js` | `raw.githubusercontent.com/businessgliders/pip-hub/main/src/components/master-kanban/index.js` |
+| `components/master-kanban/index.jsx` | `raw.githubusercontent.com/businessgliders/pip-hub/main/src/components/master-kanban/index.jsx` |
 | `components/master-kanban/MasterKanbanBoard.jsx` | `raw.githubusercontent.com/businessgliders/pip-hub/main/src/components/master-kanban/MasterKanbanBoard.jsx` |
 | `components/master-kanban/MasterKanbanColumn.jsx` | `raw.githubusercontent.com/businessgliders/pip-hub/main/src/components/master-kanban/MasterKanbanColumn.jsx` |
 | `components/master-kanban/MasterKanbanCard.jsx` | `raw.githubusercontent.com/businessgliders/pip-hub/main/src/components/master-kanban/MasterKanbanCard.jsx` |
@@ -27,7 +27,7 @@ All files are fetched from `https://raw.githubusercontent.com/businessgliders/pi
 
 1. **Fetch all 8 files** from the URLs above and overwrite your local copies.
 
-2. **Read the changelog** in `components/master-kanban/index.js` (top of the file, after the version export). Note the current version you have and the new version you're syncing to.
+2. **Read the changelog** in `components/master-kanban/index.jsx` (top of the file, after the version export). Note the current version you have and the new version you're syncing to.
 
 3. **Check for BREAKING changes** in the changelog between your current version and the new one:
    - If any entry says `[BREAKING]` or `[⚠️ BREAKING]`, a callsite change is required.
@@ -45,7 +45,7 @@ All files are fetched from `https://raw.githubusercontent.com/businessgliders/pi
 
 - Master Kanban files are READ-ONLY in spokes. Do not edit them locally.
 - Spoke-specific customizations go outside the master files.
-- `MASTER_KANBAN_VERSION` in `components/master-kanban/index.js` is your source of truth.
+- `MASTER_KANBAN_VERSION` in `components/master-kanban/index.jsx` is your source of truth.
 
 ---
 
