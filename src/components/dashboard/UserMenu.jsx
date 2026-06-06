@@ -18,17 +18,21 @@ function getInitials(name, email) {
   return source.slice(0, 2).toUpperCase();
 }
 
-export default function UserMenu() {
+export default function UserMenu({ size = 'md' }) {
   const { user } = useAuth();
   if (!user) return null;
 
   const initials = getInitials(user.full_name, user.email);
+  const isSm = size === 'sm';
+  const sizeClasses = isSm
+    ? 'w-6 h-6 text-[10px]'
+    : 'w-10 h-10 text-sm shadow-sm';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="w-10 h-10 rounded-full flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity text-white font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-white/60"
+          className={`${sizeClasses} rounded-full flex items-center justify-center hover:opacity-90 transition-opacity text-white font-semibold focus:outline-none focus:ring-2 focus:ring-white/60`}
           style={{ background: '#f1899b' }}
           title={user.full_name || user.email}
         >

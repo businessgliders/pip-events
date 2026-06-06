@@ -39,7 +39,7 @@ export default function MobileTabBar({ activeView, onHome, onFocusSearch, onArch
         boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
       }}
     >
-      <div className="flex items-end justify-around px-2 pt-1.5 pb-1 max-w-md mx-auto">
+      <div className="flex items-end justify-around px-2 pt-1 pb-0.5 max-w-md mx-auto">
         {items.map((item) => {
           const Icon = item.Icon;
           const color = item.active ? '#e86c84' : '#8a6a6a';
@@ -47,18 +47,17 @@ export default function MobileTabBar({ activeView, onHome, onFocusSearch, onArch
             <button
               key={item.key}
               onClick={item.onClick}
-              className="flex flex-col items-center justify-end gap-1 px-3 pt-1 pb-0.5 transition-colors active:scale-95"
+              className="flex flex-col items-center justify-end gap-0.5 px-3 py-0.5 transition-colors active:scale-95"
               style={{ color }}
             >
               {item.type === 'logo' ? (
                 <img
                   src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/719e48f6d_1e65b0238_PiPEvents.png"
                   alt=""
-                  className={`w-6 h-6 rounded-md object-cover ${item.active ? 'ring-2 ring-offset-1' : ''}`}
-                  style={item.active ? { '--tw-ring-color': '#e86c84' } : undefined}
+                  className="w-6 h-6 rounded-md object-cover"
                 />
               ) : (
-                <Icon className="w-[22px] h-[22px]" strokeWidth={item.active ? 2.5 : 2} />
+                <Icon className="w-6 h-6" strokeWidth={item.active ? 2.5 : 2} />
               )}
               <span className="text-[10px] font-semibold tracking-tight leading-none">
                 {item.label}
@@ -68,8 +67,8 @@ export default function MobileTabBar({ activeView, onHome, onFocusSearch, onArch
         })}
 
         {/* Profile — UserMenu provides the dropdown context menu */}
-        <div className="flex flex-col items-center justify-end gap-1 px-3 pt-1 pb-0.5">
-          <UserMenu />
+        <div className="flex flex-col items-center justify-end gap-0.5 px-3 py-0.5">
+          <UserMenu size="sm" />
           <span className="text-[10px] font-semibold tracking-tight leading-none" style={{ color: '#8a6a6a' }}>
             Profile
           </span>
