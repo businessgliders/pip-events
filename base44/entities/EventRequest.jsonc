@@ -162,6 +162,10 @@
       "default": false,
       "description": "Whether the request has been archived off the Kanban board"
     },
+    "manual_order": {
+      "type": "number",
+      "description": "Manual sort position within a column. Set when user drags to reorder; cleared when status changes."
+    },
     "status_history": {
       "type": "array",
       "description": "Audit log of status changes",

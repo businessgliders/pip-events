@@ -125,22 +125,24 @@ export default function Dashboard() {
     activeTickets.forEach(t => {
       if (map[t.status]) map[t.status].push(t);
     });
-    // Sort each column by most recent submission first
+    // Sort: manual_order (if set) wins; otherwise fall back to default sort.
+    // Default = newest submission first, except "In Conversations" = newest update first.
+    const defaultCmp = (a, b, key) => {
+      const aTime = new Date(a[key] || a.created_date || 0).getTime();
+      const bTime = new Date(b[key] || b.created_date || 0).getTime();
+      return bTime - aTime;
+    };
     Object.keys(map).forEach(k => {
+      const sortKey = k === 'In Conversations' ? 'updated_date' : 'submitted_date';
       map[k].sort((a, b) => {
-        const aTime = new Date(a.submitted_date || a.created_date || 0).getTime();
-        const bTime = new Date(b.submitted_date || b.created_date || 0).getTime();
-        return bTime - aTime;
+        const aMan = typeof a.manual_order === 'number' ? a.manual_order : null;
+        const bMan = typeof b.manual_order === 'number' ? b.manual_order : null;
+        if (aMan !== null && bMan !== null) return aMan - bMan;
+        if (aMan !== null) return -1; // manually-sorted cards float to top
+        if (bMan !== null) return 1;
+        return defaultCmp(a, b, sortKey);
       });
     });
-    // "In Conversations" sorted by most recently updated, newest at the top
-    if (map['In Conversations']) {
-      map['In Conversations'].sort((a, b) => {
-        const aTime = new Date(a.updated_date || a.created_date || 0).getTime();
-        const bTime = new Date(b.updated_date || b.created_date || 0).getTime();
-        return bTime - aTime;
-      });
-    }
     return map;
   }, [activeTickets]);
 
@@ -152,9 +154,31 @@ export default function Dashboard() {
     const ticket = activeTickets.find(t => t.id === draggableId);
     if (!ticket) return;
 
-    // status view — open dialog to capture note
     const newStatus = destination.droppableId;
-    if (ticket.status === newStatus) return;
+
+    // Same-column reorder → persist manual_order for every card in the column
+    if (ticket.status === newStatus) {
+      const columnTickets = ticketsByColumn[newStatus] || [];
+      const reordered = Array.from(columnTickets);
+      const [moved] = reordered.splice(source.index, 1);
+      reordered.splice(destination.index, 0, moved);
+
+      // Optimistic update so the card doesn't snap back during the network round-trip
+      const orderMap = {};
+      reordered.forEach((t, i) => { orderMap[t.id] = i; });
+      queryClient.setQueryData(['eventRequests'], (old) =>
+        !old ? old : old.map(t => orderMap[t.id] !== undefined ? { ...t, manual_order: orderMap[t.id] } : t)
+      );
+
+      // Persist
+      await Promise.all(
+        reordered.map((t, i) => base44.entities.EventRequest.update(t.id, { manual_order: i }))
+      );
+      queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
+      return;
+    }
+
+    // Cross-column drag → open status-change dialog (existing flow)
     setPendingStatusChange({
       ticketId: ticket.id,
       client_name: ticket.full_name,
@@ -180,6 +204,8 @@ export default function Dashboard() {
     const history = ticket?.status_history || [];
     await base44.entities.EventRequest.update(ticketId, {
       status: newStatus,
+      // Clear manual_order — old position is meaningless in the new column
+      manual_order: null,
       status_history: [
         ...history,
         { status: newStatus, note, name, timestamp: new Date().toISOString() },
