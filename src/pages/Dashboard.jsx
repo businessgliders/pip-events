@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
@@ -163,12 +164,16 @@ export default function Dashboard() {
       const [moved] = reordered.splice(source.index, 1);
       reordered.splice(destination.index, 0, moved);
 
-      // Optimistic update so the card doesn't snap back during the network round-trip
+      // Optimistic update — flushSync forces the re-order to paint in the same
+      // frame as @hello-pangea/dnd's drop animation, preventing a brief
+      // "snap-back" flicker before the new manual order takes effect.
       const orderMap = {};
       reordered.forEach((t, i) => { orderMap[t.id] = i; });
-      queryClient.setQueryData(['eventRequests'], (old) =>
-        !old ? old : old.map(t => orderMap[t.id] !== undefined ? { ...t, manual_order: orderMap[t.id] } : t)
-      );
+      flushSync(() => {
+        queryClient.setQueryData(['eventRequests'], (old) =>
+          !old ? old : old.map(t => orderMap[t.id] !== undefined ? { ...t, manual_order: orderMap[t.id] } : t)
+        );
+      });
 
       // Persist
       await Promise.all(
