@@ -472,6 +472,11 @@ export default function Dashboard() {
                   overflow: hidden;
                   animation: column-fade-in 0.4s ease-out;
                 }
+                /* Dimmed columns (e.g. Closed) return to full opacity on hover.
+                   Master ships transition-opacity on the shell, so this is smooth. */
+                .board-height-wrap [data-kanban-column].opacity-60:hover {
+                  opacity: 1;
+                }
                 @media (min-width: 768px) {
                   .board-height-wrap [data-kanban-column] { width: 20rem !important; }
                 }
