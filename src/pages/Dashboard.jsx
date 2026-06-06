@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -14,6 +14,7 @@ import CalendarView from '../components/dashboard/CalendarView';
 import WhatsNewSplash from '../components/dashboard/WhatsNewSplash';
 import NotificationCenter from '../components/dashboard/NotificationCenter';
 import UserMenu from '../components/dashboard/UserMenu';
+import MobileTabBar from '../components/dashboard/MobileTabBar';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
@@ -25,6 +26,7 @@ export default function Dashboard() {
   const { user, isAuthenticated, navigateToLogin } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
+  const searchInputRef = useRef(null);
   const [view, setView] = useState('board'); // 'board' | 'calendar' | 'archive'
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [highlightMessageId, setHighlightMessageId] = useState(null);
@@ -309,10 +311,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="relative" style={{ zIndex: 2 }}>
+      <div className="relative pb-[calc(72px+env(safe-area-inset-bottom,0px))] lg:pb-0" style={{ zIndex: 2 }}>
 
         {/* Sticky redesigned header */}
-        <div className="sticky top-0 z-30 px-4 md:px-8 pt-4 md:pt-8 pb-3">
+        <div className="sticky top-0 z-30 px-4 md:px-8 pb-3 pt-[calc(env(safe-area-inset-top,0px)+1rem)] md:pt-[calc(env(safe-area-inset-top,0px)+2rem)]">
           <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4 px-2">
             {/* Left — logo + counts */}
             <button
@@ -326,7 +328,7 @@ export default function Dashboard() {
                 alt="PIP Events"
                 className="w-11 h-11 rounded-xl object-cover shadow-sm flex-shrink-0"
               />
-              <div className="hidden sm:block text-sm font-medium leading-tight truncate text-left" style={{ color: '#5a3535' }}>
+              <div className="hidden lg:block text-sm font-medium leading-tight truncate text-left" style={{ color: '#5a3535' }}>
                 <span className="font-semibold">{activeTickets.length}</span> active request{activeTickets.length === 1 ? '' : 's'}
                 <span className="mx-1.5 opacity-50">•</span>
                 <span className="font-semibold">{(ticketsByColumn['New'] || []).length}</span> in New
@@ -347,16 +349,17 @@ export default function Dashboard() {
                 href="/RequestForm"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden md:flex w-10 h-10 rounded-full items-center justify-center transition-colors shadow-sm text-white hover:opacity-90"
+                className="hidden lg:flex w-10 h-10 rounded-full items-center justify-center transition-colors shadow-sm text-white hover:opacity-90"
                 style={{ background: '#f1889b' }}
                 title="New request (opens in new tab)"
               >
                 <Plus className="w-4 h-4" />
               </a>
 
-              <div className="relative flex-1 min-w-0 sm:w-64">
+              <div className="relative flex-1 min-w-0 lg:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#a07878' }} />
                 <input
+                  ref={searchInputRef}
                   placeholder="Search tickets..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
@@ -365,7 +368,7 @@ export default function Dashboard() {
                 />
               </div>
 
-              <div className="hidden md:inline-flex rounded-full overflow-hidden bg-white/70 shadow-sm">
+              <div className="hidden lg:inline-flex rounded-full overflow-hidden bg-white/70 shadow-sm">
                 <button
                   onClick={() => setView('board')}
                   className="px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition-colors"
@@ -390,7 +393,7 @@ export default function Dashboard() {
 
               <button
                 onClick={() => setView(view === 'archive' ? 'board' : 'archive')}
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm"
+                className="hidden lg:flex w-10 h-10 rounded-full items-center justify-center transition-colors shadow-sm"
                 style={{
                   background: view === 'archive' ? '#a855f7' : 'rgba(255,255,255,0.7)',
                 }}
@@ -457,6 +460,9 @@ export default function Dashboard() {
               <style>{`
                 /* ===== Bounded board height so columns scroll internally ===== */
                 .board-height-wrap { height: calc(100vh - 220px); overflow: hidden; }
+                @media (max-width: 1023px) {
+                  .board-height-wrap { height: calc(100vh - 220px - 72px - env(safe-area-inset-bottom, 0px)); }
+                }
                 .board-height-wrap > div { height: 100%; }
                 .board-height-wrap > div > div[class*="overflow-x-auto"] { height: 100%; padding-bottom: 0; }
 
@@ -583,6 +589,20 @@ export default function Dashboard() {
       />
 
       {isAllowed && <WhatsNewSplash />}
+
+      <MobileTabBar
+        activeView={view}
+        onHome={() => {
+          setView('board');
+          setSearch('');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onFocusSearch={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => searchInputRef.current?.focus(), 250);
+        }}
+        onArchive={() => setView(view === 'archive' ? 'board' : 'archive')}
+      />
 
     </div>
   );
