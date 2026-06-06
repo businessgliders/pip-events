@@ -337,13 +337,15 @@ export default function Dashboard() {
 
             {/* Right — actions */}
             <div className="ml-auto flex items-center gap-2 md:gap-3">
-              <NotificationCenter
-                unreadMessages={unreadMessages}
-                totalUnread={totalUnread}
-                tickets={tickets}
-                onSelect={handleNotificationSelect}
-                onMarkRead={markAsRead}
-              />
+              <div className="order-last lg:order-none">
+                <NotificationCenter
+                  unreadMessages={unreadMessages}
+                  totalUnread={totalUnread}
+                  tickets={tickets}
+                  onSelect={handleNotificationSelect}
+                  onMarkRead={markAsRead}
+                />
+              </div>
 
               <a
                 href="/RequestForm"
@@ -402,7 +404,9 @@ export default function Dashboard() {
                 <Archive className="w-4 h-4" style={{ color: view === 'archive' ? 'white' : '#5a3535' }} />
               </button>
 
-              <UserMenu />
+              <div className="hidden lg:block">
+                <UserMenu />
+              </div>
             </div>
           </div>
         </div>
