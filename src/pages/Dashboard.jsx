@@ -477,8 +477,7 @@ export default function Dashboard() {
                 .board-height-wrap [data-kanban-column] {
                   height: 100%;
                   max-height: 100%;
-                  /* Responsive width: w-72 on small, w-80 on md+ (override Master's w-80) */
-                  width: 18rem !important;
+                  /* Width owned by Master Kanban (v0.1.3+): w-[42vw] md:w-72 lg:w-80 */
                   backdrop-filter: blur(24px);
                   -webkit-backdrop-filter: blur(24px);
                   box-shadow: 0 8px 32px rgba(0,0,0,0.06);
@@ -489,9 +488,6 @@ export default function Dashboard() {
                    Master ships transition-opacity on the shell, so this is smooth. */
                 .board-height-wrap [data-kanban-column].opacity-60:hover {
                   opacity: 1;
-                }
-                @media (min-width: 768px) {
-                  .board-height-wrap [data-kanban-column] { width: 20rem !important; }
                 }
 
                 /* ===== Empty-state text — light over column tint ===== */
