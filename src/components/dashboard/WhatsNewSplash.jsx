@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
-import { X, Columns3, Check, ArrowRight, Sparkles } from 'lucide-react';
+import { X, LayoutGrid, Ghost, PartyPopper, Check, ArrowRight, Sparkles } from 'lucide-react';
 
-const STORAGE_KEY = 'pip_whatsnew_dismissed_v3_ghosted';
+const STORAGE_KEY = 'pip_whatsnew_dismissed_v4_swimlanes';
 const CAMPAIGN_END = new Date('2026-07-31T23:59:59Z');
 
 const FEATURES = [
   {
-    icon: Columns3,
+    icon: LayoutGrid,
+    title: 'Your Refreshed Board',
+    description: 'The board now has 5 main swimlanes — New, Quoted, Waiting for Payment, Confirmed, and Ghosted — plus a dedicated Hosted panel that slides in from the right edge. Everything has its own home.',
+    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/dc03c455f_generated_image.png',
+  },
+  {
+    icon: Ghost,
     title: 'New "Ghosted" Swimlane',
     description: 'Inquiries that go quiet now live in their own dedicated Ghosted column on the board — no more cluttering Hosted. Use the "Archive All" button in the column header to clear them out in one click when you\'re ready.',
     image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/a72bdcdbf_generated_image.png',
+  },
+  {
+    icon: PartyPopper,
+    title: '"Hosted" Now a Side Panel',
+    description: 'Confirmed events that have been hosted now live in a slide-out panel on the right edge of the board. Click the purple "HOSTED" tab to expand it and review past events without taking up board space.',
+    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/ac0461ebb_generated_image.png',
   },
 ];
 
