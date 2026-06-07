@@ -48,17 +48,18 @@ export default function MasterKanbanBoard({
 
   return (
     <div className={cn("relative", className)}>
-      {/* During touch drag: block manual finger-pan but ALLOW the library's
-          built-in auto-scroll when the card is held near an edge (top,
-          bottom, left, or right). The library uses preventDefault on
-          touchmove while dragging, so finger pan can't scroll anything —
-          only the library's edge-triggered auto-scroll can move the
-          board horizontally or a column vertically. */}
+      {/* Mirror mouse-drag exactly on touch: while a card is being dragged,
+          freeze every scroll container so ONLY the card moves with the
+          pointer (matches how mouse drag feels on desktop, where the page
+          and columns don't auto-pan). The library still re-orders cards
+          inside the list via placeholders. */}
       <style>{`
         body.dnd-dragging {
+          overflow: hidden !important;
           overscroll-behavior: none;
         }
         body.dnd-dragging [data-kanban-list] {
+          overflow: hidden !important;
           overscroll-behavior: contain;
         }
       `}</style>
