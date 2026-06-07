@@ -52,7 +52,7 @@ export default function MobileTabBar({ activeView, searchActive = false, onHome,
             >
               {item.type === 'logo' ? (
                 <img
-                  src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/719e48f6d_1e65b0238_PiPEvents.png"
+                  src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/e21e4f4e1_pip-events.png"
                   alt=""
                   className="w-6 h-6 rounded-md object-cover"
                 />
