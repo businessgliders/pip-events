@@ -48,11 +48,11 @@ export default function MasterKanbanBoard({
 
   return (
     <div className={cn("relative", className)}>
-      /* Mirror mouse-drag exactly on touch: while a card is being dragged,
-         freeze every scroll container so ONLY the card moves with the
-         pointer (matches how mouse drag feels on desktop, where the page
-         and columns don't auto-pan). The library still re-orders cards
-         inside the list via placeholders. */
+      {/* Mirror mouse-drag exactly on touch: while a card is being dragged,
+          freeze every scroll container so ONLY the card moves with the
+          pointer (matches how mouse drag feels on desktop, where the page
+          and columns don't auto-pan). The library still re-orders cards
+          inside the list via placeholders. */}
       <style>{`
         body.dnd-dragging {
           overflow: hidden !important;
