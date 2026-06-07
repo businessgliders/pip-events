@@ -49,6 +49,15 @@ export default function MasterKanbanBoard({
   return (
     <div className={cn("relative", className)}>
       <style>{`
+        /* While any card is being dragged, lock both the page and the
+           swimlane lists so nothing scrolls under the finger. Cards beside
+           the dragged card still shift up/down (library placeholders are
+           inside the list flow and unaffected by overflow-hidden). */
+        body.dnd-dragging {
+          overflow: hidden !important;
+          touch-action: none !important;
+          overscroll-behavior: none !important;
+        }
         body.dnd-dragging [data-kanban-list] {
           overflow: hidden !important;
           touch-action: none !important;
