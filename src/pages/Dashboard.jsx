@@ -246,6 +246,16 @@ export default function Dashboard() {
     queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
   };
 
+  const handleArchiveAllGhosted = async () => {
+    const ghosted = ticketsByColumn['Ghosted'] || [];
+    if (ghosted.length === 0) return;
+    if (!confirm(`Archive all ${ghosted.length} Ghosted ticket${ghosted.length === 1 ? '' : 's'}?`)) return;
+    await Promise.all(
+      ghosted.map(t => base44.entities.EventRequest.update(t.id, { archived: true }))
+    );
+    queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
+  };
+
   if (!isAllowed) {
     return (
       <div className="min-h-screen relative flex items-center justify-center" style={{ background: 'rgba(248, 210, 220, 0.9)' }}>
@@ -445,6 +455,7 @@ export default function Dashboard() {
                 }))}
                 onDragEnd={handleDragEnd}
                 isLoading={isLoading}
+                getActions={(status) => status === 'Ghosted' ? { onArchiveAll: handleArchiveAllGhosted } : {}}
                 highlightedTicketId={highlightedTicketId}
                 unreadByTicket={unreadCountByTicket}
                 onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
