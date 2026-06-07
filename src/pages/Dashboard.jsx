@@ -464,7 +464,12 @@ export default function Dashboard() {
                   .board-height-wrap { height: calc(100vh - 120px - 56px - env(safe-area-inset-bottom, 0px)); }
                 }
                 .board-height-wrap > div { height: 100%; }
-                .board-height-wrap > div > div[class*="overflow-x-auto"] { height: 100%; padding-bottom: 0; }
+                .board-height-wrap > div > div[class*="overflow-x-auto"] {
+                  height: 100%;
+                  padding-bottom: 0;
+                  padding-left: 0 !important;
+                  padding-right: 0 !important;
+                }
 
                 /* ===== Pre-port column chrome ===== */
                 .board-height-wrap [data-kanban-column] {
