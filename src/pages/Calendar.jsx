@@ -3,8 +3,10 @@ import { Lock } from 'lucide-react';
 import HlsVideo from '../components/HlsVideo';
 import CalendarGrid from '../components/calendar/CalendarGrid';
 import GlassNav from '../components/layout/GlassNav';
+import usePageTitle from '@/hooks/usePageTitle';
 
 export default function Calendar() {
+  usePageTitle('Calendar');
   return (
     <div className="min-h-screen relative">
       <HlsVideo

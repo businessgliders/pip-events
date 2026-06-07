@@ -2,8 +2,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import HlsVideo from '../components/HlsVideo';
 import Navbar from '../components/layout/Navbar';
 import { Check, Mail, Sparkles } from 'lucide-react';
+import usePageTitle from '@/hooks/usePageTitle';
 
 export default function Confirmation() {
+  usePageTitle('Request Received');
   const { state } = useLocation();
   const navigate = useNavigate();
   const name = state?.name || 'there';

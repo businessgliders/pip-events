@@ -6,6 +6,7 @@ import GlassNav from '../components/layout/GlassNav';
 import AddonsStep from '../components/requestForm/AddonsStep';
 import { DEFAULT_PRESELECTED_ADDONS } from '../components/requestForm/addonsConfig';
 import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronRight, ChevronLeft, Check, Lock } from 'lucide-react';
+import usePageTitle from '@/hooks/usePageTitle';
 
 const EVENT_TYPE_ICONS = {
   'Birthday': Cake,
@@ -57,6 +58,7 @@ function SectionHeader({ icon: Icon, title, subtitle }) {
 }
 
 export default function RequestForm() {
+  usePageTitle('Submit a Request');
   const params = new URLSearchParams(window.location.search);
   const preDate = params.get('date') || '';
   const preType = params.get('eventType') || '';

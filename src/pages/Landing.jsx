@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CalendarDays, Sparkles, Users, Heart, ArrowDown, Lock } from 'lucide-react';
 import HlsVideo from '../components/HlsVideo';
 import CalendarGrid from '../components/calendar/CalendarGrid';
+import usePageTitle from '@/hooks/usePageTitle';
 
 const features = [
   {
@@ -28,6 +29,7 @@ const features = [
 ];
 
 export default function Landing() {
+  usePageTitle('Events');
   const calendarRef = useRef(null);
 
   const scrollToCalendar = () => {
