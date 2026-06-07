@@ -105,12 +105,19 @@ export default function HostedSidePanel({
                 </div>
               </div>
 
-              <DragDropContext onDragEnd={onDragEnd || (() => {})}>
+              <DragDropContext
+                onDragStart={() => document.body.classList.add('dnd-dragging')}
+                onDragEnd={(r) => {
+                  document.body.classList.remove('dnd-dragging');
+                  (onDragEnd || (() => {}))(r);
+                }}
+              >
                 <Droppable droppableId={status}>
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
+                      data-kanban-list
                       className={`flex-1 overflow-y-auto p-2 md:p-3 space-y-2 md:space-y-3 custom-scrollbar transition-colors ${
                         snapshot.isDraggingOver ? 'bg-white/10' : ''
                       }`}

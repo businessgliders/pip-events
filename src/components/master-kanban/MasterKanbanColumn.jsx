@@ -130,6 +130,7 @@ export default function MasterKanbanColumn({
           <div
             ref={dropProvided.innerRef}
             {...dropProvided.droppableProps}
+            data-kanban-list
             className={cn(
               listClasses,
               dropSnapshot.isDraggingOver && "bg-white/30"
