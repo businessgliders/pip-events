@@ -11,6 +11,12 @@ function getClosedTimestamp(ticket) {
   return ticket.created_date;
 }
 
+function getEventTimestamp(ticket) {
+  // Group archive by the event's requested date; fall back to closed date if missing.
+  if (ticket.event_date) return `${ticket.event_date}T12:00:00`;
+  return getClosedTimestamp(ticket);
+}
+
 export default function ArchivedTicketsList({ tickets, cancelledTickets = [], onView, onRestore }) {
   const [tab, setTab] = useState('archived'); // 'archived' | 'cancelled'
   const activeTickets = tab === 'archived' ? tickets : cancelledTickets;
@@ -19,7 +25,7 @@ export default function ArchivedTicketsList({ tickets, cancelledTickets = [], on
   const grouped = useMemo(() => {
     const byYear = {};
     activeTickets.forEach(t => {
-      const ts = getClosedTimestamp(t);
+      const ts = getEventTimestamp(t);
       if (!ts) return;
       const d = new Date(ts);
       const year = d.getFullYear();
@@ -163,7 +169,11 @@ export default function ArchivedTicketsList({ tickets, cancelledTickets = [], on
                         <Badge variant="outline" className="text-[10px] py-0 px-1.5 bg-white/60">{t.status}</Badge>
                       </div>
                       <p className="text-xs text-gray-600 truncate mt-0.5">{t.email}</p>
-                      <p className="text-[10px] text-gray-500 mt-0.5">Closed {new Date(getClosedTimestamp(t)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">
+                        {t.event_date
+                          ? `Event ${new Date(t.event_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                          : `Closed ${new Date(getClosedTimestamp(t)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`}
+                      </p>
                     </div>
                     <div className="flex gap-2 flex-shrink-0">
                       <Button size="sm" variant="outline" className="h-8 bg-white/70" onClick={() => onView(t)}>View</Button>
