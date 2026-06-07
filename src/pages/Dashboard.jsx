@@ -466,9 +466,9 @@ export default function Dashboard() {
               </div>
               <style>{`
                 /* ===== Bounded board height so columns scroll internally ===== */
-                .board-height-wrap { height: calc(100vh - 220px); overflow: hidden; }
+                .board-height-wrap { height: calc(100vh - 140px); overflow: hidden; }
                 @media (max-width: 1023px) {
-                  .board-height-wrap { height: calc(100vh - 220px - 56px - env(safe-area-inset-bottom, 0px)); }
+                  .board-height-wrap { height: calc(100vh - 120px - 56px - env(safe-area-inset-bottom, 0px)); }
                 }
                 .board-height-wrap > div { height: 100%; }
                 .board-height-wrap > div > div[class*="overflow-x-auto"] { height: 100%; padding-bottom: 0; }
