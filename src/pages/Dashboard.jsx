@@ -23,7 +23,7 @@ const STATUS_COLUMNS = ['New', 'In Conversations', 'Waiting for Payment', 'Confi
 const BOARD_COLUMNS = STATUS_COLUMNS.filter(c => c !== 'Hosted');
 
 export default function Dashboard() {
-  const { user, isAuthenticated, navigateToLogin } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -47,11 +47,6 @@ export default function Dashboard() {
     markAsRead(messageId);
   };
 
-  // Auth gate — restrict to studio domain
-  useEffect(() => {
-    if (!isAuthenticated) navigateToLogin();
-  }, [isAuthenticated, navigateToLogin]);
-
   // Document title
   useEffect(() => {
     const prev = document.title;
@@ -63,7 +58,6 @@ export default function Dashboard() {
     queryKey: ['eventRequests'],
     queryFn: () => base44.entities.EventRequest.list('-created_date', 500),
     refetchInterval: 5000,
-    enabled: isAuthenticated,
   });
 
   // Deep-link: ?ticket=<id>&focus=compose → open detail modal + focus composer
@@ -253,8 +247,6 @@ export default function Dashboard() {
     await base44.entities.EventRequest.update(id, { archived: false });
     queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
   };
-
-  if (!isAuthenticated) return null;
 
   if (!isAllowed) {
     return (
