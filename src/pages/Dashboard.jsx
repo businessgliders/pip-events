@@ -20,8 +20,8 @@ import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
 
 const STATUS_COLUMNS = ['New', 'Quoted', 'Waiting for Payment', 'Confirmed', 'Hosted', 'Ghosted'];
-const BOARD_COLUMNS = ['New', 'Quoted', 'Waiting for Payment', 'Confirmed', 'Hosted'];
-const SIDE_PANEL_COLUMNS = ['Ghosted'];
+const BOARD_COLUMNS = ['New', 'Quoted', 'Waiting for Payment', 'Confirmed', 'Ghosted'];
+const SIDE_PANEL_COLUMNS = ['Hosted'];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -560,11 +560,11 @@ export default function Dashboard() {
                 .board-height-wrap [data-kanban-column] > div:last-child::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
               `}</style>
               <HostedSidePanel
-                status="Ghosted"
-                tickets={ticketsByColumn['Ghosted'] || []}
-                headerClasses="bg-slate-500/30 border-slate-400/40"
-                shellClasses="from-slate-400/20 to-gray-300/20 border-gray-300/40"
-                handleGradient="linear-gradient(135deg,#64748b,#475569)"
+                status="Hosted"
+                tickets={ticketsByColumn['Hosted'] || []}
+                headerClasses="bg-purple-500/30 border-purple-400/40"
+                shellClasses="from-violet-400/20 to-purple-300/20 border-purple-300/40"
+                handleGradient="linear-gradient(135deg,#a855f7,#9333ea)"
                 verticalAlign="middle"
                 onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
                 highlightedTicketId={highlightedTicketId}
