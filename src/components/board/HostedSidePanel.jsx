@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import TicketCardContent from './TicketCardContent';
+import DragLiftWrapper from '../master-kanban/DragLiftWrapper';
 
 /**
  * Right-edge side panel for a single back-office swimlane (e.g. Hosted, Ghosted).
@@ -125,24 +126,32 @@ export default function HostedSidePanel({
                                   ref={prov.innerRef}
                                   {...prov.draggableProps}
                                   {...prov.dragHandleProps}
-                                  style={prov.draggableProps.style}
+                                  style={{
+                                    ...prov.draggableProps.style,
+                                    WebkitUserSelect: 'none',
+                                    userSelect: 'none',
+                                    WebkitTouchCallout: 'none',
+                                    touchAction: snap.isDragging ? 'none' : 'manipulation',
+                                  }}
                                 >
-                                  <div
-                                    onClick={() => onTicketClick && onTicketClick(ticket)}
-                                    className={`relative backdrop-blur-md border rounded-xl p-3 group transition-all ${
-                                      snap.isDragging
-                                        ? 'shadow-2xl bg-white/90 border-white/60 cursor-grabbing ring-4 ring-white/60'
-                                        : highlightedTicketId === ticket.id
-                                        ? 'shadow-2xl bg-white/70 border-white/50 ring-4 ring-yellow-400/50 cursor-grab'
-                                        : 'bg-white/55 border-white/50 hover:bg-white/70 shadow-lg hover:shadow-xl cursor-grab'
-                                    }`}
-                                  >
-                                    <TicketCardContent
-                                      ticket={ticket}
-                                      viewMode="status"
-                                      unreadCount={unreadCountByTicket[ticket.id] || 0}
-                                    />
-                                  </div>
+                                  <DragLiftWrapper isDragging={snap.isDragging}>
+                                    <div
+                                      onClick={() => onTicketClick && onTicketClick(ticket)}
+                                      className={`relative backdrop-blur-md border rounded-xl p-3 group transition-all ${
+                                        snap.isDragging
+                                          ? 'shadow-2xl bg-white/90 border-white/60 cursor-grabbing ring-4 ring-white/60'
+                                          : highlightedTicketId === ticket.id
+                                          ? 'shadow-2xl bg-white/70 border-white/50 ring-4 ring-yellow-400/50 cursor-grab'
+                                          : 'bg-white/55 border-white/50 hover:bg-white/70 shadow-lg hover:shadow-xl cursor-grab'
+                                      }`}
+                                    >
+                                      <TicketCardContent
+                                        ticket={ticket}
+                                        viewMode="status"
+                                        unreadCount={unreadCountByTicket[ticket.id] || 0}
+                                      />
+                                    </div>
+                                  </DragLiftWrapper>
                                 </div>
                               );
                               return snap.isDragging ? ReactDOM.createPortal(card, document.body) : card;

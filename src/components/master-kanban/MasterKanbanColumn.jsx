@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Archive, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MasterKanbanCard from "./MasterKanbanCard";
+import DragLiftWrapper from "./DragLiftWrapper";
 
 /**
  * MasterKanbanColumn — generic kanban column.
@@ -154,18 +155,26 @@ export default function MasterKanbanColumn({
                         style={{
                           ...provided.draggableProps.style,
                           zIndex: snapshot.isDragging ? 9999 : "auto",
+                          // iOS-style: kill text-selection callouts & system gestures
+                          // mid-drag so the finger keeps full control of the card.
+                          WebkitUserSelect: "none",
+                          userSelect: "none",
+                          WebkitTouchCallout: "none",
+                          touchAction: snapshot.isDragging ? "none" : "manipulation",
                         }}
                       >
-                        <MasterKanbanCard
-                          ticket={ticket}
-                          onClick={() => !snapshot.isDragging && onTicketClick?.(ticket)}
-                          isDragging={snapshot.isDragging}
-                          isHighlighted={ticket.id === highlightedTicketId}
-                          unreadCount={unreadByTicket[ticket.id] || 0}
-                          renderContent={renderCardContent}
-                          dragBorderClasses={headerClasses}
-                          bareCard={bareCard}
-                        />
+                        <DragLiftWrapper isDragging={snapshot.isDragging}>
+                          <MasterKanbanCard
+                            ticket={ticket}
+                            onClick={() => !snapshot.isDragging && onTicketClick?.(ticket)}
+                            isDragging={snapshot.isDragging}
+                            isHighlighted={ticket.id === highlightedTicketId}
+                            unreadCount={unreadByTicket[ticket.id] || 0}
+                            renderContent={renderCardContent}
+                            dragBorderClasses={headerClasses}
+                            bareCard={bareCard}
+                          />
+                        </DragLiftWrapper>
                       </div>
                     );
                     // Portal dragged item to body — escapes blurred/clipped ancestors
