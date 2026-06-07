@@ -325,7 +325,7 @@ export default function Dashboard() {
               title="Reload board"
             >
               <img
-                src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/719e48f6d_1e65b0238_PiPEvents.png"
+                src="https://media.base44.com/images/public/69b4780e4278ece8feeae352/e21e4f4e1_pip-events.png"
                 alt="PIP Events"
                 className="w-11 h-11 rounded-xl object-cover shadow-sm flex-shrink-0"
               />
