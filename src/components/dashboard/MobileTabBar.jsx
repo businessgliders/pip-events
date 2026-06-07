@@ -1,5 +1,14 @@
 import { Search, Archive } from 'lucide-react';
 import UserMenu from './UserMenu';
+import { useAuth } from '@/lib/AuthContext';
+
+function getInitials(name, email) {
+  const source = (name || email || '').trim();
+  if (!source) return '?';
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return source.slice(0, 2).toUpperCase();
+}
 
 /**
  * iOS-style bottom tab bar (mobile + tablet only).
@@ -7,6 +16,8 @@ import UserMenu from './UserMenu';
  * Home (logo), Search, Archived, Profile (UserMenu context menu).
  */
 export default function MobileTabBar({ activeView, searchActive = false, onHome, onFocusSearch, onArchive }) {
+  const { user } = useAuth();
+  const initials = user ? getInitials(user.full_name, user.email) : '?';
   const items = [
     {
       key: 'home',
@@ -66,13 +77,25 @@ export default function MobileTabBar({ activeView, searchActive = false, onHome,
           );
         })}
 
-        {/* Profile — UserMenu provides the dropdown context menu */}
-        <div className="flex flex-col items-center justify-end gap-0.5 px-3 py-0.5">
-          <UserMenu size="sm" />
-          <span className="text-[10px] font-semibold tracking-tight leading-none" style={{ color: '#8a6a6a' }}>
-            Profile
-          </span>
-        </div>
+        {/* Profile — entire cell is the tap target (44×44 minimum) */}
+        <UserMenu>
+          <button
+            type="button"
+            className="flex flex-col items-center justify-end gap-0.5 px-3 py-0.5 transition-colors active:scale-95 min-h-[44px] min-w-[44px] focus:outline-none"
+            style={{ color: '#8a6a6a' }}
+          >
+            <span
+              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold"
+              style={{ background: '#f1899b' }}
+              aria-hidden="true"
+            >
+              {initials}
+            </span>
+            <span className="text-[10px] font-semibold tracking-tight leading-none">
+              Profile
+            </span>
+          </button>
+        </UserMenu>
       </div>
     </div>
   );

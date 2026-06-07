@@ -380,6 +380,34 @@ export default function Dashboard() {
                 />
               </div>
 
+              {/* Mobile / tablet: icon-only board/calendar switcher */}
+              <div className="lg:hidden inline-flex rounded-full overflow-hidden bg-white/70 shadow-sm flex-shrink-0">
+                <button
+                  onClick={() => setView('board')}
+                  className="p-2 transition-colors"
+                  style={{
+                    background: view === 'board' ? '#3a1f1f' : 'transparent',
+                    color: view === 'board' ? 'white' : '#5a3535',
+                  }}
+                  title="Board"
+                  aria-label="Board"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setView('calendar')}
+                  className="p-2 transition-colors"
+                  style={{
+                    background: view === 'calendar' ? '#3a1f1f' : 'transparent',
+                    color: view === 'calendar' ? 'white' : '#5a3535',
+                  }}
+                  title="Calendar"
+                  aria-label="Calendar"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                </button>
+              </div>
+
               <div className="hidden lg:inline-flex rounded-full overflow-hidden bg-white/70 shadow-sm">
                 <button
                   onClick={() => setView('board')}
@@ -630,8 +658,11 @@ export default function Dashboard() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onFocusSearch={() => {
+          // Focus synchronously inside the user gesture so iOS Safari opens
+          // the keyboard. Scrolling afterwards is fine — the keyboard will
+          // still appear.
+          searchInputRef.current?.focus();
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          setTimeout(() => searchInputRef.current?.focus(), 250);
         }}
         onArchive={() => setView(view === 'archive' ? 'board' : 'archive')}
       />

@@ -18,7 +18,7 @@ function getInitials(name, email) {
   return source.slice(0, 2).toUpperCase();
 }
 
-export default function UserMenu({ size = 'md' }) {
+export default function UserMenu({ size = 'md', children }) {
   const { user } = useAuth();
   if (!user) return null;
 
@@ -31,13 +31,15 @@ export default function UserMenu({ size = 'md' }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          className={`${sizeClasses} rounded-full flex items-center justify-center hover:opacity-90 transition-opacity text-white font-semibold focus:outline-none focus:ring-2 focus:ring-white/60`}
-          style={{ background: '#f1899b' }}
-          title={user.full_name || user.email}
-        >
-          {initials}
-        </button>
+        {children || (
+          <button
+            className={`${sizeClasses} rounded-full flex items-center justify-center hover:opacity-90 transition-opacity text-white font-semibold focus:outline-none focus:ring-2 focus:ring-white/60`}
+            style={{ background: '#f1899b' }}
+            title={user.full_name || user.email}
+          >
+            {initials}
+          </button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuLabel className="py-2">
