@@ -313,7 +313,7 @@ export default function Dashboard() {
 
         {/* Sticky redesigned header */}
         <div className="sticky top-0 z-30 px-4 md:px-8 pb-3 pt-[calc(env(safe-area-inset-top,0px)+1rem)] md:pt-[calc(env(safe-area-inset-top,0px)+2rem)]">
-          <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4 px-2">
+          <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4">
             {/* Left — logo + counts */}
             <button
               type="button"
@@ -485,6 +485,17 @@ export default function Dashboard() {
                 }
                 @media (min-width: 768px) {
                   .board-height-wrap [data-kanban-column] { width: 20rem !important; }
+                }
+                /* On desktop, fit all swimlanes to viewport — no horizontal scroll */
+                @media (min-width: 1024px) {
+                  .board-height-wrap [data-kanban-column] {
+                    flex: 1 1 0 !important;
+                    width: auto !important;
+                    min-width: 0 !important;
+                  }
+                  .board-height-wrap > div > div[class*="overflow-x-auto"] {
+                    overflow-x: hidden !important;
+                  }
                 }
 
                 /* ===== Empty-state text — light over column tint ===== */
