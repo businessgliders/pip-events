@@ -253,9 +253,16 @@ export default function Dashboard() {
       <div className="min-h-screen relative flex items-center justify-center" style={{ background: 'rgba(248, 210, 220, 0.9)' }}>
         <div className="relative z-10 bg-white/90 backdrop-blur-xl rounded-2xl p-8 max-w-md text-center shadow-xl">
           <h2 className="text-xl font-bold mb-2" style={{ color: '#b67651' }}>Access Restricted</h2>
-          <p className="text-sm" style={{ color: '#7a5555' }}>
+          <p className="text-sm mb-6" style={{ color: '#7a5555' }}>
             The dashboard is only available to Pilates in Pink Studio staff.
           </p>
+          <button
+            onClick={() => base44.auth.logout('/login')}
+            className="px-5 py-2 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 6px 20px rgba(241,136,155,0.35)' }}
+          >
+            Log out
+          </button>
         </div>
       </div>
     );
