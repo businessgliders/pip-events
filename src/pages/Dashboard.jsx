@@ -375,7 +375,7 @@ export default function Dashboard() {
                   onChange={e => setSearch(e.target.value)}
                   onFocus={() => setSearchFocused(true)}
                   onBlur={() => setSearchFocused(false)}
-                  className="w-full pl-9 pr-3 py-2 rounded-full text-sm bg-white/80 focus:bg-white border-0 focus:outline-none focus:ring-2 focus:ring-pink-300 placeholder:text-gray-400 transition-shadow"
+                  className="w-full pl-9 pr-3 py-2 rounded-full text-base lg:text-sm bg-white/80 focus:bg-white border-0 focus:outline-none focus:ring-2 focus:ring-pink-300 placeholder:text-gray-400 transition-shadow"
                   style={{ color: '#5a3535' }}
                 />
               </div>
