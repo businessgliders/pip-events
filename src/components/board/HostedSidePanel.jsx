@@ -37,12 +37,14 @@ export default function HostedSidePanel({
   const count = tickets.length;
   const handleLabel = status.toUpperCase();
 
-  const wrapperPositionClass =
+  // md+ (tablet & desktop): anchored on the right edge, vertically positioned.
+  // Mobile (<md): anchored bottom-right, just above the mobile tab bar.
+  const desktopPosClass =
     verticalAlign === 'top'
-      ? 'top-[22%] -translate-y-1/2'
+      ? 'md:top-[22%] md:-translate-y-1/2'
       : verticalAlign === 'bottom'
-      ? 'top-[78%] -translate-y-1/2'
-      : 'top-1/2 -translate-y-1/2';
+      ? 'md:top-[78%] md:-translate-y-1/2'
+      : 'md:top-1/2 md:-translate-y-1/2';
 
   return (
     <>
@@ -56,7 +58,7 @@ export default function HostedSidePanel({
       )}
 
       <div
-        className={`hidden lg:flex fixed right-0 ${wrapperPositionClass} z-20 items-center`}
+        className={`flex fixed right-0 z-20 items-center bottom-20 md:bottom-auto ${desktopPosClass}`}
         style={{ pointerEvents: 'none' }}
       >
         {/* Toggle handle */}
