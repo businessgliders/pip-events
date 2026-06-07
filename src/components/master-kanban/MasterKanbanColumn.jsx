@@ -107,12 +107,13 @@ export default function MasterKanbanColumn({
               Clean
             </Button>
           )}
-          {onArchiveAll && tickets.length > 0 && (
+          {onArchiveAll && (
             <Button
               variant="ghost"
               size="sm"
               onClick={onArchiveAll}
-              className="h-7 px-2 text-xs gap-1 text-slate-700 hover:bg-white/50"
+              disabled={tickets.length === 0}
+              className="h-7 px-2 text-xs gap-1 text-slate-700 hover:bg-white/50 disabled:opacity-40"
               title="Archive All"
             >
               <Archive className="w-3 h-3" />
