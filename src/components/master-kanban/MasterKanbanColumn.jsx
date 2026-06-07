@@ -150,7 +150,6 @@ export default function MasterKanbanColumn({
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        {...provided.dragHandleProps}
                         style={{
                           ...provided.draggableProps.style,
                           zIndex: snapshot.isDragging ? 9999 : "auto",
@@ -165,6 +164,7 @@ export default function MasterKanbanColumn({
                           renderContent={renderCardContent}
                           dragBorderClasses={headerClasses}
                           bareCard={bareCard}
+                          dragHandleProps={provided.dragHandleProps}
                         />
                       </div>
                     );

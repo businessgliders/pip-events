@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, GripVertical } from 'lucide-react';
 import TicketCardContent from './TicketCardContent';
 
 /**
@@ -124,19 +124,28 @@ export default function HostedSidePanel({
                                 <div
                                   ref={prov.innerRef}
                                   {...prov.draggableProps}
-                                  {...prov.dragHandleProps}
                                   style={prov.draggableProps.style}
                                 >
                                   <div
                                     onClick={() => onTicketClick && onTicketClick(ticket)}
                                     className={`relative backdrop-blur-md border rounded-xl p-3 group transition-all ${
                                       snap.isDragging
-                                        ? 'shadow-2xl bg-white/90 border-white/60 cursor-grabbing ring-4 ring-white/60'
+                                        ? 'shadow-2xl bg-white/90 border-white/60 ring-4 ring-white/60'
                                         : highlightedTicketId === ticket.id
-                                        ? 'shadow-2xl bg-white/70 border-white/50 ring-4 ring-yellow-400/50 cursor-grab'
-                                        : 'bg-white/55 border-white/50 hover:bg-white/70 shadow-lg hover:shadow-xl cursor-grab'
+                                        ? 'shadow-2xl bg-white/70 border-white/50 ring-4 ring-yellow-400/50'
+                                        : 'bg-white/55 border-white/50 hover:bg-white/70 shadow-lg hover:shadow-xl'
                                     }`}
                                   >
+                                    <div
+                                      {...prov.dragHandleProps}
+                                      onClick={(e) => e.stopPropagation()}
+                                      style={{ touchAction: 'none' }}
+                                      className="absolute top-1 right-1 z-10 p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-white/60 cursor-grab active:cursor-grabbing"
+                                      title="Drag to move"
+                                      aria-label="Drag handle"
+                                    >
+                                      <GripVertical className="w-3.5 h-3.5" />
+                                    </div>
                                     <TicketCardContent
                                       ticket={ticket}
                                       viewMode="status"
