@@ -544,11 +544,23 @@ export default function Dashboard() {
                 .board-height-wrap [data-kanban-column] > div:last-child::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
               `}</style>
               <HostedSidePanel
-                groups={SIDE_PANEL_COLUMNS.map(status => ({
-                  status,
-                  tickets: ticketsByColumn[status] || [],
-                  headerClasses: COLUMN_HEADER_CLASSES[status] || DEFAULT_HEADER,
-                }))}
+                status="Hosted"
+                tickets={ticketsByColumn['Hosted'] || []}
+                headerClasses="bg-purple-500/30 border-purple-400/40"
+                shellClasses="from-violet-400/20 to-purple-300/20 border-purple-300/40"
+                handleGradient="linear-gradient(135deg,#a855f7,#9333ea)"
+                verticalAlign="top"
+                onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
+                highlightedTicketId={highlightedTicketId}
+                unreadCountByTicket={unreadCountByTicket}
+              />
+              <HostedSidePanel
+                status="Ghosted"
+                tickets={ticketsByColumn['Ghosted'] || []}
+                headerClasses="bg-slate-500/30 border-slate-400/40"
+                shellClasses="from-slate-400/20 to-gray-300/20 border-gray-300/40"
+                handleGradient="linear-gradient(135deg,#64748b,#475569)"
+                verticalAlign="bottom"
                 onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
                 highlightedTicketId={highlightedTicketId}
                 unreadCountByTicket={unreadCountByTicket}
