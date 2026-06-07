@@ -49,19 +49,18 @@ export default function MasterKanbanBoard({
   return (
     <div className={cn("relative", className)}>
       <style>{`
-        /* While any card is being dragged, lock both the page and the
-           swimlane lists so nothing scrolls under the finger. Cards beside
-           the dragged card still shift up/down (library placeholders are
-           inside the list flow and unaffected by overflow-hidden). */
+        /* During drag: only prevent rubber-band/overscroll bouncing on iOS.
+           DO NOT lock overflow or touch-action — that would defeat
+           @hello-pangea/dnd's built-in auto-scroll, which is what lets the
+           user pan horizontally to a neighboring swimlane (or vertically
+           inside a list) by holding the dragged card near an edge. The
+           library itself preventDefaults touchmove once a drag is active,
+           so the page won't scroll under the finger. */
         body.dnd-dragging {
-          overflow: hidden !important;
-          touch-action: none !important;
-          overscroll-behavior: none !important;
+          overscroll-behavior: none;
         }
         body.dnd-dragging [data-kanban-list] {
-          overflow: hidden !important;
-          touch-action: none !important;
-          overscroll-behavior: contain !important;
+          overscroll-behavior: contain;
         }
       `}</style>
       {/* Left arrow */}
