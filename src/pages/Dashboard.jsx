@@ -312,8 +312,8 @@ export default function Dashboard() {
       <div className="relative pb-[calc(56px+env(safe-area-inset-bottom,0px))] lg:pb-0" style={{ zIndex: 2 }}>
 
         {/* Sticky redesigned header */}
-        <div className="sticky top-0 z-30 px-4 md:px-8 pb-3 pt-[calc(env(safe-area-inset-top,0px)+1rem)] md:pt-[calc(env(safe-area-inset-top,0px)+2rem)]">
-          <div className="max-w-[1600px] mx-auto flex items-center gap-3 md:gap-4">
+        <div className="sticky top-0 z-30 pb-3 pt-[calc(env(safe-area-inset-top,0px)+1rem)] md:pt-[calc(env(safe-area-inset-top,0px)+2rem)]">
+          <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center gap-3 md:gap-4">
             {/* Left — logo + counts */}
             <button
               type="button"
