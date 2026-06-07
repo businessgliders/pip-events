@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, LayoutGrid, Ghost, PartyPopper, Check, ArrowRight, Sparkles } from 'lucide-react';
+import { X, LayoutGrid, Ghost, PartyPopper, Check, ArrowRight, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const STORAGE_KEY = 'pip_whatsnew_dismissed_v4_swimlanes';
 const CAMPAIGN_END = new Date('2026-07-31T23:59:59Z');
@@ -50,6 +50,10 @@ export default function WhatsNewSplash() {
     }
   };
 
+  const handlePrev = () => {
+    if (step > 0) setStep(step - 1);
+  };
+
   if (!show) return null;
 
   const feature = FEATURES[step];
@@ -61,6 +65,27 @@ export default function WhatsNewSplash() {
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
       style={{ background: 'rgba(58, 31, 31, 0.6)', backdropFilter: 'blur(8px)' }}
     >
+      {/* Prev arrow */}
+      {step > 0 && (
+        <button
+          onClick={handlePrev}
+          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-[61] w-11 h-11 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-105"
+          aria-label="Previous"
+        >
+          <ChevronLeft className="w-5 h-5" style={{ color: '#5a3535' }} />
+        </button>
+      )}
+      {/* Next arrow */}
+      {step < FEATURES.length - 1 && (
+        <button
+          onClick={() => setStep(step + 1)}
+          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[61] w-11 h-11 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-105"
+          aria-label="Next"
+        >
+          <ChevronRight className="w-5 h-5" style={{ color: '#5a3535' }} />
+        </button>
+      )}
+
       <div
         className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden relative animate-in fade-in zoom-in-95 duration-300"
         style={{ maxHeight: '90vh' }}
