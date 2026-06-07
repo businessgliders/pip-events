@@ -65,31 +65,30 @@ export default function WhatsNewSplash() {
       className="fixed inset-0 z-[60] flex items-center justify-center p-4"
       style={{ background: 'rgba(58, 31, 31, 0.6)', backdropFilter: 'blur(8px)' }}
     >
-      {/* Prev arrow */}
-      {step > 0 && (
-        <button
-          onClick={handlePrev}
-          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-[61] w-11 h-11 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-105"
-          aria-label="Previous"
-        >
-          <ChevronLeft className="w-5 h-5" style={{ color: '#5a3535' }} />
-        </button>
-      )}
-      {/* Next arrow */}
-      {step < FEATURES.length - 1 && (
-        <button
-          onClick={() => setStep(step + 1)}
-          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[61] w-11 h-11 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-105"
-          aria-label="Next"
-        >
-          <ChevronRight className="w-5 h-5" style={{ color: '#5a3535' }} />
-        </button>
-      )}
-
       <div
         className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden relative animate-in fade-in zoom-in-95 duration-300"
         style={{ maxHeight: '90vh' }}
       >
+        {/* Prev arrow — at the left edge of the popup */}
+        {step > 0 && (
+          <button
+            onClick={handlePrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all hover:scale-105"
+            aria-label="Previous"
+          >
+            <ChevronLeft className="w-5 h-5" style={{ color: '#5a3535' }} />
+          </button>
+        )}
+        {/* Next arrow — at the right edge of the popup */}
+        {step < FEATURES.length - 1 && (
+          <button
+            onClick={() => setStep(step + 1)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all hover:scale-105"
+            aria-label="Next"
+          >
+            <ChevronRight className="w-5 h-5" style={{ color: '#5a3535' }} />
+          </button>
+        )}
         {/* Close */}
         <button
           onClick={() => handleDismiss(false)}
