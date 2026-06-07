@@ -28,6 +28,8 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
   const [currentUser, setCurrentUser] = useState(null);
   const [draftDirty, setDraftDirty] = useState(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  // Mobile-only: which panel is shown (lg+ shows both side-by-side)
+  const [mobileTab, setMobileTab] = useState('email');
   const saveDraftRef = useRef(null);
 
   const handleClose = () => {
@@ -89,59 +91,87 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
   const submittedAt = request.submitted_date || request.created_date;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={handleClose}>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-2 sm:p-4" onClick={handleClose}>
       <div
         className="bg-white rounded-2xl shadow-2xl w-full flex flex-col"
-        style={{ maxWidth: '1100px', maxHeight: '90vh', overflow: 'hidden' }}
+        style={{ maxWidth: '1100px', maxHeight: 'calc(100dvh - 1rem)', overflow: 'hidden' }}
         onClick={e => e.stopPropagation()}
       >
         {/* ── Top bar ── */}
         <div
-          className="flex items-center justify-between px-6 py-4 flex-shrink-0"
+          className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 gap-2 flex-shrink-0"
           style={{
             borderBottom: '1px solid rgba(247,177,189,0.3)',
             background: 'linear-gradient(135deg, rgba(251,224,226,0.5), rgba(255,255,255,0.95))',
           }}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0"
               style={{ background: 'linear-gradient(135deg, #fbe0e2, #f7b1bd)' }}>
-              <User className="w-5 h-5" style={{ color: '#e86c84' }} />
+              <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#e86c84' }} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold leading-tight" style={{ color: '#6b4e4e' }}>{request.full_name}</h2>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(241,136,155,0.12)', color: '#e86c84', border: '1px solid rgba(241,136,155,0.3)' }}>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                <h2 className="text-base sm:text-lg font-bold leading-tight truncate" style={{ color: '#6b4e4e' }}>{request.full_name}</h2>
+                <span className="text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: 'rgba(241,136,155,0.12)', color: '#e86c84', border: '1px solid rgba(241,136,155,0.3)' }}>
                   {request.ticket_number ? `#${request.ticket_number}` : `#${request.id?.slice(-6)}`}
                 </span>
               </div>
-              <p className="text-xs mt-0.5" style={{ color: '#c48a96' }}>
-                {request.event_type} · {request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMMM d, yyyy') : '—'}
+              <p className="text-[11px] sm:text-xs mt-0.5 truncate" style={{ color: '#c48a96' }}>
+                {request.event_type} · {request.event_date ? format(new Date(request.event_date + 'T12:00:00'), 'MMM d, yyyy') : '—'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <span className="hidden sm:inline-block text-xs font-semibold px-3 py-1 rounded-full" style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
               {status}
             </span>
-            <button onClick={handleClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors ml-1">
+            <button onClick={handleClose} className="p-1.5 rounded-full hover:bg-pink-50 transition-colors">
               <X className="w-5 h-5" style={{ color: '#c48a96' }} />
             </button>
           </div>
         </div>
 
-        {/* ── Two-column body ── */}
+        {/* ── Mobile tab switcher (lg+ shows both panels side-by-side) ── */}
+        <div className="lg:hidden flex flex-shrink-0" style={{ borderBottom: '1px solid rgba(247,177,189,0.3)' }}>
+          <button
+            onClick={() => setMobileTab('email')}
+            className="flex-1 py-2 text-xs font-semibold transition-colors"
+            style={{
+              color: mobileTab === 'email' ? '#e86c84' : '#c48a96',
+              borderBottom: mobileTab === 'email' ? '2px solid #e86c84' : '2px solid transparent',
+              background: mobileTab === 'email' ? 'rgba(251,224,226,0.3)' : 'transparent',
+            }}
+          >
+            Emails
+          </button>
+          <button
+            onClick={() => setMobileTab('details')}
+            className="flex-1 py-2 text-xs font-semibold transition-colors"
+            style={{
+              color: mobileTab === 'details' ? '#e86c84' : '#c48a96',
+              borderBottom: mobileTab === 'details' ? '2px solid #e86c84' : '2px solid transparent',
+              background: mobileTab === 'details' ? 'rgba(251,224,226,0.3)' : 'transparent',
+            }}
+          >
+            Details · <span style={{ color: sc.text }}>{status}</span>
+          </button>
+        </div>
+
+        {/* ── Two-column body (lg+) / single-panel (mobile) ── */}
         <div className="flex-1 flex min-h-0 overflow-hidden">
 
           {/* LEFT — Email comms */}
-          <div className="flex-1 flex flex-col min-h-0 min-w-0" style={{ borderRight: '1px solid rgba(247,177,189,0.25)' }}>
+          <div
+            className={`flex-1 flex-col min-h-0 min-w-0 ${mobileTab === 'email' ? 'flex' : 'hidden'} lg:flex`}
+            style={{ borderRight: '1px solid rgba(247,177,189,0.25)' }}
+          >
             <EmailThreadPanel ticket={request} currentUser={currentUser} highlightMessageId={highlightMessageId} focusComposer={focusComposer} onDraftDirtyChange={setDraftDirty} saveDraftRef={saveDraftRef} />
           </div>
 
           {/* RIGHT — Details */}
           <div
-            className="flex flex-col overflow-y-auto"
-            style={{ width: '42%', flexShrink: 0 }}
+            className={`flex-col overflow-y-auto w-full lg:w-[42%] flex-shrink-0 ${mobileTab === 'details' ? 'flex flex-1' : 'hidden'} lg:flex`}
           >
             {/* Status update */}
             <div className="px-5 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(247,177,189,0.2)' }}>
