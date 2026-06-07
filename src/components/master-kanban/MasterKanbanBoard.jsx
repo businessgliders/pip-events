@@ -48,18 +48,16 @@ export default function MasterKanbanBoard({
 
   return (
     <div className={cn("relative", className)}>
-      {/* Mirror mouse-drag exactly on touch: while a card is being dragged,
-          freeze every scroll container so ONLY the card moves with the
-          pointer (matches how mouse drag feels on desktop, where the page
-          and columns don't auto-pan). The library still re-orders cards
-          inside the list via placeholders. */}
+      {/* While a card is being dragged: keep scroll containers scrollable so
+          @hello-pangea/dnd's built-in auto-scroll can pan in the direction
+          the finger is moving (toward an edge). Only block iOS rubber-band
+          so the page doesn't bounce mid-drag. The library cancels the drag
+          automatically when the finger lifts. */}
       <style>{`
         body.dnd-dragging {
-          overflow: hidden !important;
           overscroll-behavior: none;
         }
         body.dnd-dragging [data-kanban-list] {
-          overflow: hidden !important;
           overscroll-behavior: contain;
         }
       `}</style>
