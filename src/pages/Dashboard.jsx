@@ -19,8 +19,9 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { Link } from 'react-router-dom';
 import { Search, LayoutGrid, Archive, CalendarDays, Plus } from 'lucide-react';
 
-const STATUS_COLUMNS = ['New', 'In Conversations', 'Waiting for Payment', 'Confirmed', 'Closed', 'Hosted'];
-const BOARD_COLUMNS = STATUS_COLUMNS.filter(c => c !== 'Hosted');
+const STATUS_COLUMNS = ['New', 'Quoted', 'Waiting for Payment', 'Confirmed', 'Hosted', 'Ghosted'];
+const BOARD_COLUMNS = ['New', 'Quoted', 'Waiting for Payment', 'Confirmed'];
+const SIDE_PANEL_COLUMNS = ['Hosted', 'Ghosted'];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -80,9 +81,14 @@ export default function Dashboard() {
 
   const isAllowed = user?.email?.endsWith('@pilatesinpinkstudio.com');
 
-  // Normalize legacy "Pending" → "In Conversations"
+  // Normalize legacy statuses → "Quoted"
   const tickets = useMemo(
-    () => allTickets.map(t => (t.status === 'Pending' ? { ...t, status: 'In Conversations' } : t)),
+    () => allTickets.map(t => {
+      if (t.status === 'Pending' || t.status === 'In Conversations') {
+        return { ...t, status: 'Quoted' };
+      }
+      return t;
+    }),
     [allTickets]
   );
 
@@ -129,14 +135,14 @@ export default function Dashboard() {
       if (map[t.status]) map[t.status].push(t);
     });
     // Sort: manual_order (if set) wins; otherwise fall back to default sort.
-    // Default = newest submission first, except "In Conversations" = newest update first.
+    // Default = newest submission first, except "Quoted" = newest update first.
     const defaultCmp = (a, b, key) => {
       const aTime = new Date(a[key] || a.created_date || 0).getTime();
       const bTime = new Date(b[key] || b.created_date || 0).getTime();
       return bTime - aTime;
     };
     Object.keys(map).forEach(k => {
-      const sortKey = k === 'In Conversations' ? 'updated_date' : 'submitted_date';
+      const sortKey = k === 'Quoted' ? 'updated_date' : 'submitted_date';
       map[k].sort((a, b) => {
         // Local override (set synchronously on drop) wins, then persisted manual_order, then default sort.
         const aMan = orderOverrides[a.id] !== undefined
@@ -232,14 +238,6 @@ export default function Dashboard() {
     setPendingStatusChange(null);
     setHighlightedTicketId(ticketId);
     setTimeout(() => setHighlightedTicketId(null), 2000);
-    queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
-  };
-
-  const handleArchiveAll = async () => {
-    const closed = ticketsByColumn['Closed'] || [];
-    if (!closed.length) return;
-    if (!confirm(`Archive ${closed.length} request${closed.length === 1 ? '' : 's'}?`)) return;
-    await Promise.all(closed.map(t => base44.entities.EventRequest.update(t.id, { archived: true })));
     queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
   };
 
@@ -443,7 +441,6 @@ export default function Dashboard() {
                   tickets: ticketsByColumn[col] || [],
                   colorClasses: COLUMN_COLOR_CLASSES[col] || DEFAULT_COLOR,
                   headerClasses: COLUMN_HEADER_CLASSES[col] || DEFAULT_HEADER,
-                  isDimmed: col === 'Closed',
                   emptyLabel: 'No inquiries',
                 }))}
                 onDragEnd={handleDragEnd}
@@ -458,9 +455,6 @@ export default function Dashboard() {
                     unreadCount={unreadCountByTicket[ticket.id] || 0}
                   />
                 )}
-                getActions={(status) =>
-                  status === 'Closed' ? { onArchiveAll: handleArchiveAll } : {}
-                }
               />
               </div>
               <style>{`
@@ -550,8 +544,11 @@ export default function Dashboard() {
                 .board-height-wrap [data-kanban-column] > div:last-child::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.6); }
               `}</style>
               <HostedSidePanel
-                tickets={ticketsByColumn['Hosted'] || []}
-                onStatusChange={handleStatusChangeFromMenu}
+                groups={SIDE_PANEL_COLUMNS.map(status => ({
+                  status,
+                  tickets: ticketsByColumn[status] || [],
+                  headerClasses: COLUMN_HEADER_CLASSES[status] || DEFAULT_HEADER,
+                }))}
                 onTicketClick={(t) => { setHighlightMessageId(null); setSelectedRequest(t); }}
                 highlightedTicketId={highlightedTicketId}
                 unreadCountByTicket={unreadCountByTicket}

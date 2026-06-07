@@ -72,12 +72,14 @@
       "type": "string",
       "enum": [
         "New",
+        "Quoted",
         "In Conversations",
         "Waiting for Payment",
         "Confirmed",
         "Closed",
         "No Response",
         "Hosted",
+        "Ghosted",
         "Pending",
         "Cancelled"
       ],
