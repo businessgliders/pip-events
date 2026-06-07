@@ -1,27 +1,15 @@
 import { useState, useEffect } from 'react';
-import { X, Search, Bell, Hash, Check, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Columns3, Check, ArrowRight, Sparkles } from 'lucide-react';
 
-const STORAGE_KEY = 'pip_whatsnew_dismissed_v2';
-const CAMPAIGN_END = new Date('2026-05-22T23:59:59Z');
+const STORAGE_KEY = 'pip_whatsnew_dismissed_v3_ghosted';
+const CAMPAIGN_END = new Date('2026-07-31T23:59:59Z');
 
 const FEATURES = [
   {
-    icon: Bell,
-    title: 'Unread Message Tracking',
-    description: 'New mail badges appear directly on ticket cards, plus a bell in the header shows all unread replies. Messages auto-mark as read when you view them in the conversation.',
-    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/751b3eb8e_generated_image.png',
-  },
-  {
-    icon: Search,
-    title: 'Search Now Includes Archive',
-    description: 'Searching the board now also finds matches in archived and cancelled tickets. A quick pill button takes you straight to the archive view to see them.',
-    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/4233e1104_generated_image.png',
-  },
-  {
-    icon: Hash,
-    title: 'Ticket # in Archive',
-    description: 'Archived and cancelled ticket rows now show their ticket number, making it easier to reference past inquiries at a glance.',
-    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/b7932fa10_generated_image.png',
+    icon: Columns3,
+    title: 'New "Ghosted" Swimlane',
+    description: 'Inquiries that go quiet now live in their own dedicated Ghosted column on the board — no more cluttering Hosted. Use the "Archive All" button in the column header to clear them out in one click when you\'re ready.',
+    image: 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/a72bdcdbf_generated_image.png',
   },
 ];
 
