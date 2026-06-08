@@ -12,10 +12,14 @@ Deno.serve(async (req) => {
 
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('gmail');
 
-    // List recent inbound messages (last hour, not in sent)
+    // List recent inbound messages (last 1 day, anywhere except sent).
+    // We intentionally do NOT restrict to in:inbox — Gmail sometimes routes
+    // replies into Promotions / Updates categories or filters them out of the
+    // inbox; we still want to ingest those as inbound client replies.
+    const query = (await req.json().catch(() => ({})))?.query || 'newer_than:1d -in:sent -in:chats';
     const listRes = await fetch(
       'https://gmail.googleapis.com/gmail/v1/users/me/messages?q=' +
-        encodeURIComponent('newer_than:1h -in:sent in:inbox') +
+        encodeURIComponent(query) +
         '&maxResults=50',
       { headers: { 'Authorization': `Bearer ${accessToken}` } }
     );
