@@ -9,7 +9,20 @@
 
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-const ALLOWED_STATUSES = ['Confirmed', 'Pending', 'In Conversations', 'New', 'Completed'];
+// Statuses that represent a date that's booked or being actively booked.
+// Excludes Ghosted / Closed / Cancelled. "Hosted" is included for safety but
+// in practice gets filtered out by the `event_date >= today` check below.
+const ALLOWED_STATUSES = [
+  'Confirmed',
+  'Waiting for Payment',
+  'Quoted',
+  'New',
+  'Hosted',
+  // Legacy values kept for any rows not yet migrated:
+  'Pending',
+  'In Conversations',
+  'Completed',
+];
 
 Deno.serve(async (req) => {
   try {
