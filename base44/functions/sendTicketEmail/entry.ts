@@ -297,14 +297,11 @@ Deno.serve(async (req) => {
       read_at: [{ email: user.email, timestamp: new Date().toISOString() }],
     });
 
-    // Backfill thread IDs on ticket if missing + auto-progress status
+    // Backfill thread IDs on ticket if missing (status is no longer auto-progressed
+    // on staff reply — staff move the ticket manually via the Kanban board).
     const updates = {};
     if (!ticket.gmail_thread_id && actualThreadId) updates.gmail_thread_id = actualThreadId;
     if (!ticket.gmail_root_message_id && rfcMessageId) updates.gmail_root_message_id = rfcMessageId;
-    // Auto-progress New → In Conversations only for genuine staff replies
-    // (excludes welcome/auto-confirmation emails and any non-staff sender)
-    const isStaffReply = !is_welcome && user.email && user.email.toLowerCase().endsWith(`@${STAFF_DOMAIN}`);
-    if (isStaffReply && (ticket.status === 'New' || !ticket.status)) updates.status = 'In Conversations';
     if (Object.keys(updates).length > 0) {
       await base44.asServiceRole.entities.EventRequest.update(ticket_id, updates);
     }
