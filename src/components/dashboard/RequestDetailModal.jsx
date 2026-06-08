@@ -75,6 +75,24 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = original; };
   }, []);
+
+  // On mobile/tablet, scroll to email panel when modal opens
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // Only on mobile/tablet (max-width: 1024px / lg breakpoint)
+    const isMobile = window.innerWidth < 1024;
+    if (!isMobile) return;
+
+    // Delay slightly to ensure DOM is rendered
+    const timer = setTimeout(() => {
+      const emailPanel = document.querySelector('[data-email-panel]');
+      if (emailPanel) {
+        emailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
   const handleSave = async () => {
     setSaving(true);
     await base44.entities.EventRequest.update(request.id, { status });
@@ -166,6 +184,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
 
           {/* LEFT — Email comms */}
           <div
+            data-email-panel
             className={`flex-1 flex-col min-h-0 min-w-0 ${mobileTab === 'email' ? 'flex' : 'hidden'} lg:flex`}
             style={{ borderRight: '1px solid rgba(247,177,189,0.25)' }}
           >
