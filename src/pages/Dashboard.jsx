@@ -248,10 +248,15 @@ export default function Dashboard() {
 
   const handleArchiveAllGhosted = async () => {
     const ghosted = ticketsByColumn['Ghosted'] || [];
-    if (ghosted.length === 0) return;
-    if (!confirm(`Archive all ${ghosted.length} Ghosted ticket${ghosted.length === 1 ? '' : 's'}?`)) return;
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const pastGhosted = ghosted.filter(t => t.event_date && t.event_date < today);
+    if (pastGhosted.length === 0) {
+      alert('No Ghosted tickets with past event dates to archive.');
+      return;
+    }
+    if (!confirm(`Archive ${pastGhosted.length} Ghosted ticket${pastGhosted.length === 1 ? '' : 's'} with past event dates?`)) return;
     await Promise.all(
-      ghosted.map(t => base44.entities.EventRequest.update(t.id, { archived: true }))
+      pastGhosted.map(t => base44.entities.EventRequest.update(t.id, { archived: true }))
     );
     queryClient.invalidateQueries({ queryKey: ['eventRequests'] });
   };
