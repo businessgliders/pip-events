@@ -452,19 +452,21 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
           <button
             onClick={handlePolish}
             disabled={polishing || empty}
-            className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-all disabled:opacity-50"
+            title="Polish"
+            className="flex items-center gap-1.5 text-xs font-medium px-2 py-1.5 lg:px-3 rounded-full transition-all disabled:opacity-50"
             style={{ background: '#f5f3ff', color: '#7c3aed', border: '1px solid #e9d5ff' }}
           >
             {polishing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
-            {polishing ? 'Polishing…' : 'Polish'}
+            <span className="hidden lg:inline">{polishing ? 'Polishing…' : 'Polish'}</span>
           </button>
           <button
             onClick={handleClear}
             disabled={empty && attachments.length === 0}
-            className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full transition-all disabled:opacity-50"
+            title="Clear"
+            className="flex items-center gap-1.5 text-xs font-medium px-2 py-1.5 lg:px-3 rounded-full transition-all disabled:opacity-50"
             style={{ background: 'rgba(220,200,205,0.2)', color: '#9a7070', border: '1px solid rgba(220,200,205,0.5)' }}
           >
-            <Trash2 className="w-3.5 h-3.5" /> Clear
+            <Trash2 className="w-3.5 h-3.5" /> <span className="hidden lg:inline">Clear</span>
           </button>
           {draftSavedAt && (
             <span className="flex items-center gap-1 text-[11px]" style={{ color: '#10b981' }} title={`Draft auto-saved at ${new Date(draftSavedAt).toLocaleString()}`}>
@@ -476,11 +478,12 @@ export default function EmailComposer({ ticket, currentUser, onSent, onCancel, a
         <button
           onClick={handleSend}
           disabled={sending || empty || uploadingCount > 0}
-          className="flex items-center gap-2 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-50"
+          title="Send Reply"
+          className="flex items-center gap-2 text-white px-2.5 py-2 lg:px-4 rounded-xl text-sm font-semibold transition-all disabled:opacity-50"
           style={{ background: 'linear-gradient(135deg,#f1889b,#e86c84)', boxShadow: '0 4px 16px rgba(241,136,155,0.3)' }}
         >
           {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-          {sending ? 'Sending…' : uploadingCount > 0 ? 'Uploading…' : 'Send Reply'}
+          <span className="hidden lg:inline">{sending ? 'Sending…' : uploadingCount > 0 ? 'Uploading…' : 'Send Reply'}</span>
         </button>
       </div>
     </div>

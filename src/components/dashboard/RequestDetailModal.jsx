@@ -175,7 +175,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
               background: mobileTab === 'details' ? 'rgba(251,224,226,0.3)' : 'transparent',
             }}
           >
-            Details · <span style={{ color: sc.text }}>{status}</span>
+            Details
           </button>
         </div>
 
