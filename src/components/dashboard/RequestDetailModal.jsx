@@ -144,6 +144,36 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            {request.email && (
+              <a
+                href={`https://mail.google.com/mail/u/0/#search/${encodeURIComponent(request.email)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Search all in Gmail"
+                onClick={e => e.stopPropagation()}
+                className="p-1.5 rounded-full hover:bg-pink-50 transition-colors flex items-center justify-center"
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg"
+                  alt="Gmail"
+                  className="w-5 h-5"
+                />
+              </a>
+            )}
+            {request.phone && (
+              <a
+                href={`zoomphonecall://${request.phone.replace(/[^\d+]/g, '')}`}
+                title="Call on Zoom"
+                onClick={e => e.stopPropagation()}
+                className="p-1.5 rounded-full hover:bg-pink-50 transition-colors flex items-center justify-center"
+              >
+                <img
+                  src="https://media.base44.com/images/public/690aaf0c732696417648d224/adb1bdaaa_image.png"
+                  alt="Zoom"
+                  className="w-5 h-5"
+                />
+              </a>
+            )}
             <span className="hidden sm:inline-block text-xs font-semibold px-3 py-1 rounded-full" style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
               {status}
             </span>
