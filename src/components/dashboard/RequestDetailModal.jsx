@@ -157,6 +157,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
                   src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg"
                   alt="Gmail"
                   className="w-5 h-5"
+                  style={{ filter: 'grayscale(1) brightness(0.95) sepia(1) hue-rotate(295deg) saturate(3.5)' }}
                 />
               </a>
             )}
@@ -171,6 +172,7 @@ export default function RequestDetailModal({ request: initialRequest, onClose, o
                   src="https://media.base44.com/images/public/690aaf0c732696417648d224/adb1bdaaa_image.png"
                   alt="Zoom"
                   className="w-5 h-5"
+                  style={{ filter: 'grayscale(1) brightness(0.95) sepia(1) hue-rotate(295deg) saturate(3.5)' }}
                 />
               </a>
             )}
