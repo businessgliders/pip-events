@@ -20,20 +20,34 @@ Deno.serve(async (req) => {
 
     // Build the hub payload. Spread `form` first so any extra event fields
     // flow through, then overlay the canonical fields the hub expects.
+    // The hub uses these to build the single rich confirmation email and
+    // assigns the authoritative ticket number.
     const payload = {
       ...form,
       source_app: 'events',
+      // Identity
       name: form.full_name || '',
+      full_name: form.full_name || '',
       email: form.email || '',
       phone: form.phone || '',
+      // Subject hint
       subject: form.event_type || 'Event Inquiry',
+      // Event details
       event_type: form.event_type || '',
       event_date: form.event_date || '',
-      guest_count: form.number_of_guests || 0,
+      additional_dates: form.additional_dates || '',
       preferred_times: form.preferred_times || '',
-      budget: form.budget || '',
+      time_slot: form.time_slot || '',
+      duration: form.duration || '',
+      // Guest count — send under both names so the hub can use either
+      guest_count: form.number_of_guests || 0,
+      number_of_guests: form.number_of_guests || 0,
+      // Selections
       selected_classes: form.selected_classes || [],
       add_ons: form.add_ons || [],
+      // Budget + notes
+      budget: form.budget || '',
+      notes: form.notes || '',
       message: form.notes || '',
     };
 

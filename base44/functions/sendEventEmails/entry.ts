@@ -332,24 +332,13 @@ Deno.serve(async (req) => {
 </body>
 </html>`;
 
-  // `record` is already loaded + verified at the top of the handler.
-  // Assign a sequential ticket_number if this record doesn't have one yet
-  let requestNumber = record?.ticket_number;
-  if (record && !requestNumber) {
-    const highest = await base44.asServiceRole.entities.EventRequest.filter({}, '-ticket_number', 1);
-    const maxNum = highest?.[0]?.ticket_number || 0;
-    requestNumber = maxNum + 1;
-    await base44.asServiceRole.entities.EventRequest.update(record.id, { ticket_number: requestNumber });
-    record.ticket_number = requestNumber;
-  }
-
-  const requestShortId = requestNumber || (record ? record.id.slice(-8) : 'NEW');
+  // NOTE: PiP Hub now owns all client communication and ticket numbering.
+  // We no longer assign our own sequential ticket_number here, and we no longer
+  // send the submitter "Thank You" email — the hub sends the single unified
+  // confirmation with the correct #. We only keep the internal owner notification.
+  const requestShortId = record?.ticket_number || (record ? record.id.slice(-8) : 'NEW');
   const requestTag = `[Request #${requestShortId}]`;
-
-  // Unified subject — used for BOTH the requestor email (To) and owner copy (Bcc).
-  // Identical Message-ID + subject = Gmail groups owner's view of all client replies into one thread.
-  const unifiedSubject = `🎉 ${requestTag} ${form.event_type} Event Request - ${form.full_name}`;
-  const confirmationSubject = unifiedSubject;
+  const confirmationSubject = `🎉 ${requestTag} ${form.event_type} Event Request - ${form.full_name}`;
 
   // Build dashboard deep-link button for owner email — always use production URL
   const PRODUCTION_URL = 'https://events.pilatesinpinkstudio.com';
@@ -370,77 +359,14 @@ Deno.serve(async (req) => {
 
   const ownerHtmlFinal = ownerHtml.replace('__DASHBOARD_BUTTON__', dashboardButton);
 
-  // 1) Send the welcome email to the requestor (BCC owner) FIRST so we can capture
-  //    its Gmail threadId + RFC Message-ID.
-  const submitterResult = await sendGmail(accessToken, {
-    to: form.email,
-    bcc: OWNER_EMAIL,
-    subject: confirmationSubject,
-    html: submitterHtml,
-    replyTo: SENDER_EMAIL,
-  });
-
-  // Capture threading metadata from the submitter email so future replies stay in the same thread
-  let threadMeta = {};
-  if (submitterResult?.id) {
-    threadMeta = await fetchSentMeta(accessToken, submitterResult.id);
-  }
-
-  // 2) Send the internal owner notification THREADED onto the welcome — Gmail will
-  //    merge it into the same conversation on the owner's side, so future client
-  //    replies (which thread off the welcome) appear alongside the owner notification
-  //    in one unified thread.
+  // Submitter "Thank You" email is DISABLED — PiP Hub now sends the unified
+  // confirmation to the client with the correct ticket number.
+  // We only send the internal owner notification to info@pilatesinpinkstudio.com.
   const ownerResult = await sendGmail(accessToken, {
     to: OWNER_EMAIL,
     subject: confirmationSubject,
     html: ownerHtmlFinal,
-    inReplyTo: threadMeta.rfcMessageId || undefined,
-    references: threadMeta.rfcMessageId || undefined,
-    threadId: threadMeta.threadId || undefined,
   });
 
-  // Log the initial confirmation email on the EventRequest record + create EmailMessage row
-  if (record) {
-    const existingLog = record.email_log || [];
-    const updates = {
-      email_log: [...existingLog, {
-        sent_at: new Date().toISOString(),
-        direction: 'initial',
-        template_name: 'Auto-Confirmation',
-        subject: confirmationSubject,
-        body_html: submitterHtml,
-        gmail_message_id: submitterResult?.id || null,
-        rfc_message_id: threadMeta.rfcMessageId || null,
-      }],
-    };
-    if (threadMeta.threadId) updates.gmail_thread_id = threadMeta.threadId;
-    if (threadMeta.rfcMessageId) updates.gmail_root_message_id = threadMeta.rfcMessageId;
-
-    await base44.asServiceRole.entities.EventRequest.update(record.id, updates);
-
-    // Create EmailMessage row for the welcome bubble in the new thread UI
-    if (submitterResult?.id) {
-      await base44.asServiceRole.entities.EmailMessage.create({
-        ticket_id: record.id,
-        gmail_thread_id: threadMeta.threadId || null,
-        gmail_message_id: submitterResult.id,
-        rfc_message_id: threadMeta.rfcMessageId || null,
-        direction: 'outbound',
-        from_email: SENDER_EMAIL,
-        from_name: 'Pilates in Pink ™',
-        to_email: form.email,
-        subject: confirmationSubject,
-        body_html: submitterHtml,
-        body_text: '',
-        sent_by: 'system',
-        sent_at: new Date().toISOString(),
-        is_welcome: true,
-        send_status: 'sent',
-        read_by: [],
-        read_at: [],
-      });
-    }
-  }
-
-  return Response.json({ success: true, submitterResult, ownerResult, threadMeta });
+  return Response.json({ success: true, ownerResult, submitterSkipped: true });
 });
