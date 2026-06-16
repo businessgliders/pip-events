@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Sparkles, Inbox } from 'lucide-react';
+import { X, ArrowRight, Sparkles } from 'lucide-react';
 
 const SESSION_KEY = 'pip_inbox_migration_seen_v1';
 const INBOX_URL = 'https://inbox.pilatesinpinkstudio.com/';
-const SHOWCASE_IMAGE = 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/a4faeed41_CleanShot2026-06-15at1947302x.png';
+const SHOWCASE_IMAGE = 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/4fdbd3e5b_generated_image.png';
+const APP_ICON = 'https://media.base44.com/images/public/69841af9c747b033a60780f2/8796f5d2d_IMG_0093.png';
 
 export default function PiPInboxMigrationPopup() {
   const [open, setOpen] = useState(false);
@@ -77,7 +78,7 @@ export default function PiPInboxMigrationPopup() {
               <img
                 src={SHOWCASE_IMAGE}
                 alt="PiP Inbox"
-                className="w-full h-44 object-cover object-center"
+                className="w-full h-44 object-contain object-center"
               />
             </div>
 
@@ -85,12 +86,11 @@ export default function PiPInboxMigrationPopup() {
             <div className="px-7 pt-6 pb-7 text-center">
               {/* Icon + NEW badge */}
               <div className="flex items-center justify-center gap-2 mb-3">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: 'rgba(241,136,155,0.12)' }}
-                >
-                  <Inbox className="w-5 h-5" style={{ color: '#e86c84' }} />
-                </div>
+                <img
+                  src={APP_ICON}
+                  alt="PiP Inbox icon"
+                  className="w-10 h-10 rounded-xl object-cover shadow-sm"
+                />
                 <div
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider"
                   style={{
