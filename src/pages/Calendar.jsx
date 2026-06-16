@@ -1,19 +1,8 @@
-import { Link } from 'react-router-dom';
-import { Lock } from 'lucide-react';
 import HlsVideo from '../components/HlsVideo';
 import CalendarGrid from '../components/calendar/CalendarGrid';
 import GlassNav from '../components/layout/GlassNav';
 import usePageTitle from '@/hooks/usePageTitle';
 import usePageSEO from '@/hooks/usePageSEO';
-import { useAuth } from '@/lib/AuthContext';
-
-function getInitials(name, email) {
-  const source = (name || email || '').trim();
-  if (!source) return '?';
-  const parts = source.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return source.slice(0, 2).toUpperCase();
-}
 
 export default function Calendar() {
   usePageTitle('Calendar');
@@ -21,8 +10,6 @@ export default function Calendar() {
     path: '/Calendar',
     description: 'Check live studio availability and pick a date to request your private Pilates in Pink™ event.',
   });
-  const { user } = useAuth();
-  const isSignedIn = !!user;
   return (
     <div className="min-h-screen relative">
       <HlsVideo
@@ -31,30 +18,6 @@ export default function Calendar() {
         style={{zIndex: 0}}
       />
       <div className="fixed inset-0" style={{zIndex: 1, background: 'rgba(248, 210, 220, 0.85)'}} />
-
-      {/* Top-right corner — padlock when signed out, user initial when signed in.
-          Both link to the staff dashboard (which gates access itself). */}
-      <Link
-        to="/RequestBoard"
-        title={isSignedIn ? `Signed in as ${user.full_name || user.email}` : 'Staff Dashboard'}
-        className="fixed top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
-        style={{
-          zIndex: 10,
-          background: isSignedIn ? '#f1889b' : 'rgba(255,255,255,0.18)',
-          backdropFilter: isSignedIn ? 'none' : 'blur(10px)',
-          WebkitBackdropFilter: isSignedIn ? 'none' : 'blur(10px)',
-          border: '1px solid rgba(255,255,255,0.35)',
-          boxShadow: isSignedIn ? '0 4px 12px rgba(241,136,155,0.35)' : 'none',
-        }}
-      >
-        {isSignedIn ? (
-          <span className="text-xs font-semibold text-white">
-            {getInitials(user.full_name, user.email)}
-          </span>
-        ) : (
-          <Lock className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.85)' }} />
-        )}
-      </Link>
 
       <div className="relative" style={{zIndex: 2}}>
         <GlassNav />
