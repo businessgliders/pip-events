@@ -359,14 +359,9 @@ Deno.serve(async (req) => {
 
   const ownerHtmlFinal = ownerHtml.replace('__DASHBOARD_BUTTON__', dashboardButton);
 
-  // Submitter "Thank You" email is DISABLED — PiP Hub now sends the unified
-  // confirmation to the client with the correct ticket number.
-  // We only send the internal owner notification to info@pilatesinpinkstudio.com.
-  const ownerResult = await sendGmail(accessToken, {
-    to: OWNER_EMAIL,
-    subject: confirmationSubject,
-    html: ownerHtmlFinal,
-  });
-
-  return Response.json({ success: true, ownerResult, submitterSkipped: true });
+  // Both submitter "Thank You" and internal owner notification are DISABLED —
+  // PiP Hub now owns all client communication AND internal alerts for new
+  // event requests. sendEventEmails is now a no-op kept only for backward
+  // compatibility with the frontend invocation.
+  return Response.json({ success: true, submitterSkipped: true, ownerSkipped: true });
 });
