@@ -3,20 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 const SESSION_KEY = 'pip_inbox_migration_seen_v1';
-const INBOX_URL = 'https://inbox.pilatesinpinkstudio.com/';
+const INBOX_URL = 'https://inbox.pilatesinpinkstudio.com/inbox#events';
 const SHOWCASE_IMAGE = 'https://media.base44.com/images/public/69b4780e4278ece8feeae352/4fdbd3e5b_generated_image.png';
 const APP_ICON = 'https://media.base44.com/images/public/69841af9c747b033a60780f2/8796f5d2d_IMG_0093.png';
 
 export default function PiPInboxMigrationPopup() {
   const [open, setOpen] = useState(true);
 
-  const markSeen = () => {
-    setOpen(false);
-  };
-
   const handleTryNow = () => {
     window.open(INBOX_URL, '_blank', 'noopener,noreferrer');
-    markSeen();
+    // Popup intentionally stays open after CTA click.
   };
 
   return (
@@ -87,7 +83,7 @@ export default function PiPInboxMigrationPopup() {
                 never miss a message.
               </p>
 
-              <div className="flex items-center justify-center gap-5">
+              <div className="flex items-center justify-center">
                 <button
                   onClick={handleTryNow}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white transition-all hover:scale-[1.03]"
@@ -97,13 +93,6 @@ export default function PiPInboxMigrationPopup() {
                   }}
                 >
                   Try now <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={markSeen}
-                  className="text-sm font-semibold transition-colors hover:opacity-70"
-                  style={{ color: '#2a1a20' }}
-                >
-                  Continue existing
                 </button>
               </div>
             </div>
