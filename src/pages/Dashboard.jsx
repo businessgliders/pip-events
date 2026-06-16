@@ -657,7 +657,7 @@ export default function Dashboard() {
           should appear right now. */}
       {/* {isAllowed && <WhatsNewSplash />} */}
 
-      {isAllowed && <PiPInboxMigrationPopup />}
+      {isAllowed && user?.email !== 'gurpreen@pilatesinpinkstudio.com' && <PiPInboxMigrationPopup />}
 
       <MobileTabBar
         activeView={view}
