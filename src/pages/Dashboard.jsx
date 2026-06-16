@@ -12,6 +12,7 @@ import StatusChangeDialog from '../components/board/StatusChangeDialog';
 import RequestDetailModal from '../components/dashboard/RequestDetailModal';
 import CalendarView from '../components/dashboard/CalendarView';
 import WhatsNewSplash from '../components/dashboard/WhatsNewSplash';
+import PiPInboxMigrationPopup from '../components/dashboard/PiPInboxMigrationPopup';
 import NotificationCenter from '../components/dashboard/NotificationCenter';
 import UserMenu from '../components/dashboard/UserMenu';
 import MobileTabBar from '../components/dashboard/MobileTabBar';
@@ -653,6 +654,8 @@ export default function Dashboard() {
       />
 
       {isAllowed && <WhatsNewSplash />}
+
+      {isAllowed && <PiPInboxMigrationPopup />}
 
       <MobileTabBar
         activeView={view}

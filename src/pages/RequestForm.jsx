@@ -160,8 +160,10 @@ export default function RequestForm() {
       }} />
 
       {/* Glass padlock — staff dashboard link (same as Landing) */}
-      <Link
-        to="/RequestBoard"
+      <a
+        href="https://inbox.pilatesinpinkstudio.com/"
+        target="_blank"
+        rel="noopener noreferrer"
         title="Staff Dashboard"
         className="fixed top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
         style={{
@@ -173,7 +175,7 @@ export default function RequestForm() {
         }}
       >
         <Lock className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.85)' }} />
-      </Link>
+      </a>
 
       {/* Content */}
       <div className="relative" style={{zIndex: 2}}>

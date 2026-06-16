@@ -52,8 +52,10 @@ export default function Landing() {
         }}
       />
 
-      <Link
-        to="/RequestBoard"
+      <a
+        href="https://inbox.pilatesinpinkstudio.com/"
+        target="_blank"
+        rel="noopener noreferrer"
         title="Staff Dashboard"
         className="fixed top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
         style={{
@@ -65,7 +67,7 @@ export default function Landing() {
         }}
       >
         <Lock className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.85)' }} />
-      </Link>
+      </a>
 
       <div className="relative" style={{ zIndex: 2 }}>
         <div className="max-w-5xl mx-auto px-6 pt-16 pb-12 sm:pt-24 sm:pb-20">
