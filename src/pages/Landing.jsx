@@ -4,6 +4,7 @@ import { CalendarDays, Sparkles, Users, Heart, ArrowDown, Lock } from 'lucide-re
 import HlsVideo from '../components/HlsVideo';
 import CalendarGrid from '../components/calendar/CalendarGrid';
 import usePageTitle from '@/hooks/usePageTitle';
+import usePageSEO from '@/hooks/usePageSEO';
 
 const features = [
   {
@@ -30,6 +31,10 @@ const features = [
 
 export default function Landing() {
   usePageTitle('Events');
+  usePageSEO({
+    path: '/',
+    description: 'Book your private event at Pilates in Pink™ Studio — birthdays, bridal showers, bachelorettes, and corporate wellness experiences in our signature pink Pilates studio.',
+  });
   const calendarRef = useRef(null);
 
   const scrollToCalendar = () => {

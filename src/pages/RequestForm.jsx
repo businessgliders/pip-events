@@ -7,6 +7,7 @@ import AddonsStep from '../components/requestForm/AddonsStep';
 import { DEFAULT_PRESELECTED_ADDONS } from '../components/requestForm/addonsConfig';
 import { Info, Cake, Flower2, Wine, Briefcase, PersonStanding, Sparkles, ChevronRight, ChevronLeft, Check, Lock } from 'lucide-react';
 import usePageTitle from '@/hooks/usePageTitle';
+import usePageSEO from '@/hooks/usePageSEO';
 
 const EVENT_TYPE_ICONS = {
   'Birthday': Cake,
@@ -59,6 +60,10 @@ function SectionHeader({ icon: Icon, title, subtitle }) {
 
 export default function RequestForm() {
   usePageTitle('Submit a Request');
+  usePageSEO({
+    path: '/RequestForm',
+    description: 'Submit your private event request for Pilates in Pink™ Studio. Tell us about your date, group size, and add-ons — we reply within 24 hours.',
+  });
   const params = new URLSearchParams(window.location.search);
   const preDate = params.get('date') || '';
   const preType = params.get('eventType') || '';

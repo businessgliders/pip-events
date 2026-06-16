@@ -4,6 +4,7 @@ import HlsVideo from '../components/HlsVideo';
 import CalendarGrid from '../components/calendar/CalendarGrid';
 import GlassNav from '../components/layout/GlassNav';
 import usePageTitle from '@/hooks/usePageTitle';
+import usePageSEO from '@/hooks/usePageSEO';
 import { useAuth } from '@/lib/AuthContext';
 
 function getInitials(name, email) {
@@ -16,6 +17,10 @@ function getInitials(name, email) {
 
 export default function Calendar() {
   usePageTitle('Calendar');
+  usePageSEO({
+    path: '/Calendar',
+    description: 'Check live studio availability and pick a date to request your private Pilates in Pink™ event.',
+  });
   const { user } = useAuth();
   const isSignedIn = !!user;
   return (

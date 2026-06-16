@@ -3,9 +3,14 @@ import HlsVideo from '../components/HlsVideo';
 import Navbar from '../components/layout/Navbar';
 import { Check, Mail, Sparkles } from 'lucide-react';
 import usePageTitle from '@/hooks/usePageTitle';
+import usePageSEO from '@/hooks/usePageSEO';
 
 export default function Confirmation() {
   usePageTitle('Request Received');
+  usePageSEO({
+    path: '/Confirmation',
+    description: 'Your private event request at Pilates in Pink™ Studio has been received. We will be in touch within 24 hours.',
+  });
   const { state } = useLocation();
   const navigate = useNavigate();
   const name = state?.name || 'there';
