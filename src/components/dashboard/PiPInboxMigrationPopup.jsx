@@ -79,7 +79,7 @@ export default function PiPInboxMigrationPopup() {
               </div>
 
               <h2 className="text-2xl font-bold leading-tight mb-2" style={{ color: '#2a1a20' }}>
-                Try the new PiP Inbox
+                Try the new Unified PiP Inbox
               </h2>
 
               <p className="text-sm leading-relaxed mb-6" style={{ color: '#7a6970' }}>
