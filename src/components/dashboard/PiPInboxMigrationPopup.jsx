@@ -33,7 +33,6 @@ export default function PiPInboxMigrationPopup() {
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
           }}
-          onClick={markSeen}
         >
           <motion.div
             className="relative w-full max-w-lg max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl bg-white"
