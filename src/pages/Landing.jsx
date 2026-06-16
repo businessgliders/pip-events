@@ -53,7 +53,7 @@ export default function Landing() {
       />
 
       <a
-        href="https://inbox.pilatesinpinkstudio.com/"
+        href="https://inbox.pilatesinpinkstudio.com/inbox#events"
         target="_blank"
         rel="noopener noreferrer"
         title="Staff Dashboard"

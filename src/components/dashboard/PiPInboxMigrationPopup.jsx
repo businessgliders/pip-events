@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 const SESSION_KEY = 'pip_inbox_migration_seen_v1';
 const INBOX_URL = 'https://inbox.pilatesinpinkstudio.com/';
@@ -54,20 +54,6 @@ export default function PiPInboxMigrationPopup() {
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
-            <button
-              onClick={markSeen}
-              className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-              }}
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" style={{ color: '#5a3535' }} />
-            </button>
-
             {/* Showcase image — edge-to-edge with pink-tinted backdrop */}
             <div
               className="relative"
@@ -78,7 +64,7 @@ export default function PiPInboxMigrationPopup() {
               <img
                 src={SHOWCASE_IMAGE}
                 alt="PiP Inbox"
-                className="w-full h-44 object-contain object-center"
+                className="w-full h-44 object-cover object-center"
               />
             </div>
 
