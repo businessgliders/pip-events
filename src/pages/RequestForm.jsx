@@ -136,6 +136,11 @@ export default function RequestForm() {
     };
     const created = await base44.entities.EventRequest.create(savedForm);
     await base44.functions.invoke('sendEventEmails', { form: savedForm, record_id: created?.id, app_url: window.location.origin });
+    // Forward to PiP Hub (Unified Inbox) — non-blocking; never let a hub failure
+    // disrupt the client's submission flow.
+    base44.functions
+      .invoke('forwardToHub', { form: savedForm, record_id: created?.id })
+      .catch(err => console.error('forwardToHub failed:', err));
     setSubmitting(false);
     navigate('/Confirmation', { state: { name: form.full_name, email: form.email, eventType: form.event_type } });
   };
