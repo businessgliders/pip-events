@@ -653,7 +653,9 @@ export default function Dashboard() {
         onCancel={() => setPendingStatusChange(null)}
       />
 
-      {isAllowed && <WhatsNewSplash />}
+      {/* WhatsNewSplash temporarily hidden — only the PiP Inbox migration popup
+          should appear right now. */}
+      {/* {isAllowed && <WhatsNewSplash />} */}
 
       {isAllowed && <PiPInboxMigrationPopup />}
 
