@@ -8,20 +8,9 @@ const SHOWCASE_IMAGE = 'https://media.base44.com/images/public/69b4780e4278ece8f
 const APP_ICON = 'https://media.base44.com/images/public/69841af9c747b033a60780f2/8796f5d2d_IMG_0093.png';
 
 export default function PiPInboxMigrationPopup() {
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (!sessionStorage.getItem(SESSION_KEY)) {
-        setOpen(true);
-      }
-    } catch (_e) {
-      setOpen(true);
-    }
-  }, []);
+  const [open, setOpen] = useState(true);
 
   const markSeen = () => {
-    try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (_e) { /* noop */ }
     setOpen(false);
   };
 
