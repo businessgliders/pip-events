@@ -244,7 +244,7 @@ export default function RequestForm() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="text-sm font-semibold text-gray-600 block mb-1.5">Event Date *</label>
-                      <input required type="date" value={form.event_date} onChange={e => set('event_date', e.target.value)} className={inputClass} />
+                      <input required type="date" value={form.event_date} onChange={e => set('event_date', e.target.value)} className={`${inputClass} block appearance-none`} style={{ minHeight: '42px' }} />
                     </div>
                     <div>
                       <label className="text-sm font-semibold text-gray-600 block mb-1.5">Preferred Time(s)</label>
@@ -525,10 +525,21 @@ export default function RequestForm() {
                 onClick={handleSubmit}
                 disabled={submitting || !canSubmit}
                 title={!canSubmit ? 'Please complete all required fields' : ''}
-                className="flex items-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{background: submitting ? '#f7b1bd' : 'linear-gradient(135deg, #f1889b, #e86c84)', boxShadow: '0 6px 20px rgba(241,136,155,0.35)'}}
+                className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: 'linear-gradient(135deg, #f1889b, #e86c84)',
+                  boxShadow: '0 6px 20px rgba(241,136,155,0.35)',
+                  minWidth: '180px',
+                }}
               >
-                {submitting ? 'Submitting...' : 'Submit Request'} {!submitting && <Check className="w-4 h-4" />}
+                {submitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>Submit Request <Check className="w-4 h-4" /></>
+                )}
               </button>
             )}
           </div>
