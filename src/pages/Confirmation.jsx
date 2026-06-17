@@ -10,6 +10,7 @@ export default function Confirmation() {
   usePageSEO({
     path: '/Confirmation',
     description: 'Your private event request at Pilates in Pink™ Studio has been received. We will be in touch within 24 hours.',
+    noindex: true,
   });
   const { state } = useLocation();
   const navigate = useNavigate();

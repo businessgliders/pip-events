@@ -46,10 +46,20 @@ function upsertLink(rel, href) {
   return { el, prev, created };
 }
 
-export default function usePageSEO({ description, path, ogTitle, ogDescription } = {}) {
+export default function usePageSEO({ description, path, ogTitle, ogDescription, noindex = false } = {}) {
   useEffect(() => {
     const restorers = [];
-    const canonicalUrl = path ? `${SITE_ORIGIN}${path}` : window.location.href.split('?')[0];
+    // Lowercase the path so canonicals are consistent (Google treats URLs as case-sensitive).
+    const normalizedPath = path ? path.toLowerCase() : null;
+    const canonicalUrl = normalizedPath ? `${SITE_ORIGIN}${normalizedPath}` : window.location.href.split('?')[0];
+
+    if (noindex) {
+      const r = upsertMeta('meta[name="robots"]', {
+        create: { name: 'robots' },
+        content: 'noindex, nofollow',
+      });
+      restorers.push(() => (r.created ? r.el.remove() : r.el.setAttribute('content', r.prev)));
+    }
     const effectiveOgTitle = ogTitle || document.title;
     const effectiveOgDesc = ogDescription || description;
 

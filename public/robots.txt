@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /requestboard
+Disallow: /login
+Disallow: /confirmation
+
+Sitemap: https://events.pilatesinpinkstudio.com/sitemap.xml
