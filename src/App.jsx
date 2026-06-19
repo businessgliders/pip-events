@@ -11,9 +11,16 @@ import Calendar from './pages/Calendar.jsx';
 import RequestForm from './pages/RequestForm';
 import Confirmation from './pages/Confirmation';
 import Dashboard from './pages/Dashboard';
+import PublicForm from './pages/PublicForm';
 
 const AuthenticatedApp = () => {
   const { isLoadingPublicSettings } = useAuth();
+
+  // Fully public route — bypass any auth/public-settings loading gate.
+  // Must short-circuit BEFORE the loading spinner so visitors are never blocked.
+  if (typeof window !== 'undefined' && window.location.pathname.toLowerCase() === '/form') {
+    return <PublicForm />;
+  }
 
   if (isLoadingPublicSettings) {
     return (
@@ -27,6 +34,7 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Landing />} />
+      <Route path="/form" element={<PublicForm />} />
       <Route path="/login" element={<Login />} />
       <Route path="/Calendar" element={<Calendar />} />
       <Route path="/RequestForm" element={<RequestForm />} />
