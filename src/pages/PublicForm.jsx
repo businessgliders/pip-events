@@ -1,92 +1,104 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import PublicFormField from "@/components/PublicFormField";
 
+const ACCENT = "#7d2235";
+// IMPORTANT: these functions live in the HUB app, not pip-events.
 const HUB = "https://base44.app/api/apps/69841af9c747b033a60780f2/functions";
-const PINK = "#d6336c";
 
 export default function PublicForm() {
   const token = new URLSearchParams(window.location.search).get("token");
-  const [state, setState] = useState({ loading: true, error: "", form: null, done: false });
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(null);
   const [answers, setAnswers] = useState({});
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    if (!token) { setState({ loading: false, error: "Missing link token.", form: null, done: false }); return; }
-    (async () => {
-      try {
-        const res = await fetch(`${HUB}/getPublicForm`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          setState({ loading: false, error: data.error === "invalid_token" ? "This link is invalid or expired." : (data.error || "Could not load form."), form: null, done: false });
-          return;
-        }
-        setState({ loading: false, error: "", form: data.form, done: !!data.already_submitted });
-      } catch (e) {
-        setState({ loading: false, error: "Network error. Please try again.", form: null, done: false });
-      }
-    })();
+    if (!token) { setError("This link is missing its access token."); setLoading(false); return; }
+    fetch(`${HUB}/getPublicForm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.error) throw new Error(d.error);
+        setData(d);
+        if (d.already_submitted) setDone(true);
+      })
+      .catch(() => setError("This form link is invalid or has expired."))
+      .finally(() => setLoading(false));
   }, [token]);
 
-  const setVal = (id, v) => setAnswers((a) => ({ ...a, [id]: v }));
+  const setAnswer = (id, val) => setAnswers((a) => ({ ...a, [id]: val }));
 
   const submit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setError("");
     try {
       const res = await fetch(`${HUB}/submitPublicForm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, answers }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        if (data.error === "already_submitted") { setState((s) => ({ ...s, done: true })); }
-        else { alert(data.error || "Submission failed."); }
-      } else {
-        setState((s) => ({ ...s, done: true }));
-      }
-    } catch { alert("Network error. Please try again."); }
+      const d = await res.json();
+      if (d.error) throw new Error(d.error);
+      setDone(true);
+    } catch (err) {
+      setError(err.message === "already_submitted" ? "You've already submitted this form." : "Submission failed. Please try again.");
+    }
     setSubmitting(false);
   };
 
-  const Card = ({ children }) => (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(160deg,#fff5f8,#ffe8f0)", padding: 24 }}>
-      <div style={{ width: "100%", maxWidth: 560, background: "#fff", borderRadius: 20, boxShadow: "0 20px 60px rgba(214,51,108,0.15)", padding: 32 }}>{children}</div>
-    </div>
-  );
-
-  if (state.loading) return <Card><p style={{ textAlign: "center", color: "#9b6" }}>Loading…</p></Card>;
-  if (state.error) return <Card><h2 style={{ color: PINK }}>Hmm…</h2><p style={{ color: "#666" }}>{state.error}</p></Card>;
-  if (state.done) return <Card><div style={{ textAlign: "center" }}><div style={{ fontSize: 48 }}>💗</div><h2 style={{ color: PINK }}>Thank you!</h2><p style={{ color: "#666" }}>Your response has been received.</p></div></Card>;
-
-  const f = state.form;
   return (
-    <Card>
-      <h1 style={{ color: PINK, marginBottom: 4 }}>{f.name}</h1>
-      <p style={{ color: "#999", marginBottom: 24, fontSize: 14 }}>Pilates in Pink Studio</p>
-      <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-        {(f.fields || []).map((field) => (
-          <Field key={field.id} field={field} value={answers[field.id]} onChange={(v) => setVal(field.id, v)} />
-        ))}
-        <button type="submit" disabled={submitting} style={{ marginTop: 8, background: PINK, color: "#fff", border: "none", borderRadius: 12, padding: "14px 20px", fontWeight: 600, fontSize: 16, cursor: "pointer", opacity: submitting ? 0.6 : 1 }}>
-          {submitting ? "Sending…" : "Submit"}
-        </button>
-      </form>
-    </Card>
+    <div className="min-h-screen w-full flex items-start sm:items-center justify-center p-4 py-10"
+      style={{ background: "linear-gradient(160deg,#fde7ef 0%,#f8d3e0 50%,#f3c2d4 100%)" }}>
+      <div className="w-full max-w-lg">
+        {loading ? (
+          <div className="flex justify-center py-20"><Loader2 className="w-7 h-7 animate-spin" style={{ color: ACCENT }} /></div>
+        ) : error && !data ? (
+          <Card><State icon={AlertCircle} title="Link unavailable" msg={error} /></Card>
+        ) : done ? (
+          <Card><State icon={CheckCircle2} title="Thank you!" msg="Your response has been recorded." /></Card>
+        ) : (
+          <Card>
+            <h1 className="text-2xl font-bold" style={{ color: ACCENT }}>{data.form.name}</h1>
+            {data.recipient.name && <p className="text-sm text-pink-900/60 mt-1">For {data.recipient.name}</p>}
+            <form onSubmit={submit} className="mt-6 space-y-5">
+              {(data.form.fields || []).map((f) => (
+                <PublicFormField key={f.id} field={f} value={answers[f.id]} onChange={(v) => setAnswer(f.id, v)} accent={ACCENT} />
+              ))}
+              {error && <p className="text-sm text-red-500">{error}</p>}
+              <button type="submit" disabled={submitting}
+                className="w-full py-3 rounded-xl text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
+                style={{ backgroundColor: ACCENT }}>
+                {submitting && <Loader2 className="w-4 h-4 animate-spin" />} Submit
+              </button>
+            </form>
+          </Card>
+        )}
+        <p className="text-center text-xs text-pink-900/40 mt-4">Pilates in Pink Studio</p>
+      </div>
+    </div>
   );
 }
 
-function Field({ field, value, onChange }) {
-  const label = <label style={{ display: "block", marginBottom: 6, fontWeight: 600, color: "#444", fontSize: 14 }}>{field.label}{field.required && <span style={{ color: "#d6336c" }}> *</span>}</label>;
-  const base = { width: "100%", border: "1px solid #f3c6d6", borderRadius: 10, padding: "12px 14px", fontSize: 15, outline: "none", boxSizing: "border-box" };
+function Card({ children }) {
+  return <div className="bg-white rounded-3xl shadow-xl shadow-pink-900/10 p-6 sm:p-8">{children}</div>;
+}
 
-  if (field.type === "textarea") return <div>{label}<textarea required={field.required} value={value || ""} onChange={(e) => onChange(e.target.value)} rows={4} style={base} /></div>;
-  if (field.type === "select") return <div>{label}<select required={field.required} value={value || ""} onChange={(e) => onChange(e.target.value)} style={base}><option value="">Select…</option>{(field.options || []).map((o) => <option key={o} value={o}>{o}</option>)}</select></div>;
-  if (field.type === "checkbox") return <div style={{ display: "flex", alignItems: "center", gap: 10 }}><input type="checkbox" checked={!!value} onChange={(e) => onChange(e.target.checked)} style={{ width: 18, height: 18, accentColor: "#d6336c" }} /><span style={{ color: "#444", fontSize: 14 }}>{field.label}</span></div>;
-
-  const typeMap = { email: "email", phone: "tel", number: "number", date: "date", time: "time", text: "text" };
-  return <div>{label}<input type={typeMap[field.type] || "text"} required={field.required} value={value || ""} onChange={(e) => onChange(e.target.value)} style={base} /></div>;
+function State({ icon: Icon, title, msg }) {
+  return (
+    <div className="text-center py-8">
+      <div className="w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: `${ACCENT}1a`, color: ACCENT }}>
+        <Icon className="w-7 h-7" />
+      </div>
+      <h2 className="text-xl font-bold text-pink-900">{title}</h2>
+      <p className="text-sm text-pink-900/60 mt-1">{msg}</p>
+    </div>
+  );
 }
